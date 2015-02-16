@@ -37,5 +37,7 @@ public class Tester {
 			
 		partsInventoryView.register(partsInventoryController);
 		
+		PartsInventoryGateway.DisplayInventory_All();
+		
 	}
 }
