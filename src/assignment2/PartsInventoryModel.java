@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PartsInventoryModel {
 	private List<Part> partsInventory;
-	private Comparator<Part> sortingMode = Part.PartNameDescending; // default sort
+	private Comparator<Part> sortingMode = Part.IDDescending; // default sort
 	private PartsInventoryGateway pdg;
 	
 	public PartsInventoryModel() {
@@ -67,34 +67,17 @@ public class PartsInventoryModel {
 		}
 	}
 	
-	public void editPart(Part partOld, Part partNew) throws Exception {
-		int index = partsInventory.indexOf(partOld);
-		//if (index == -1) {
-		//	throw new Exception("Error: the old part, " + partOld.getPartName() + " cannot be edited as it is not listed in inventory.");
-		//}
-		
-		// If the item being edited did not originally have the new part name AND the new part name is already taken, throw an error
-		// Otherwise, the name remains the same, and it should be OK to keep
-		if (!partOld.getPartName().equals(partNew.getPartName()) && findPartName(partNew.getPartName()) != null) {
-			//throw new Exception("Part name \"" + partNew.getPartName() + "\" is already listed in inventory.");
-			throw new Exception("Error: part name already exists in the inventory.");
-		} else {
-			partsInventory.set(index, partNew);
+	public void editPart(Part partOld, Part partNew) throws SQLException, IOException {
+		try {
+			pdg.editPart(partOld.getID(), partNew.getPartName(), partNew.getPartNumber(), partNew.getVendor(), 
+						 partNew.getQuantityUnitType(), partNew.getExternalPartNumber());
+			partsInventory = pdg.getParts();
 		}
-	}
-	
-	public void editPart(Part partOld, int newID, int newQuantity, String newQuantityUnitType, String newName, String newPartNumber, String newExternalPartNumber, String newLocation, String newVendor) throws Exception {
-		int index = partsInventory.indexOf(partOld);
-	//	if (index == -1) {
-	//		throw new Exception("Error: the old part, " + partOld.getPartName() + " cannot be edited as it is not listed in inventory.");
-	//	}
-		
-		if (!partOld.getPartName().equals(newName) && findPartName(newName) != null) {
-			//throw new Exception("Part name \"" + newName + "\" is already listed in inventory.");
-			throw new Exception("Error: part name already exists in the inventory.");
-		} else {
-			Part newPart = new Part(newID, newQuantityUnitType, newName, newPartNumber, newExternalPartNumber, newVendor);
-			partsInventory.set(index, newPart);
+		catch (SQLException sqe) {
+			throw new SQLException(sqe.getMessage());
+		}
+		catch (IOException ioe) {
+			throw new SQLException(ioe.getMessage());
 		}
 	}
 	

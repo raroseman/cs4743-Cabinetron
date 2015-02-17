@@ -74,8 +74,6 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					partView.setExternalNumber(selectedPart.getExternalPartNumber());
 					partView.setVendor(selectedPart.getVendor());
 					partView.setQuantityUnitType(selectedPart.getQuantityUnitType());
-					inventoryView.updatePanel();
-					inventoryView.repaint();
 					hasPartViewOpen = true;
 				}
 				break;
@@ -94,6 +92,8 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 						inventoryView.repaint();
 					} catch (NumberFormatException noint) {
 						partView.setErrorMessage(noint.getMessage());
+					} catch (SQLException sqe) {
+						partView.setErrorMessage(sqe.getMessage());
 					} catch (IOException ex) {
 						partView.setErrorMessage(ex.getMessage());
 					} catch (Exception e1) {

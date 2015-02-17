@@ -36,7 +36,7 @@ public class Test_Part {
 			assertTrue(p.getQuantityUnitType().equals(unitOfQuantity));
 			assertTrue(p.getPartName().equals(partName));
 			assertTrue(p.getPartNumber().equals(partNumber));
-			assertTrue(p.getVendor().equals(""));
+			assertTrue(p.getVendor() == null);
 		}
 		catch (IOException e) {
 			fail("Exception thrown during unexceptional part creation: \n\t" + e);
