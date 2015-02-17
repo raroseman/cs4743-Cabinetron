@@ -1,11 +1,10 @@
 package assignment2;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.SQLException;
 
-import javax.swing.JButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -14,15 +13,10 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 	private PartsInventoryModel partsInventoryModel;
 	private PartsInventoryView inventoryView;
 	private PartView partView;
-	private JButton lastButtonClicked;
-	private Color lastButtonOriginalColor;
-	private Color highlightedColor = new Color(255, 255, 153);
 	private Part selectedPart = null;
 	private boolean hasPartViewOpen;
-	private static int id = 57;
 	
 	public PartsInventoryController(PartsInventoryModel inventoryModel, PartsInventoryView inventoryView) {
-		lastButtonClicked = null;
 		this.partsInventoryModel = inventoryModel;
 		this.inventoryView = inventoryView;
 		hasPartViewOpen = false;
@@ -43,7 +37,6 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				partView = new PartView(partsInventoryModel, "Add New Part");
 				partView.register(this);
 				partView.disableIDEdit();
-				partView.setID(id + 1);
 				partView.hideSaveButton();
 				partView.hideEditButton();
 				hasPartViewOpen = true;
@@ -54,7 +47,12 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 						partView.dispose();
 						hasPartViewOpen = false;
 					}
-					partsInventoryModel.deletePart(selectedPart);
+					try {
+						partsInventoryModel.deletePart(selectedPart);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					ClearSelection();
 					inventoryView.updatePanel();
 					inventoryView.repaint();
@@ -73,11 +71,9 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					partView.setName(selectedPart.getPartName());
 					partView.setID(selectedPart.getID());
 					partView.setNumber(selectedPart.getPartNumber());
-					partView.setExternalNumber(selectedPart.getExternalNumber());
+					partView.setExternalNumber(selectedPart.getExternalPartNumber());
 					partView.setVendor(selectedPart.getVendor());
-					partView.setQuantity(selectedPart.getQuantity());
 					partView.setQuantityUnitType(selectedPart.getQuantityUnitType());
-					partView.setLocation(selectedPart.getLocation());
 					inventoryView.updatePanel();
 					inventoryView.repaint();
 					hasPartViewOpen = true;
@@ -91,7 +87,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			case "Save":
 				if (selectedPart != null) {
 					try {
-						Part newPart = new Part(partView.getID(), partView.getQuantity(), partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalNumber(), partView.getPartLocation(), partView.getVendor());
+						Part newPart = new Part(partView.getID(), partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalPartNumber(), partView.getVendor());
 						partsInventoryModel.editPart(selectedPart, newPart);
 						partView.dispose();
 						inventoryView.updatePanel();
@@ -107,60 +103,25 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				break;
 			case "OK":
 				try {
-					Part part = new Part(++id, partView.getQuantity(), partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalNumber(), partView.getPartLocation(), partView.getVendor());			
+					Part part = new Part(partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalPartNumber(), partView.getVendor());			
 					partsInventoryModel.addPart(part);
-					partsInventoryModel.printInventory();
 					partView.dispose();
 					inventoryView.updatePanel();
 					inventoryView.repaint();
 				}
 				catch (NumberFormatException noint) {
-					id--;
 					partView.setErrorMessage(noint.getMessage());
 				}
 				catch (IOException ioex) {
-					id--;
 					partView.setErrorMessage(ioex.getMessage());
 				}
 				catch (Exception ex) {
-					id--;
 					partView.setErrorMessage(ex.getMessage());
 				}
 				break;
 			case "Cancel":
 				partView.dispose();
 				break;
-			case "Part Name":
-				ChangeButtonColors(e);
-				partsInventoryModel.sortByPartName();
-				inventoryView.updatePanel();
-				inventoryView.repaint();
-				break;
-			case "Part #":
-				ChangeButtonColors(e);
-				partsInventoryModel.sortByPartNumber();
-				inventoryView.updatePanel();
-				inventoryView.repaint();
-				break;
-			case "Vendor":
-				ChangeButtonColors(e);
-				partsInventoryModel.sortByVendor();
-				inventoryView.updatePanel();
-				inventoryView.repaint();
-				break;
-			case "Quantity":
-				ChangeButtonColors(e);
-				partsInventoryModel.sortByQuantity();
-				inventoryView.updatePanel();
-				inventoryView.repaint();
-				break;
-			case "Location":
-				ChangeButtonColors(e);
-				partsInventoryModel.sortByLocation();
-				inventoryView.updatePanel();
-				inventoryView.repaint();
-				break;
-				
 		}
 	}
 	
@@ -170,16 +131,6 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 		inventoryView.disableView();
 	}
 	
-	// restores previous button clicked to its original color; changes color of current button clicked 
-	private void ChangeButtonColors(ActionEvent e) {
-		if (lastButtonClicked != null) {
-			lastButtonClicked.setBackground(lastButtonOriginalColor);
-		}
-		lastButtonClicked = (JButton) e.getSource();
-		lastButtonOriginalColor = lastButtonClicked.getBackground();
-		lastButtonClicked.setBackground(highlightedColor); // indicates the most recently clicked button
-	}
-
 	// When the user clicks on an element in the inventory list, event is triggered: gets Part from index of list element
 	@Override
 	public void valueChanged(ListSelectionEvent e) {

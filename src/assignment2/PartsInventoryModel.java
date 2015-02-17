@@ -1,32 +1,35 @@
 package assignment2;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
 public class PartsInventoryModel {
 	private List<Part> partsInventory;
 	private Comparator<Part> sortingMode = Part.PartNameDescending; // default sort
+	private PartsInventoryGateway pdg;
 	
 	public PartsInventoryModel() {
-		partsInventory = new ArrayList<Part>();
+		pdg = new PartsInventoryGateway();
+		partsInventory = pdg.getParts();
 	}
 	
 	public void addPart(Part p) throws Exception {
 		try {
-			addPart(p.getID(), p.getQuantity(), p.getQuantityUnitType(), p.getPartName(), p.getPartNumber(), p.getExternalNumber(), p.getLocation(), p.getVendor());
+			addPart(p.getQuantityUnitType(), p.getPartName(), p.getPartNumber(), p.getExternalPartNumber(), p.getVendor());
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
 		catch (Exception e) {
+			System.out.println(e.getMessage());
 			throw new Exception(e.getMessage());
 		}
 	}
 	
-	public void addPart(Integer id, Integer quantity, String unitOfQuantity, String partName, String partNumber, String externalPartNumber, String location) throws Exception {
+	public void addPart(String unitOfQuantity, String partName, String partNumber, String externalPartNumber) throws Exception {
 		try {
-			addPart(id, quantity, unitOfQuantity, partName, partNumber, externalPartNumber, location, "");
+			addPart(unitOfQuantity, partName, partNumber, externalPartNumber);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -36,31 +39,31 @@ public class PartsInventoryModel {
 		}
 	}
 	
-	public void addPart(Integer id, Integer quantity, String unitOfQuantity, String partName, String partNumber, String externalPartNumber, String location, String vendor) throws Exception, IOException {
+	public void addPart(String unitOfQuantity, String partName, String partNumber, String externalPartNumber, String vendor) throws Exception, IOException, SQLException {
 
-		if (quantity <= 0) {
-			throw new IOException("A new item requires quantity greater than zero.");
-		}
 		try {
-			Part p = new Part(id, quantity, unitOfQuantity, partName, partNumber, externalPartNumber, location, vendor);
-			if (findPartName(p.getPartName()) != null) {
-				throw new Exception("Part name \"" + p.getPartName() + "\" is already listed in inventory.");
-			}
-			partsInventory.add(p);
+			Part p = new Part(unitOfQuantity, partName, partNumber, externalPartNumber, vendor);
+			pdg.addPart(p.getPartName(), p.getPartNumber(), p.getVendor(), p.getQuantityUnitType(), p.getExternalPartNumber());
+			partsInventory = pdg.getParts();
 		}
-		catch (IOException e) {
-			throw new IOException(e.getMessage());
+		catch (IOException ioe) {
+			throw new IOException(ioe.getMessage());
+		}
+		catch (SQLException sqe) {
+			throw new SQLException(sqe.getMessage());
+		}
+		catch (Exception e) {
+			throw new Exception(e.getMessage());
 		}
 	}
 	
-	public void deletePart(Part p) {
-		partsInventory.remove(p); // if it exists, first instance (unique, only one entry) is removed. otherwise does nothing
-	}
-	
-	public void deletePart(String partName) {
-		Part p = findPartName(partName);
-		if (p != null) {
-			partsInventory.remove(p); // if it exists, first instance (unique, only one entry) is removed. otherwise does nothing
+	public void deletePart(Part p) throws SQLException {
+		try {
+			pdg.deletePart(p.getID()); // if it exists, first instance (unique, only one entry) is removed. otherwise does nothing
+			partsInventory = pdg.getParts();
+		}
+		catch (SQLException sqe) {
+			throw new SQLException(sqe.getMessage());
 		}
 	}
 	
@@ -90,7 +93,7 @@ public class PartsInventoryModel {
 			//throw new Exception("Part name \"" + newName + "\" is already listed in inventory.");
 			throw new Exception("Error: part name already exists in the inventory.");
 		} else {
-			Part newPart = new Part(newID, newQuantity, newQuantityUnitType, newName, newPartNumber, newExternalPartNumber, newLocation, newVendor);
+			Part newPart = new Part(newID, newQuantityUnitType, newName, newPartNumber, newExternalPartNumber, newVendor);
 			partsInventory.set(index, newPart);
 		}
 	}
@@ -119,22 +122,6 @@ public class PartsInventoryModel {
 		return null;
 	}
 	
-	public void printInventory() { // for debugging, console, or file output
-		String horizontalSeparator = "";
-		int recordNum = 1;
-		for (int i = 0; i < 80; i++) {
-			horizontalSeparator += '-';
-		}
-		System.out.printf("%8s   %17s   %17s   %8s   %17s   %17s\n",
-				"Record #", "Part #", "Part Name", "Quantity", "Quantity Unit Type", "Vendor");
-		System.out.println(horizontalSeparator);
-		for (Part part : partsInventory) {
-			System.out.printf("%8s | %17s | %17s | %8s | %17s | %17s\n",
-					recordNum++, part.getPartNumber(), part.getPartName(), part.getQuantity(), part.getQuantityUnitType(), part.getExternalNumber());
-			System.out.println(horizontalSeparator);
-		}
-	}
-	
 	public int getSize() {
 		return partsInventory.size();
 	}
@@ -147,17 +134,7 @@ public class PartsInventoryModel {
 		return Part.getValidQuantityUnitTypes();
 	}
 	
-	public String[] getValidLocationTypes() {
-		return Part.getValidLocationTypes();
-	}
-	
-	public void sortByQuantity() {
-		if (sortingMode == Part.QuantityDescending) {
-			sortingMode = Part.QuantityAscending;
-		}
-		else {
-			sortingMode = Part.QuantityDescending;
-		}
+	public void sortByCurrentSortMethod() {
 		partsInventory.sort(sortingMode);
 	}
 	
@@ -201,22 +178,22 @@ public class PartsInventoryModel {
 		partsInventory.sort(sortingMode);
 	}
 	
-	public void sortByLocation() {
-		if (sortingMode == Part.LocationDescending) {
-			sortingMode = Part.LocationAscending;
-		}
-		else {
-			sortingMode = Part.LocationDescending;
-		}
-		partsInventory.sort(sortingMode);
-	}
-	
 	public void sortByID() {
 		if (sortingMode == Part.IDDescending) {
 			sortingMode = Part.IDAscending;
 		}
 		else {
 			sortingMode = Part.IDDescending;
+		}
+		partsInventory.sort(sortingMode);
+	}
+	
+	public void sortByExternalPartNumber() {
+		if (sortingMode == Part.ExternalPartNumberDescending) {
+			sortingMode = Part.ExternalPartNumberAscending;
+		}
+		else {
+			sortingMode = Part.ExternalPartNumberDescending;
 		}
 		partsInventory.sort(sortingMode);
 	}
