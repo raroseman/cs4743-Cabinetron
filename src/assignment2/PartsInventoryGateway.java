@@ -153,19 +153,24 @@ public class PartsInventoryGateway {
 		closeConnection();
 	}
 	
-	public void deletePart(Integer partID) throws SQLException {
+	public void deletePart(Integer partID) throws SQLException, IOException {
 		createConnection();
-
+		
 		try {
+			if (isPartAssociatedWithInventoryItem(partID)) {
+				throw new SQLException("Error: Cannot delete part associated with an inventory item."); // "Failed to delete entry..."
+			}
 			SQL = "DELETE FROM Parts WHERE ID=? ";
 			prepstmt = conn.prepareStatement(SQL);
 			prepstmt.setInt(1, partID);
 			prepstmt.execute();
 		}
-		catch (SQLException e) {
+		catch (SQLException sqe) {
 			closePreparedStatement();
 			closeConnection();
-			throw new SQLException(e.getMessage()); // "Failed to delete entry..."
+			throw new SQLException(sqe.getMessage()); // "Failed to delete entry..."
+		} catch (IOException ioe) {
+			throw new IOException(ioe.getMessage());
 		}
 		closePreparedStatement();
 		closeConnection();
@@ -303,6 +308,32 @@ public class PartsInventoryGateway {
 		}
 	}
 	
+	private boolean isPartAssociatedWithInventoryItem(Integer partID) throws SQLException, IOException {
+		createConnection();
+		SQL = "SELECT InventoryItems.ID FROM InventoryItems ";
+		SQL += "WHERE InventoryItems.PartID=?";
+		try {
+			prepstmt = conn.prepareStatement(SQL);
+			prepstmt.setInt(1, partID);
+			rs = prepstmt.executeQuery();
+			if (rs.next()) {
+				closeResultSet();
+				closePreparedStatement();
+				return true;
+			}
+			else {
+				closeResultSet();
+				closePreparedStatement();
+				return false;
+			}
+		} catch (SQLException e1) {
+			closeResultSet();
+			closePreparedStatement();
+			e1.printStackTrace();
+			return false;
+		}
+	}
+	
 	public void addItemToInventory() { /* NOT YET IMPLEMENTED */
 		createConnection();
 		// Check to see if Part already exists
@@ -387,7 +418,7 @@ public class PartsInventoryGateway {
 			while (rs.next()) {
 				try {
 					Part p = new Part(rs.getInt("ID"), rs.getString("Unit"), rs.getString("PartName"), 
-							rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+							rs.getString("PartNumber"), rs.getString("ExternalPartNumber"), rs.getString("Vendor"));
 					parts.add(p);
 				}
 				catch (IOException ioe) {

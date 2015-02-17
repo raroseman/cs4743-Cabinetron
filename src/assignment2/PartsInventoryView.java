@@ -26,6 +26,7 @@ public class PartsInventoryView extends JFrame  {
 	private ListSelectionModel tableSelectionModel;
 	private DefaultTableModel tableModel;
 	private Object[] rowData;
+	private JLabel errorMessage;
 
 	public PartsInventoryView(PartsInventoryModel model) {
 		super("Cabinetron");
@@ -107,6 +108,11 @@ public class PartsInventoryView extends JFrame  {
 		disableView();
 		inventoryFrame.add(viewPart);
 		
+		errorMessage = new JLabel("");
+		errorMessage.setForeground(Color.red);
+		errorMessage.setBounds(185, 515, 515, 30);
+		inventoryFrame.add(errorMessage);
+		
 		p.setVisible(true);
 		inventoryFrame.add(p);
 		inventoryFrame.setVisible(true);
@@ -184,6 +190,14 @@ public class PartsInventoryView extends JFrame  {
 	
 	public void enableView() {
 		viewPart.setEnabled(true);
+	}
+	
+	public void clearErrorMessage() {
+		errorMessage.setText("");
+	}
+	
+	public void setErrorMessage(String message) {
+		errorMessage.setText(message);
 	}
 	
 	public Part getObjectInRow(int index) {

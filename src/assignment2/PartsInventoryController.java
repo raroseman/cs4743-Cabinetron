@@ -30,6 +30,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 		
 		switch(command) {
 			case "Add": 
+				inventoryView.clearErrorMessage();
 				if (hasPartViewOpen) {
 					partView.dispose();
 				}
@@ -42,6 +43,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				hasPartViewOpen = true;
 				break;
 			case "Delete":
+				inventoryView.clearErrorMessage();
 				if (selectedPart != null) {
 					if (hasPartViewOpen) {
 						partView.dispose();
@@ -49,9 +51,14 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					}
 					try {
 						partsInventoryModel.deletePart(selectedPart);
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} 
+					catch (SQLException sqe) {
+						inventoryView.setErrorMessage(sqe.getMessage());
+					//	System.out.println(sqe.getMessage());
+					}
+					catch (IOException ioe) {
+						inventoryView.setErrorMessage(ioe.getMessage());
+					//	System.out.println(ioe.getMessage());
 					}
 					ClearSelection();
 					inventoryView.updatePanel();
@@ -59,6 +66,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				}
 				break;
 			case "View":
+				inventoryView.clearErrorMessage();
 				if (hasPartViewOpen) {
 					partView.dispose();
 				}
@@ -142,6 +150,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 		else {
 			int selectedRow = lsm.getMinSelectionIndex();	
 			selectedPart = inventoryView.getObjectInRow(selectedRow);
+			inventoryView.clearErrorMessage();
 			inventoryView.enableDelete();
 			inventoryView.enableView();
 		}

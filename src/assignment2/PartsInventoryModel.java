@@ -57,13 +57,16 @@ public class PartsInventoryModel {
 		}
 	}
 	
-	public void deletePart(Part p) throws SQLException {
+	public void deletePart(Part p) throws SQLException, IOException {
 		try {
 			pdg.deletePart(p.getID()); // if it exists, first instance (unique, only one entry) is removed. otherwise does nothing
 			partsInventory = pdg.getParts();
 		}
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
+		} catch (IOException ioe) {
+			// TODO Auto-generated catch block
+			throw new IOException(ioe.getMessage());
 		}
 	}
 	
