@@ -5,45 +5,97 @@ import java.util.Comparator;
 
 public class Part implements Comparable<Part> {
 	private Integer id = 0;
-	private Integer quantity = 0;
 	private String partName = "";
 	private String partNumber = "";
-	private String externalPartNumber = "";
-	private String vendor = "";
+	private String externalPartNumber = null;
+	private String vendor = null;
 	private String quantityUnitType = "Unknown";
-	private String location = "";
-	private static String[] locationTypes = new String[] { "Unknown", "Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2" };
 	private static String[] unitTypes = new String[] { "Unknown", "Linear Feet", "Pieces" };
 	private static int maxPartNameLength = 255;
 	private static int maxPartNumberLength = 20;
 	private static int maxVendorLength = 255;
 	private static int maxExternalNumberLength = 50;
 	
-
-	public Part(Integer id, Integer quantity, String quantityUnitType, String partName, String partNum, String externalPartNumber, String location) throws IOException {
+	/*
+	 * Does not include the optional parameters: ID (required for reference only), externalPartNumber, vendor
+	 * Since the ID field is determined by the database, setting the ID before it is assigned by the database
+	 * may introduce inconsistencies.
+	 */
+	public Part(String quantityUnitType, String partName, String partNum) throws IOException {
 		try {
-			setID(id);
-			setQuantity(quantity);
 			setQuantityUnitType(quantityUnitType);
 			setPartName(partName);
 			setPartNumber(partNum);
-			setExternalPartNumber(externalPartNumber);
-			setLocation(location);
 		}
 		catch (IOException e) {
-			//throw new IOException("Exception thrown during Part creation: \n\t" + e);
 			throw new IOException(e.getMessage());
 		}
 	}
 	
-
-	public Part(Integer id, Integer quantity, String quantityUnitType, String partName, String partNum, String externalPartNumber, String location, String vendor) throws IOException {
-		this(id, quantity, quantityUnitType, partName, partNum, externalPartNumber, location);
-		setVendor(vendor);
+	/*
+	 * Does not include the optional parameter: ID, vendor
+	 */
+	public Part(String quantityUnitType, String partName, String partNum, String externalPartNumber) throws IOException {
+		this(quantityUnitType, partName, partNum);
+		try {
+			setExternalPartNumber(externalPartNumber);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
 	}
 	
-	public Integer getQuantity() {
-		return this.quantity;
+	/*
+	 * TODO: Constructor for --- NO ID, no externalPartNum (requires reordering constructor arguments)
+	 */
+	
+	
+	/*
+	 * Does not include the optional parameter: ID
+	 */
+	public Part(String quantityUnitType, String partName, String partNum, String externalPartNumber, String vendor) throws IOException {
+		this(quantityUnitType, partName, partNum, externalPartNumber);
+		try {
+			setVendor(vendor);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+	
+	/*
+	 * Does not include the optional parameters: externalPartNumber, vendor
+	 */
+	public Part(Integer id, String quantityUnitType, String partName, String partNum) throws IOException {
+		this(quantityUnitType, partName, partNum);
+		try {
+			setID(id);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+	
+	/*
+	 * Does not include the optional parameter: vendor
+	 */
+	public Part(Integer id, String quantityUnitType, String partName, String partNum, String externalPartNumber) throws IOException {
+		this(id, quantityUnitType, partName, partNum);
+		try {
+			setExternalPartNumber(externalPartNumber);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+	
+	/*
+	 * TODO: Constructor for --- Does not include the optional parameter: externalPartNumber
+	 */
+
+	public Part(Integer id, String quantityUnitType, String partName, String partNum, String externalPartNumber, String vendor) throws IOException {
+		this(id, quantityUnitType, partName, partNum, externalPartNumber);
+		setVendor(vendor);
 	}
 	
 	public String getQuantityUnitType() {
@@ -52,10 +104,6 @@ public class Part implements Comparable<Part> {
 	
 	public static String[] getValidQuantityUnitTypes() {
 		return unitTypes;
-	}
-	
-	public static String[] getValidLocationTypes() {
-		return locationTypes;
 	}
 	
 	public String getPartName() {
@@ -70,24 +118,12 @@ public class Part implements Comparable<Part> {
 		return this.partNumber;
 	}
 	
-	public String getExternalNumber() {
+	public String getExternalPartNumber() {
 		return this.externalPartNumber;
 	}
 	
 	public String getVendor() {
 		return this.vendor;
-	}
-	
-	public String getLocation() {
-		return this.location;
-	}
-	
-	@Override
-	public String toString() {
-		//int width; // 
-		//String format = "%" + width + "s" + "%" + width + "s" + "%" + width + "s" + "%" + width + "s";
-		//return String.format(format, getPartName(), getPartNumber(), getVendor(), getQuantity());
-		return getPartName() + " | " + getPartNumber() + " | " + getVendor() + " | " + getQuantity(); // looks bad, would prefer separated adjustable columns
 	}
 	
 	public static int getMaxPartNameLength() {
@@ -111,15 +147,6 @@ public class Part implements Comparable<Part> {
 		}
 	}
 	
-	private void setQuantity(Integer quantity) throws IOException {
-		if (quantity < 0) {
-			throw new IOException("Error: cannot assign negative value to quantity.");
-		}
-		else {
-			this.quantity = quantity;
-		}
-	}
-	
 	private void setQuantityUnitType(String quantityUnitType) throws IOException {
 		for (String unit : unitTypes) {
 			if (unit.equals(quantityUnitType) && !unit.equals("Unknown")) {
@@ -131,19 +158,6 @@ public class Part implements Comparable<Part> {
 			}
 		}
 		throw new IOException("Error: unit type unrecognized.");
-	}
-	
-	private void setLocation(String location) throws IOException {
-		for (String loc : locationTypes) {
-			if (loc.equals(location) && !loc.equals("Unknown")) {
-				this.location = location.trim();
-				return;
-			}
-			else if (loc.equals(location) && loc.equals("Unknown")) {
-				throw new IOException("Error: location cannot be listed as \"unknown.\"");
-			}
-		}
-		throw new IOException("Error: location unrecognized.");
 	}
 	
 	private void setPartName(String partName) throws IOException {
@@ -171,40 +185,26 @@ public class Part implements Comparable<Part> {
 	}
 	
 	private void setExternalPartNumber(String externalPartNumber) throws IOException {
-		if (externalPartNumber.length() > maxExternalNumberLength) {
-			throw new IOException("Error: external part number is too long (" + maxExternalNumberLength + " characters max).");
-		}
-		else {
-			this.externalPartNumber = externalPartNumber.trim();
+		if (externalPartNumber != null) { // optional parameter
+			if (externalPartNumber.length() > maxExternalNumberLength) {
+				throw new IOException("Error: external part number is too long (" + maxExternalNumberLength + " characters max).");
+			}
+			else {
+				this.externalPartNumber = externalPartNumber.trim();
+			}
 		}
 	}
 	
 	private void setVendor(String vendor) throws IOException {
-		if (vendor.length() > maxVendorLength) {
-			throw new IOException("Error: vendor name is too long (" + maxVendorLength + " characters max).");
-		}
-		else {
-			this.vendor = vendor.trim();
+		if (vendor != null) { // optional parameter
+			if (vendor.length() > maxVendorLength) {
+				throw new IOException("Error: vendor name is too long (" + maxVendorLength + " characters max).");
+			}
+			else {
+				this.vendor = vendor.trim();
+			}
 		}
 	}
-
-	// used to sort by quantity in descending order
-	public static Comparator<Part> QuantityDescending = new Comparator<Part>() {
-		public int compare(Part part, Part anotherPart) {
-			Integer quantity1 = part.getQuantity();
-			Integer quantity2 = anotherPart.getQuantity();
-			return quantity1.compareTo(quantity2);
-		}
-	};
-	
-	// used to sort by quantity in ascending order
-	public static Comparator<Part> QuantityAscending = new Comparator<Part>() {
-		public int compare(Part part, Part anotherPart) {
-			Integer quantity1 = part.getQuantity();
-			Integer quantity2 = anotherPart.getQuantity();
-			return quantity2.compareTo(quantity1);
-		}
-	};
 	
 	// used to sort by unit type in descending order
 		public static Comparator<Part> QuantityUnitTypeDescending = new Comparator<Part>() {
@@ -278,25 +278,7 @@ public class Part implements Comparable<Part> {
 		}
 	};
 	
-	// used to sort by location in descending order
-	public static Comparator<Part> LocationDescending = new Comparator<Part>() {
-		public int compare(Part part, Part anotherPart) {
-			String vendor1 = part.getLocation().toUpperCase();
-			String vendor2 = anotherPart.getLocation().toUpperCase();
-			return vendor1.compareTo(vendor2);
-		}
-	};
-	
-	// used to sort by location in ascending order
-	public static Comparator<Part> LocationAscending = new Comparator<Part>() {
-		public int compare(Part part, Part anotherPart) {
-			String vendor1 = part.getLocation().toUpperCase();
-			String vendor2 = anotherPart.getLocation().toUpperCase();
-			return vendor2.compareTo(vendor1);
-		}
-	};
-	
-	// used to sort by location in descending order
+	// used to sort by ID in descending order
 	public static Comparator<Part> IDDescending = new Comparator<Part>() {
 		public int compare(Part part, Part anotherPart) {
 			Integer vendor1 = part.getID();
@@ -305,11 +287,29 @@ public class Part implements Comparable<Part> {
 		}
 	};
 	
-	// used to sort by location in ascending order
+	// used to sort by ID in ascending order
 	public static Comparator<Part> IDAscending = new Comparator<Part>() {
 		public int compare(Part part, Part anotherPart) {
 			Integer vendor1 = part.getID();
 			Integer vendor2 = anotherPart.getID();
+			return vendor2.compareTo(vendor1);
+		}
+	};
+	
+	// used to sort by External Part # in descending order
+	public static Comparator<Part> ExternalPartNumberDescending = new Comparator<Part>() {
+		public int compare(Part part, Part anotherPart) {
+			String vendor1 = part.getExternalPartNumber();
+			String vendor2 = anotherPart.getExternalPartNumber();
+			return vendor1.compareTo(vendor2);
+		}
+	};
+	
+	// used to sort by External Part # in ascending order
+	public static Comparator<Part> ExternalPartNumberAscending = new Comparator<Part>() {
+		public int compare(Part part, Part anotherPart) {
+			String vendor1 = part.getExternalPartNumber();
+			String vendor2 = anotherPart.getExternalPartNumber();
 			return vendor2.compareTo(vendor1);
 		}
 	};

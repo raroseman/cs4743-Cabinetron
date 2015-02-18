@@ -15,17 +15,18 @@ import javax.swing.table.TableColumn;
 public class PartsInventoryView extends JFrame  {	
 	private PartsInventoryModel model;
 
-	private JPanel inventoryFrame; // layers 1, 2, 3
+	private JPanel inventoryFrame;
 	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
-	private String[] columnNames = {"ID", "Part Name", "Part Number", "External Part #", "Vendor", "Quantity", "Quantity Unit Type", "Location"};
+	private String[] columnNames = {"ID", "Part Name", "Part Number", "External Part Number", "Vendor", "Quantity Unit Type"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
 	private JPanel p;
 	private ListSelectionModel tableSelectionModel;
 	private DefaultTableModel tableModel;
 	private Object[] rowData;
+	private JLabel errorMessage;
 
 	public PartsInventoryView(PartsInventoryModel model) {
 		super("Cabinetron");
@@ -59,14 +60,16 @@ public class PartsInventoryView extends JFrame  {
 		tableModel.setColumnIdentifiers(columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
 		
+
+		
 		for (Part p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalNumber(), p.getVendor(), p.getQuantity(), p.getQuantityUnitType(), p.getLocation()};
+			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalPartNumber(), p.getVendor(), p.getQuantityUnitType()};
 			tableModel.addRow(rowData);
 		}
 	
 		table.setModel(tableModel);
 		p = new JPanel();
-		p.setBounds(0, 0, GUIWidth - 15, GUIHeight);
+		p.setBounds(0, 0, GUIWidth, GUIHeight);
 
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableSelectionModel = table.getSelectionModel();
@@ -79,9 +82,7 @@ public class PartsInventoryView extends JFrame  {
 		
 		for (int i = 0; i < columnNames.length; i++) {
 			column = table.getColumnModel().getColumn(i);
-			if (column.getHeaderValue().toString() == "Quantity") {
-				column.setPreferredWidth(GUIWidth / 32);
-			} if (column.getHeaderValue().toString() == "ID") {
+			if (column.getHeaderValue().toString() == "ID") {
 				column.setPreferredWidth(GUIWidth / 32);
 			} if (column.getHeaderValue().toString() == "Vendor") {
 				column.setPreferredWidth(GUIWidth / 16);
@@ -107,6 +108,11 @@ public class PartsInventoryView extends JFrame  {
 		disableView();
 		inventoryFrame.add(viewPart);
 		
+		errorMessage = new JLabel("");
+		errorMessage.setForeground(Color.red);
+		errorMessage.setBounds(185, 515, 515, 30);
+		inventoryFrame.add(errorMessage);
+		
 		p.setVisible(true);
 		inventoryFrame.add(p);
 		inventoryFrame.setVisible(true);
@@ -117,10 +123,12 @@ public class PartsInventoryView extends JFrame  {
 	
 	public void updatePanel() { // tears down the entire table and re-populates it
 		tableModel.setRowCount(0);
+		model.sortByCurrentSortMethod();
 		for (Part p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalNumber(), p.getVendor(), p.getQuantity(), p.getQuantityUnitType(), p.getLocation()};
+			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalPartNumber(), p.getVendor(), p.getQuantityUnitType()};
 			tableModel.addRow(rowData);
 		}
+
 		table.setModel(tableModel);
 	}
 
@@ -148,14 +156,11 @@ public class PartsInventoryView extends JFrame  {
 		        case "Vendor":
 		        	model.sortByVendor();
 		        	break;
-		        case "Quantity":
-		        	model.sortByQuantity();
-		        	break;
 		        case "Quantity Unit Type":
 		        	model.sortByQuantityUnitType();
 		        	break;
-		        case "Location":
-		        	model.sortByLocation();
+		        case "External Part Number":
+		        	model.sortByPartName();
 		        	break;
 		        }
 		        updatePanel();
@@ -185,6 +190,14 @@ public class PartsInventoryView extends JFrame  {
 	
 	public void enableView() {
 		viewPart.setEnabled(true);
+	}
+	
+	public void clearErrorMessage() {
+		errorMessage.setText("");
+	}
+	
+	public void setErrorMessage(String message) {
+		errorMessage.setText(message);
 	}
 	
 	public Part getObjectInRow(int index) {
