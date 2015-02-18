@@ -12,15 +12,35 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	private static String[] locationTypes = new String[] { "Unknown", "Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2" };
 	
 	/*
-	 * Does not include the optional parameters: ID (required for reference only), externalPartNumber, vendor
+	 * Does not include the optional parameters: ID (required for reference only),
 	 * Since the ID field is determined by the database, setting the ID before it is assigned by the database
 	 * may introduce inconsistencies.
 	 */
+	public InventoryItem(Integer partID, String location, Integer quantity) throws IOException {
+		try {
+			setPartID(partID);
+			setQuantity(quantity);
+			setLocation(location);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+	
+	public InventoryItem(Part p, String location, Integer quantity) throws IOException {
+		try {
+			setPart(p);
+			setQuantity(quantity);
+			setLocation(location);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
 	
 	public InventoryItem(Integer id, Integer partID, String location, Integer quantity) throws IOException {
 		try {
 			setID(id);
-			//setPart(p);
 			setPartID(partID);
 			setQuantity(quantity);
 			setLocation(location);
@@ -77,7 +97,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	}
 	
 	private void setPartID(Integer partID) throws IOException {
-		if (id < 1) {
+		if (partID < 1) {
 			throw new IOException("Error: part ID must be greater than zero.");
 		}
 		else {
