@@ -21,7 +21,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * @author Josef Klein
  *
  */
-public class ItemInventoryGateway {
+public class InventoryItemGateway {
 	MysqlDataSource ds = new MysqlDataSource();
 	Connection conn = null; // the database connection handle
 	String URL = "jdbc:mysql://devcloud.fulgentcorp.com:3306/eay250";

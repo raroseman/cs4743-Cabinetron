@@ -7,13 +7,13 @@ import java.util.List;
 public class InventoryItemModel {
 	private List<InventoryItem> inventoryItems;
 	private Comparator<InventoryItem> sortingMode = InventoryItem.IDDescending; // default sort
-	private ItemInventoryGateway iig; 
+	private InventoryItemGateway iig; 
 	/**
 	 * PDG should eventually be an InventoryItemGateway
 	 */
 	
 	public InventoryItemModel() {
-		iig = new ItemInventoryGateway();
+		iig = new InventoryItemGateway();
 		inventoryItems = iig.getInventory(); // gets list of inventory items
 	}
 	
