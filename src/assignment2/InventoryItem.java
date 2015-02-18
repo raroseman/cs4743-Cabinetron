@@ -1,8 +1,9 @@
 package assignment2;
 
 import java.io.IOException;
+import java.util.Comparator;
 
-public class InventoryItem {
+public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer id = 0;
 	private Integer partID = 0;
 	private Integer quantity = 0;
@@ -20,6 +21,7 @@ public class InventoryItem {
 		try {
 			setID(id);
 			//setPart(p);
+			setPartID(partID);
 			setQuantity(quantity);
 			setLocation(location);
 		}
@@ -76,7 +78,7 @@ public class InventoryItem {
 	
 	private void setPartID(Integer partID) throws IOException {
 		if (id < 1) {
-			throw new IOException("Error: cannot assign negative value to quantity.");
+			throw new IOException("Error: part ID must be greater than zero.");
 		}
 		else {
 			this.partID = partID;
@@ -112,5 +114,28 @@ public class InventoryItem {
 			}
 		}
 		throw new IOException("Error: location unrecognized.");
+	}
+	
+	// sort by ID in descending order
+	public static Comparator<InventoryItem> IDDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer id1 = item.getID();
+			Integer id2 = anotherItem.getID();
+			return id1.compareTo(id2);
+		}
+	};
+	
+	// sort by ID in ascending order
+	public static Comparator<InventoryItem> IDAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer id1 = item.getID();
+			Integer id2 = anotherItem.getID();
+			return id2.compareTo(id1);
+		}
+	};
+	
+	@Override
+	public int compareTo(InventoryItem o) {
+		return 0;
 	}
 }

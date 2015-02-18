@@ -65,7 +65,6 @@ public class PartsInventoryModel {
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
 		} catch (IOException ioe) {
-			// TODO Auto-generated catch block
 			throw new IOException(ioe.getMessage());
 		}
 	}
