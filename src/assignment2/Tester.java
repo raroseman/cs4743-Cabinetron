@@ -1,5 +1,8 @@
 package assignment2;
 
+import assignment2.DB_CreateTables;
+import assignment2.DB_InsertTableData;
+
 /*
  * 
  * CS 4743 assignment 2
@@ -13,6 +16,12 @@ public class Tester {
 	private static PartsInventoryModel partsInventoryModel;
 	
 	public static void main(String args[]) {
+		
+		DB_CreateTables c = new DB_CreateTables();
+		c.Setup();
+		DB_InsertTableData i = new DB_InsertTableData();
+		i.Setup();
+		
 		partsInventoryModel = new PartsInventoryModel();
 	
 		partsInventoryView = new PartsInventoryView(partsInventoryModel);
