@@ -340,7 +340,7 @@ public class InventoryItemGateway {
 		List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 		createConnection();
 		// Select all inventory items for display
-		SQL = "SELECT Parts.ID, InventoryItems.Quantity, Locations.Location FROM Inventory ";
+		SQL = "SELECT Parts.ID, InventoryItems.PartID, InventoryItems.Quantity, Locations.Location FROM Inventory ";
 		SQL += "INNER JOIN InventoryItems ON Inventory.InventoryItemID = InventoryItems.ID ";
 		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
