@@ -376,4 +376,120 @@ public class InventoryItemGateway {
 		closeConnection();
 		return ii;
 	}
+	
+	public ArrayList<String> getLocations() throws SQLException {
+		ArrayList<String> locations = new ArrayList<String>();
+		createConnection();
+		
+		SQL = "SELECT Location FROM Locations";
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(SQL);
+			rs = stmt.getResultSet();
+			
+			while (rs.next()) {
+				locations.add(rs.getString("Location"));
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+		closeConnection();
+		return locations;
+	}
+	
+	public ArrayList<String> getParts() throws SQLException {
+		ArrayList<String> parts = new ArrayList<String>();
+		createConnection();
+		
+		SQL = "SELECT Parts.PartNumber FROM Parts";
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(SQL);
+			rs = stmt.getResultSet();
+			
+			while (rs.next()) {
+				parts.add(rs.getString("PartNumber"));
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+		closeConnection();
+		return parts;
+	}
+	
+	public Integer getPartIDByPartNumber(String partNumber) throws SQLException {
+		Integer id = 0;
+		
+		createConnection();
+		
+		SQL = "SELECT Parts.ID FROM Parts WHERE PartNumber=?";
+		try {
+			prepstmt = conn.prepareStatement(SQL);
+			prepstmt.setString(1, partNumber);
+			rs = prepstmt.executeQuery();
+			if (rs.next()) {
+				id = rs.getInt("ID");
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				return id;
+			}
+			else {
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				throw new SQLException ("Error: No part exists with that part number.");
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+	}
+	
+	public String getPartNumberByID(Integer ID) throws SQLException {
+		String partNumber = null;
+		createConnection();
+		
+		SQL = "SELECT Parts.PartNumber FROM Parts WHERE Parts.ID=?";
+		try {
+			prepstmt = conn.prepareStatement(SQL);
+			prepstmt.setInt(1, ID);
+			rs = prepstmt.executeQuery();
+			
+			if (rs.next()) {
+				partNumber = rs.getString("PartNumber");
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				return partNumber;
+			}
+			else {
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				throw new SQLException ("Error: No part exists with that part ID.");
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+	}
 }

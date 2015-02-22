@@ -9,7 +9,6 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer quantity = 0;
 	private Part part = null;
 	private String location = "Unknown";
-	private static String[] locationTypes = new String[] { "Unknown", "Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2" };
 	
 	/*
 	 * Does not include the optional parameters: ID (required for reference only),
@@ -60,10 +59,6 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
-	}
-	
-	public static String[] getValidLocationTypes() {
-		return locationTypes;
 	}
 	
 	public Integer getID() {
@@ -124,16 +119,12 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	}
 	
 	private void setLocation(String location) throws IOException {
-		for (String loc : locationTypes) {
-			if (loc.equals(location) && !loc.equals("Unknown")) {
-				this.location = location.trim();
-				return;
-			}
-			else if (loc.equals(location) && loc.equals("Unknown")) {
-				throw new IOException("Error: location cannot be listed as \"unknown.\"");
-			}
+		if (location.equals("Unknown")) {
+			throw new IOException("Error: location cannot be listed as \"unknown.\"");
 		}
-		throw new IOException("Error: location unrecognized.");
+		else {
+			this.location = location;
+		}
 	}
 	
 	// sort by ID in descending order

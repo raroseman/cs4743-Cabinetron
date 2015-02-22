@@ -1,6 +1,7 @@
 package assignment2;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -101,8 +102,20 @@ public class InventoryItemModel {
 		return inventoryItems;
 	}
 	
-	public String[] getValidLocationTypes() {
-		return InventoryItem.getValidLocationTypes();
+	public ArrayList<String> getLocations() throws SQLException {
+		return iig.getLocations();
+	}
+	
+	public ArrayList<String> getParts() throws SQLException {
+		return iig.getParts();
+	}
+	
+	public Integer getPartIDByPartNumber(String partNumber) throws SQLException {
+		return iig.getPartIDByPartNumber(partNumber);
+	}
+	
+	public String getPartNumberByID(Integer ID) throws SQLException {
+		return iig.getPartNumberByID(ID);
 	}
 	
 	public void sortByCurrentSortMethod() {

@@ -2,6 +2,7 @@ package assignment2;
 
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,16 +14,18 @@ import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class ItemView extends JFrame {
+	private InventoryItemModel model;
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
 	private JLabel ID, partID, itemQuantity, partLocationType, errorMessage;
-	private JTextField partField, idField, quantityField;
-	private JComboBox<String> locationUnitTypeField;	
+	private JTextField idField, quantityField;
+	private JComboBox<String> partField, locationField;	
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonLeft, buttonBottom,
 				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop;
 	
 	public ItemView(InventoryItemModel model, String title) {
 		super(title);
+		this.model = model;
 		
 		viewWidth = 400;
 		viewHeight = 275;
@@ -93,7 +96,15 @@ public class ItemView extends JFrame {
 		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(idField);
 		
-		partField = new JTextField();
+		partField = new JComboBox<String>();
+		try {
+			for (String part : model.getParts()) {
+				partField.addItem(part);
+			}
+		} 
+		catch (SQLException e) {
+			setErrorMessage(e.getMessage());
+		}
 		partField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
 		partFrame.add(partField);
 		
@@ -101,12 +112,18 @@ public class ItemView extends JFrame {
 		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
 		partFrame.add(quantityField);
 		
-		locationUnitTypeField = new JComboBox<String>();
-		for (String unitType : model.getValidLocationTypes()) {
-			locationUnitTypeField.addItem(unitType);
+		locationField = new JComboBox<String>();
+		try {
+			for (String unitType : model.getLocations()) {
+				locationField.addItem(unitType);
+			}
+		} 
+		catch (SQLException e) {
+			setErrorMessage(e.getMessage());
 		}
-		locationUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
-		partFrame.add(locationUnitTypeField);
+		locationField.setSelectedItem("Unknown"); // default Unknown; if it is not in the list, defaults to first item
+		locationField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
+		partFrame.add(locationField);
 	}
 	
 	public void register(InventoryController controller) {
@@ -119,12 +136,18 @@ public class ItemView extends JFrame {
 	public Integer getPartID() {
 		Integer i = 0;
 		try {
-			i = Integer.parseInt(partField.getText().trim());
-			return i;
+			i = model.getPartIDByPartNumber(partField.getSelectedItem().toString());
+			System.out.println("HERE; i = " + i);
 		}
-		catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Error: item id must be in the form of an integer.");
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return i;
+	}
+	
+	public String getPartNumber() {
+		return partField.getSelectedItem().toString();
 	}
 	
 	public Integer getID() throws NumberFormatException {
@@ -150,16 +173,26 @@ public class ItemView extends JFrame {
 	}
 	
 	public String getQuantityUnitType() {
-		int index = locationUnitTypeField.getSelectedIndex();
-		return locationUnitTypeField.getItemAt(index);
+		int index = locationField.getSelectedIndex();
+		return locationField.getItemAt(index);
 	}
 	
 	public void setErrorMessage(String error) {
 		errorMessage.setText(error);
 	}
 	
-	public void setItemID(Integer item) {
-		partField.setText(String.valueOf(item));
+	public void setPartNumber(String partNumber) {
+		partField.setSelectedItem(partNumber);
+	}
+	
+	public void setPartNumberByID(Integer ID) {
+
+		try {
+			partField.setSelectedItem(model.getPartNumberByID(ID));
+		} 
+		catch (SQLException e) {
+			errorMessage.setText(e.getMessage());
+		}
 	}
 	
 	public void setID(Integer id) {
@@ -171,7 +204,7 @@ public class ItemView extends JFrame {
 	}
 	
 	public void setLocationType(String quantityUnitType) {
-		locationUnitTypeField.setSelectedItem(quantityUnitType);
+		locationField.setSelectedItem(quantityUnitType);
 	}
 	
 	public void hideEditButton() {
@@ -192,13 +225,13 @@ public class ItemView extends JFrame {
 		partField.setEnabled(false);
 		idField.setEnabled(false);
 		quantityField.setEnabled(false);
-		locationUnitTypeField.setEnabled(false);
+		locationField.setEnabled(false);
 	}
 	
 	public void enableEditable() {
 		save.setVisible(true);
 		partField.setEnabled(true);
 		quantityField.setEnabled(true);
-		locationUnitTypeField.setEnabled(true);
+		locationField.setEnabled(true);
 	}
 }
