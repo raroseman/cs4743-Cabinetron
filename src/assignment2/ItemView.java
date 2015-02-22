@@ -116,4 +116,88 @@ public class ItemView extends JFrame {
 		edit.addActionListener(controller);
 		save.addActionListener(controller);
 	}
+	
+	public Integer getPartID() {
+		Integer i = 0;
+		try {
+			i = Integer.parseInt(nameField.getText().trim());
+			return i;
+		}
+		catch (NumberFormatException nfe) {
+			throw new NumberFormatException("Error: item id must be in the form of an integer.");
+		}
+	}
+	
+	public Integer getID() throws NumberFormatException {
+		Integer i = 0;
+		try {
+			i = Integer.parseInt(idField.getText().trim());
+			return i;
+		}
+		catch (NumberFormatException nfe) {
+			throw new NumberFormatException("Error: id must be in the form of an integer.");
+		}
+	}
+	
+	public Integer getQuantity() throws NumberFormatException {
+		Integer i = 0;
+		try {
+			i = Integer.parseInt(quantityField.getText().trim());
+			return i;
+		}
+		catch (NumberFormatException nfe) {
+			throw new NumberFormatException("Error: quantity must be in the form of an integer.");
+		}
+	}
+	
+	public String getQuantityUnitType() {
+		int index = locationUnitTypeField.getSelectedIndex();
+		return locationUnitTypeField.getItemAt(index);
+	}
+	
+	public void setErrorMessage(String error) {
+		errorMessage.setText(error);
+	}
+	
+	public void setItemID(Integer item) {
+		nameField.setText(String.valueOf(item));
+	}
+	
+	public void setID(Integer id) {
+		idField.setText(String.valueOf(id));
+	}
+	
+	public void setQuantity(Integer quantity) {
+		idField.setText(String.valueOf(quantity));
+	}
+	
+	public void setLocationType(String quantityUnitType) {
+		locationUnitTypeField.setSelectedItem(quantityUnitType);
+	}
+	
+	public void hideEditButton() {
+		edit.setVisible(false);
+	}
+	
+	public void hideSaveButton() {
+		save.setVisible(false);
+	}
+	
+	public void disableIDEdit() {
+		idField.setEnabled(false);
+	}
+	
+	public void disableEditable() {
+		ok.setVisible(false);
+		save.setVisible(false);
+		nameField.setEnabled(false);
+		idField.setEnabled(false);
+		locationUnitTypeField.setEnabled(false);
+	}
+	
+	public void enableEditable() {
+		save.setVisible(true);
+		nameField.setEnabled(true);
+		locationUnitTypeField.setEnabled(true);
+	}
 }
