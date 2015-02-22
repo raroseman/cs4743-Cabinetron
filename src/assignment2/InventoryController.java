@@ -90,7 +90,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 			case "Save":
 				if (selectedItem != null) {
 					try {
-						InventoryItem newItem = new InventoryItem(itemView.getID(), itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());
+						InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());
 						inventoryItemModel.editInventoryItem(selectedItem, newItem);
 						itemView.dispose();
 						inventoryView.updatePanel();
@@ -108,7 +108,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;
 			case "OK":
 				try {
-					InventoryItem newItem = new InventoryItem(itemView.getID(), itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());			
+					InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());			
 					inventoryItemModel.addInventoryItem(newItem);
 					itemView.dispose();
 					inventoryView.updatePanel();

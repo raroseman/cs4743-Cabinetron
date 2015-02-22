@@ -29,7 +29,7 @@ public class PartsInventoryView extends JFrame  {
 	private JLabel errorMessage;
 
 	public PartsInventoryView(PartsInventoryModel model) {
-		super("Cabinetron");
+		super("Cabinetron: Parts");
 		this.model = model;
 
 		GUIWidth = 800;

@@ -26,7 +26,7 @@ public class ItemView extends JFrame {
 		super(title);
 		
 		viewWidth = 400;
-		viewHeight = 400;
+		viewHeight = 275;
 		labelW = viewWidth / 4;
 		labelH = 32;
 		labelTop = 15;
@@ -71,23 +71,23 @@ public class ItemView extends JFrame {
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
-		errorMessage.setBounds(labelLeft, labelTop + (labelH * 6), errorW, errorH);
+		errorMessage.setBounds(labelLeft, labelTop + (labelH * 4), errorW, errorH);
 		partFrame.add(errorMessage);
 		
 		cancel = new JButton("Cancel");
-		cancel.setBounds(buttonLeft, buttonBottom, buttonW, buttonH);
+		cancel.setBounds((int) (buttonLeft * 1.25), buttonBottom, buttonW, buttonH);
 		partFrame.add(cancel);
 		
 		ok = new JButton("OK");
-		ok.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
+		ok.setBounds((int) (buttonLeft * 2.25), buttonBottom, buttonW, buttonH);
 		partFrame.add(ok);
 		
 		edit = new JButton("Edit");
-		edit.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
+		edit.setBounds((int) (buttonLeft * 1.25), buttonBottom, buttonW, buttonH);
 		partFrame.add(edit);
 		
 		save = new JButton("Save");
-		save.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
+		save.setBounds((int) (buttonLeft * 2.25), buttonBottom, buttonW, buttonH);
 		partFrame.add(save);
 		
 		nameField = new JTextField();
