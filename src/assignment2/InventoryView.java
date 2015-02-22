@@ -67,7 +67,7 @@ public class InventoryView extends JFrame {
 			table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));		
 			
 			for (InventoryItem p: model.getInventory()) {
-				rowData = new Object[] {p.getID(), p.getPart(), p.getLocation(), p.getQuantity()};
+				rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
 				tableModel.addRow(rowData);
 			}
 			
@@ -129,14 +129,14 @@ public class InventoryView extends JFrame {
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPart(), p.getLocation(), p.getQuantity()};
+			rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
 
 		table.setModel(tableModel);
 	}
 	
-	public void register(PartsInventoryController controller) {
+	public void register(InventoryController controller) {
 		addPart.addActionListener(controller);
 		deletePart.addActionListener(controller);
 		viewPart.addActionListener(controller);

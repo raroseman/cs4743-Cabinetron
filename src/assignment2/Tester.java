@@ -11,6 +11,7 @@ public class Tester {
 	private static PartsInventoryView partsInventoryView;
 	private static InventoryView inventoryView;
 	private static PartsInventoryController partsInventoryController;
+	private static InventoryController inventoryController;
 	private static PartsInventoryModel partsInventoryModel;
 	private static InventoryItemModel inventoryItemModel;
 	
@@ -24,8 +25,12 @@ public class Tester {
 		inventoryView = new InventoryView(inventoryItemModel);
 		
 		partsInventoryController = new PartsInventoryController(partsInventoryModel, partsInventoryView);
+		
+		inventoryController = new InventoryController(inventoryItemModel, inventoryView);
 			
-		partsInventoryView.register(partsInventoryController);		
+		partsInventoryView.register(partsInventoryController);	
+		
+		inventoryView.register(inventoryController);
 		
 	}
 }

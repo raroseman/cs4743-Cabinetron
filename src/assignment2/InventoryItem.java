@@ -8,7 +8,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer partID = 0;
 	private Integer quantity = 0;
 	private Part part = null;
-	private String location = "";
+	private String location = "Unknown";
 	private static String[] locationTypes = new String[] { "Unknown", "Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2" };
 	
 	/*
