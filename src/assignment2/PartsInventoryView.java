@@ -27,17 +27,28 @@ public class PartsInventoryView extends JFrame  {
 	private DefaultTableModel tableModel;
 	private Object[] rowData;
 	private JLabel errorMessage;
+	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
 
 	public PartsInventoryView(PartsInventoryModel model) {
 		super("Cabinetron: Parts");
 		this.model = model;
 
-		GUIWidth = 800;
-		GUIHeight = 600;
+		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		tableMargin = 15;
+		tableW = GUIWidth - (tableMargin * 2);
+		tableH = GUIHeight - 100;
+		buttonW = 125;
+		buttonH = 30;
+		buttonX = 100;
+		buttonY = GUIHeight - 75;
+		errorW = GUIWidth - 20;
+		errorH = 32;
+		errorX = tableMargin;
+		errorY = GUIHeight - 100;
 
 		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (GUIWidth / 2), 
-						 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (GUIHeight / 2));
+		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 50);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,7 +86,7 @@ public class PartsInventoryView extends JFrame  {
 		tableSelectionModel = table.getSelectionModel();
 		
 		tableScrollPane = new JScrollPane(table);
-		tableScrollPane.setPreferredSize(new Dimension(GUIWidth - 30, GUIHeight - 100));
+		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
 		tableScrollPane.setVisible(true);
 		
 		TableColumn column = null;
@@ -93,24 +104,24 @@ public class PartsInventoryView extends JFrame  {
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
-		addPart.setBounds(15, 515, 70, 30);
+		addPart.setBounds(buttonX, buttonY, buttonW, buttonH);
 		inventoryFrame.add(addPart);
 		
 		// Creates and adds the "delete" button to the inventory frame
 		deletePart = new JButton("Delete");
-		deletePart.setBounds(105, 515, 70, 30);
+		deletePart.setBounds((GUIWidth / 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		disableDelete();
 		inventoryFrame.add(deletePart);
 		
 		// Creates and adds the "view" button to the inventory frame
 		viewPart = new JButton("View");
-		viewPart.setBounds(695, 515, 70, 30);
+		viewPart.setBounds((GUIWidth - buttonX) - buttonW, buttonY, buttonW, buttonH);
 		disableView();
 		inventoryFrame.add(viewPart);
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
-		errorMessage.setBounds(185, 515, 515, 30);
+		errorMessage.setBounds(errorX, errorY, errorW, errorH);
 		inventoryFrame.add(errorMessage);
 		
 		p.setVisible(true);

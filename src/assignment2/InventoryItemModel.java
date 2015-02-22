@@ -19,7 +19,7 @@ public class InventoryItemModel {
 	
 	public void addInventoryItem(InventoryItem ii) throws Exception {
 		try {
-			addInventoryItem(ii.getID(), ii.getLocation(), ii.getQuantity());
+			addInventoryItem(ii.getPartID(), ii.getLocation(), ii.getQuantity());
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -43,10 +43,12 @@ public class InventoryItemModel {
 	}
 	
 	public void addInventoryItem(Integer partID, String location, Integer quantity) throws Exception, IOException, SQLException { // all args
-
+		if (quantity <= 0) {
+			throw new IOException("Error: Quantity for a new item must be greater than zero.");
+		}
 		try {
 			iig.addInventoryItem(partID, location, quantity);
-			inventoryItems = iig.getInventory(); // gets list of inventory items
+			inventoryItems = iig.getInventory(); // update list of inventory items
 		}
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
@@ -59,7 +61,7 @@ public class InventoryItemModel {
 	public void deletePart(InventoryItem ii) throws SQLException, IOException {
 		try {
 			iig.deleteInventoryItem(ii.getID()); // if it exists, first instance (unique, only one entry) is removed. otherwise does nothing
-			inventoryItems = iig.getInventory(); // gets list of inventory items
+			inventoryItems = iig.getInventory(); // update list of inventory items
 		}
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
@@ -70,6 +72,7 @@ public class InventoryItemModel {
 	
 	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException {
 		try {
+			System.out.println("TO GATEWAY: " + iiOld.getID() + " | " + iiNew.getPartID()+ " | " +  iiNew.getLocation()+ " | " +  iiNew.getQuantity());
 			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity());
 			inventoryItems = iig.getInventory(); // gets list of inventory items
 		}
@@ -81,12 +84,9 @@ public class InventoryItemModel {
 		}
 	}
 	
-	public InventoryItem findItemName(String itemName) {
-		if (itemName.length() > Part.getMaxPartNameLength()) {
-			itemName = itemName.substring(0, Part.getMaxPartNameLength()); // maybe just throw length exceeded exception...
-		}
+	public InventoryItem findItemByID(Integer i) {
 		for (InventoryItem item : inventoryItems) { // this is O(n)
-			if (item.getPart().equals(itemName)) {
+			if (item.getID().equals(i)) {
 				return item;
 			}
 		}

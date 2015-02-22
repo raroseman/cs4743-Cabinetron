@@ -46,7 +46,7 @@ public class DB_InsertTableData {
 		}
 		
 		SQL = "INSERT INTO Locations (Location) VALUES ";
-		SQL += "('Unknown'), ('Facility 1 Warehouse 1'), ('Facility 1 Warehouse 2'), ('Pieces')";
+		SQL += "('Unknown'), ('Facility 1 Warehouse 1'), ('Facility 1 Warehouse 2'), ('Facility 2')";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {
@@ -68,14 +68,6 @@ public class DB_InsertTableData {
 		
 		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity) VALUES ";
 		SQL += "(1, 3, 1), (2, 2, 2) ";
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		SQL = "INSERT INTO Inventory (InventoryItemID) VALUES ";
-		SQL += "(1), (2) ";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {

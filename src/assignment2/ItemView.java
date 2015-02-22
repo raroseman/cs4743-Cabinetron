@@ -11,13 +11,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class ItemView extends JFrame {
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
-
-
-	private JLabel partName, itemQuantity, partLocationType, partID, errorMessage;
-	private JTextField nameField, idField, quantityField;
+	private JLabel ID, partID, itemQuantity, partLocationType, errorMessage;
+	private JTextField partField, idField, quantityField;
 	private JComboBox<String> locationUnitTypeField;	
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonLeft, buttonBottom,
 				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop;
@@ -53,11 +52,11 @@ public class ItemView extends JFrame {
 		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
-		partName = new JLabel("Name");
-		partName.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
-		partFrame.add(partName);
+		ID = new JLabel("ID");
+		ID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
+		partFrame.add(ID);
 		
-		partID = new JLabel("ID");
+		partID = new JLabel("Part ID");
 		partID.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
 		partFrame.add(partID);
 		
@@ -75,28 +74,28 @@ public class ItemView extends JFrame {
 		partFrame.add(errorMessage);
 		
 		cancel = new JButton("Cancel");
-		cancel.setBounds((int) (buttonLeft * 1.25), buttonBottom, buttonW, buttonH);
+		cancel.setBounds((int) (buttonLeft), buttonBottom, buttonW, buttonH);
 		partFrame.add(cancel);
 		
 		ok = new JButton("OK");
-		ok.setBounds((int) (buttonLeft * 2.25), buttonBottom, buttonW, buttonH);
+		ok.setBounds((int) (buttonLeft * 2), buttonBottom, buttonW, buttonH);
 		partFrame.add(ok);
 		
 		edit = new JButton("Edit");
-		edit.setBounds((int) (buttonLeft * 1.25), buttonBottom, buttonW, buttonH);
+		edit.setBounds((int) (buttonLeft * 2), buttonBottom, buttonW, buttonH);
 		partFrame.add(edit);
 		
 		save = new JButton("Save");
-		save.setBounds((int) (buttonLeft * 2.25), buttonBottom, buttonW, buttonH);
+		save.setBounds((int) (buttonLeft * 2), buttonBottom, buttonW, buttonH);
 		partFrame.add(save);
 		
-		nameField = new JTextField();
-		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		partFrame.add(nameField);
-		
 		idField = new JTextField();
-		idField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(idField);
+		
+		partField = new JTextField();
+		partField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		partFrame.add(partField);
 		
 		quantityField = new JTextField();
 		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
@@ -120,7 +119,7 @@ public class ItemView extends JFrame {
 	public Integer getPartID() {
 		Integer i = 0;
 		try {
-			i = Integer.parseInt(nameField.getText().trim());
+			i = Integer.parseInt(partField.getText().trim());
 			return i;
 		}
 		catch (NumberFormatException nfe) {
@@ -160,7 +159,7 @@ public class ItemView extends JFrame {
 	}
 	
 	public void setItemID(Integer item) {
-		nameField.setText(String.valueOf(item));
+		partField.setText(String.valueOf(item));
 	}
 	
 	public void setID(Integer id) {
@@ -168,7 +167,7 @@ public class ItemView extends JFrame {
 	}
 	
 	public void setQuantity(Integer quantity) {
-		idField.setText(String.valueOf(quantity));
+		quantityField.setText(String.valueOf(quantity));
 	}
 	
 	public void setLocationType(String quantityUnitType) {
@@ -190,14 +189,16 @@ public class ItemView extends JFrame {
 	public void disableEditable() {
 		ok.setVisible(false);
 		save.setVisible(false);
-		nameField.setEnabled(false);
+		partField.setEnabled(false);
 		idField.setEnabled(false);
+		quantityField.setEnabled(false);
 		locationUnitTypeField.setEnabled(false);
 	}
 	
 	public void enableEditable() {
 		save.setVisible(true);
-		nameField.setEnabled(true);
+		partField.setEnabled(true);
+		quantityField.setEnabled(true);
 		locationUnitTypeField.setEnabled(true);
 	}
 }
