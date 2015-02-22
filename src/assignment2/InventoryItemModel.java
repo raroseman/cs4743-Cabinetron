@@ -81,6 +81,18 @@ public class InventoryItemModel {
 		}
 	}
 	
+	public InventoryItem findItemName(String itemName) {
+		if (itemName.length() > Part.getMaxPartNameLength()) {
+			itemName = itemName.substring(0, Part.getMaxPartNameLength()); // maybe just throw length exceeded exception...
+		}
+		for (InventoryItem item : inventoryItems) { // this is O(n)
+			if (item.getPart().equals(itemName)) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	public int getSize() {
 		return inventoryItems.size();
 	}
