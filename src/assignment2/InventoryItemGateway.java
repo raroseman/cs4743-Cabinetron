@@ -305,8 +305,10 @@ public class InventoryItemGateway {
 		List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 		createConnection();
 		// Select all inventory items for display
-		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, InventoryItems.Quantity, Locations.Location FROM InventoryItems ";
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location FROM InventoryItems ";
 		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
 		try {
 			stmt = conn.createStatement();
@@ -315,7 +317,8 @@ public class InventoryItemGateway {
 
 			while (rs.next()) {
 				try {
-					InventoryItem ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
+					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+					InventoryItem ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"));
 					inventory.add(ii);
 				}
 				catch (IOException ioe) {
@@ -349,7 +352,6 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
-					
 					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
 				}
 				catch (IOException ioe) {

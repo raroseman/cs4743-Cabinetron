@@ -151,7 +151,7 @@ public class InventoryView extends JFrame {
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
-			Part part = partsModel.findPartID(p.getPartID());
+			Part part = p.getPart();
 			rowData = new Object[] { p.getID(), part.getID(), part.getPartName(), part.getPartNumber(), p.getLocation(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
@@ -177,6 +177,21 @@ public class InventoryView extends JFrame {
 		        switch (columnName) {
 		        case "ID":
 		        	model.sortByID();
+		        	break;
+		        case "Part ID":
+		        	model.sortByPartID();
+		        	break;
+		        case "Part Name":
+		        	model.sortByPartName();
+		        	break;
+		        case "Part Number":
+		        	model.sortByPartNumber();
+		        	break;
+		        case "Location":
+		        	model.sortByLocation();
+		        	break;
+		        case "Quantity":
+		        	model.sortByQuantity();
 		        	break;
 		        }
 		        updatePanel();

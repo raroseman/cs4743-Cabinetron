@@ -130,4 +130,54 @@ public class InventoryItemModel {
 		}
 		inventoryItems.sort(sortingMode);
 	}
+	
+	public void sortByPartName() {
+		if (sortingMode == InventoryItem.PartNameDescending) {
+			sortingMode = InventoryItem.PartNameAscending;
+		}
+		else {
+			sortingMode = InventoryItem.PartNameDescending;
+		}
+		inventoryItems.sort(sortingMode);
+	}
+	
+	public void sortByPartID() {
+		if (sortingMode == InventoryItem.PartIDDescending) {
+			sortingMode = InventoryItem.PartIDAscending;
+		}
+		else {
+			sortingMode = InventoryItem.PartIDDescending;
+		}
+		inventoryItems.sort(sortingMode);
+	}
+	
+	public void sortByPartNumber() {
+		if (sortingMode == InventoryItem.PartNumberDescending) {
+			sortingMode = InventoryItem.PartNumberAscending;
+		}
+		else {
+			sortingMode = InventoryItem.PartNumberDescending;
+		}
+		inventoryItems.sort(sortingMode);
+	}
+	
+	public void sortByLocation() {
+		if (sortingMode == InventoryItem.LocationDescending) {
+			sortingMode = InventoryItem.LocationAscending;
+		}
+		else {
+			sortingMode = InventoryItem.LocationDescending;
+		}
+		inventoryItems.sort(sortingMode);
+	}
+	
+	public void sortByQuantity() {
+		if (sortingMode == InventoryItem.QuantityDescending) {
+			sortingMode = InventoryItem.QuantityAscending;
+		}
+		else {
+			sortingMode = InventoryItem.QuantityDescending;
+		}
+		inventoryItems.sort(sortingMode);
+	}
 }

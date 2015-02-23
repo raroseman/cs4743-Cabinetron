@@ -77,7 +77,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 					itemView = new ItemView(inventoryItemModel, "View/Edit Item: " + selectedItem.getID());
 					itemView.register(this);
 					itemView.disableEditable();
-					itemView.setPartNumberByID(selectedItem.getPartID());
+					itemView.setPartNumber(selectedItem.getPart().getPartNumber());
 					itemView.setID(selectedItem.getID());
 					itemView.setQuantity(selectedItem.getQuantity());
 					itemView.setLocationType(selectedItem.getLocation());

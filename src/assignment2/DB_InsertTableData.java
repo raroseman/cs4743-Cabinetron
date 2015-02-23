@@ -56,7 +56,7 @@ public class DB_InsertTableData {
 //		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID) VALUES ";
 //		SQL += "('A-42', 'Bilbo', 3), ('B-64', 'Frodo', 2) ";
 		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID, ExternalPartNumber) VALUES ";
-		for (int i = 1; i < 25000; i++) {
+		for (int i = 1; i < 250; i++) {
 			SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"'), ";
 		}
 		SQL += "('C4', 'PartC4', 3, 'EX-C499') ";
@@ -67,7 +67,7 @@ public class DB_InsertTableData {
 		}
 		
 		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity) VALUES ";
-		for (int i = 1; i < 25000; i++) {
+		for (int i = 25; i > 0; i--) {
 			SQL += "("+i+", 3, "+i+"), ";
 		}
 		SQL += "(1, 2, 1) ";
