@@ -86,9 +86,7 @@ public class PartsInventoryView extends JFrame  {
 		table.setColumnSelectionAllowed(false);
 		tableModel.setColumnIdentifiers(columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
-		
-
-		
+		model.sortByCurrentSortMethod();
 		for (Part p: model.getInventory()) {
 			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalPartNumber(), p.getVendor(), p.getQuantityUnitType()};
 			tableModel.addRow(rowData);

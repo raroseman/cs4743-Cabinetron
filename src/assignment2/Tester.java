@@ -2,7 +2,7 @@ package assignment2;
 
 /*
  * 
- * CS 4743 assignment 2
+ * CS 4743 assignment 3
  * Written by Josef Klein and Ryan Roseman
  * 
  */

@@ -53,13 +53,22 @@ public class DB_InsertTableData {
 			e1.printStackTrace();
 		}
 		
-//		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID) VALUES ";
-//		SQL += "('A-42', 'Bilbo', 3), ('B-64', 'Frodo', 2) ";
-		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID, ExternalPartNumber) VALUES ";
-		for (int i = 1; i < 250; i++) {
-			SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"'), ";
+		String vendor = "ACME, Inc.";
+		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID, ExternalPartNumber, Vendor) VALUES ";
+		for (int i = 1; i < 50; i++) {
+			if (i % 2 == 0) {
+				if (i % 4 == 0) {
+					SQL += "('A"+i+"', 'MyPart"+i+"', 2, 'EX"+i+"', '"+vendor+"'), ";
+				}
+				else {
+					SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', '"+vendor+"'), ";
+				}
+			}
+			else {
+				SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', ''), ";
+			}
 		}
-		SQL += "('C4', 'PartC4', 3, 'EX-C499') ";
+		SQL += "('C4', 'PartC4', 3, 'EX-C499', '') ";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {
