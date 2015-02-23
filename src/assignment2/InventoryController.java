@@ -2,6 +2,8 @@ package assignment2;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -9,7 +11,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-public class InventoryController implements ActionListener, ListSelectionListener {
+public class InventoryController implements ActionListener, ListSelectionListener, WindowFocusListener {
 	private InventoryItemModel inventoryItemModel;
 	private InventoryView inventoryView;
 	private ItemView itemView;
@@ -90,7 +92,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 			case "Save":
 				if (selectedItem != null) {
 					try {
-						InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());
+						InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
 						inventoryItemModel.editInventoryItem(selectedItem, newItem);
 						itemView.dispose();
 						inventoryView.updatePanel();
@@ -108,7 +110,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;
 			case "OK":
 				try {
-					InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getQuantityUnitType(), itemView.getQuantity());			
+					InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());			
 					inventoryItemModel.addInventoryItem(newItem);
 					itemView.dispose();
 					inventoryView.updatePanel();
@@ -150,6 +152,18 @@ public class InventoryController implements ActionListener, ListSelectionListene
 			inventoryView.enableDelete();
 			inventoryView.enableView();
 		}
+		
+	}
+
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		System.out.println("Gained focus");
+		inventoryView.updatePanel();
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

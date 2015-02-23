@@ -1,8 +1,5 @@
 package assignment2;
 
-import assignment2.DB_CreateTables;
-import assignment2.DB_InsertTableData;
-
 /*
  * 
  * CS 4743 assignment 2
@@ -31,7 +28,7 @@ public class Tester {
 		
 		inventoryItemModel = new InventoryItemModel();
 		
-		inventoryView = new InventoryView(inventoryItemModel);
+		inventoryView = new InventoryView(partsInventoryModel, inventoryItemModel);
 		
 		partsInventoryController = new PartsInventoryController(partsInventoryModel, partsInventoryView);
 		

@@ -56,10 +56,10 @@ public class DB_InsertTableData {
 //		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID) VALUES ";
 //		SQL += "('A-42', 'Bilbo', 3), ('B-64', 'Frodo', 2) ";
 		SQL = "INSERT INTO Parts (PartNumber, PartName, UnitID, ExternalPartNumber) VALUES ";
-		for (int i = 1; i < 25; i++) {
+		for (int i = 1; i < 25000; i++) {
 			SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"'), ";
 		}
-		SQL += "('A99', 'MyPart99', 3, 'EX99') ";
+		SQL += "('C4', 'PartC4', 3, 'EX-C499') ";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {
@@ -67,7 +67,10 @@ public class DB_InsertTableData {
 		}
 		
 		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity) VALUES ";
-		SQL += "(1, 3, 1), (2, 2, 2) ";
+		for (int i = 1; i < 25000; i++) {
+			SQL += "("+i+", 3, "+i+"), ";
+		}
+		SQL += "(1, 2, 1) ";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {

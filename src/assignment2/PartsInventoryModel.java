@@ -107,6 +107,15 @@ public class PartsInventoryModel {
 		return null;
 	}
 	
+	public Part findPartID(Integer ID) {
+		for (Part part : partsInventory) { // this is O(n)
+			if (part.getID().equals(ID)) {
+				return part;
+			}
+		}
+		return null;
+	}
+	
 	public int getSize() {
 		return partsInventory.size();
 	}

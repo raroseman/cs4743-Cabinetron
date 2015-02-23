@@ -19,12 +19,13 @@ import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
 public class InventoryView extends JFrame {
+	private PartsInventoryModel partsModel;
 	private InventoryItemModel model;
 	private JPanel inventoryFrame;
 	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
-	private String[] columnNames = {"ID", "Part", "Location", "Quantity"};
+	private String[] columnNames = {"ID", "Part ID", "Part Name", "Part Number", "Location", "Quantity"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
 	private JPanel p;
@@ -34,8 +35,9 @@ public class InventoryView extends JFrame {
 	private JLabel errorMessage;
 	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
 	
-	public InventoryView(InventoryItemModel model) {
+	public InventoryView(PartsInventoryModel partsModel, InventoryItemModel model) {
 		super("Cabinetron: Inventory");
+		this.partsModel = partsModel;
 		this.model = model;
 		
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
@@ -67,45 +69,6 @@ public class InventoryView extends JFrame {
 		setContentPane(inventoryFrame);
 		inventoryFrame.setLayout(null);
 		
-		table = new JTable() {
-			public boolean isCellEditable(int row, int col)
-		    {
-		        return false;
-		    }
-		};
-		tableModel = (DefaultTableModel) table.getModel();
-		table.setColumnSelectionAllowed(false);
-		tableModel.setColumnIdentifiers(columnNames);
-		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));		
-		
-		for (InventoryItem p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
-			tableModel.addRow(rowData);
-		}
-		
-		table.setModel(tableModel);
-		p = new JPanel();
-		p.setBounds(0, 0, GUIWidth, GUIHeight);
-
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tableSelectionModel = table.getSelectionModel();
-		
-		tableScrollPane = new JScrollPane(table);
-		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
-		tableScrollPane.setVisible(true);
-		
-		TableColumn column = null;
-		
-		for (int i = 0; i < columnNames.length; i++) {
-			column = table.getColumnModel().getColumn(i);
-			if (column.getHeaderValue().toString() == "ID") {
-				column.setPreferredWidth(GUIWidth / 32);
-			} if (column.getHeaderValue().toString() == "Vendor") {
-				column.setPreferredWidth(GUIWidth / 16);
-			} 
-		}
-
-		p.add(tableScrollPane);
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
@@ -129,6 +92,49 @@ public class InventoryView extends JFrame {
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
 		inventoryFrame.add(errorMessage);
 		
+		
+		table = new JTable() {
+			public boolean isCellEditable(int row, int col)
+		    {
+		        return false;
+		    }
+		};
+		
+		tableModel = (DefaultTableModel) table.getModel();
+		table.setColumnSelectionAllowed(false);
+		tableModel.setColumnIdentifiers(columnNames);
+		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));		
+		
+		refreshInventoryList();
+		
+		p = new JPanel();
+		p.setBounds(0, 0, GUIWidth, GUIHeight);
+
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tableSelectionModel = table.getSelectionModel();
+		
+		tableScrollPane = new JScrollPane(table);
+		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
+		tableScrollPane.setVisible(true);
+		
+		TableColumn column = null;
+		
+		for (int i = 0; i < columnNames.length; i++) {
+			column = table.getColumnModel().getColumn(i);
+			if (column.getHeaderValue().toString().equals("ID") ||
+				column.getHeaderValue().toString().equals("Part ID")) {
+				column.setPreferredWidth(GUIWidth / 15);
+			}
+			else if (column.getHeaderValue().toString().equals("Quantity")) {
+				column.setPreferredWidth(GUIWidth / 10);
+			}
+			else {
+				column.setPreferredWidth(GUIWidth / 5);
+			}
+		}
+
+		p.add(tableScrollPane);
+	
 		p.setVisible(true);
 		inventoryFrame.add(p);
 		inventoryFrame.setVisible(true);
@@ -138,13 +144,23 @@ public class InventoryView extends JFrame {
 	}
 	
 	public void updatePanel() { // tears down the entire table and re-populates it
+		refreshInventoryList();
+	}
+	
+	private void refreshInventoryList() {
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
+			Part part = partsModel.findPartID(p.getPartID());
+			rowData = new Object[] { p.getID(), part.getID(), part.getPartName(), part.getPartNumber(), p.getLocation(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
-
+		if (partsModel.getSize() == 0) {
+			disableAdd();
+		}
+		else {
+			enableAdd();
+		}
 		table.setModel(tableModel);
 	}
 	
@@ -166,6 +182,7 @@ public class InventoryView extends JFrame {
 		        updatePanel();
 		    }
 		});
+		this.addWindowFocusListener(controller);
 	}
 	
 	public int getWidth() {
@@ -174,6 +191,14 @@ public class InventoryView extends JFrame {
 	
 	public int getHeight() {
 		return GUIHeight;
+	}
+	
+	public void disableAdd() {
+		addPart.setEnabled(false);
+	}
+	
+	public void enableAdd() {
+		addPart.setEnabled(true);
 	}
 	
 	public void disableDelete() {

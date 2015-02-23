@@ -334,75 +334,6 @@ public class PartsInventoryGateway {
 		}
 	}
 	
-	public void addItemToInventory() { /* NOT YET IMPLEMENTED */
-		createConnection();
-		// Check to see if Part already exists
-		SQL = "SELECT Parts.PartName, Parts.PartNumber FROM Parts ";
-		SQL += "WHERE PartName=? AND PartNumber=?";
-		try {
-			prepstmt = conn.prepareStatement(SQL);
-			prepstmt.setString(1, "Bilbo");
-			prepstmt.setString(2, "A-42");
-			rs = prepstmt.executeQuery();
-			while (rs.next()) {
-				System.out.print(rs.getString("PartNumber") + " | ");
-				System.out.print(rs.getString("PartName") + "\n");
-			}
-			closeResultSet();
-			closePreparedStatement();
-		} catch (SQLException e1) {
-			closeResultSet();
-			closePreparedStatement();
-			e1.printStackTrace();
-		}
-		// Check to see if location is "Unknown"
-		// Then check to see if location exists in the database
-		// Finally, check the quantity - ensure it is greater than 0 if INSERT
-		// or at least 0 if an UPDATE
-
-		closeConnection();
-		System.out.println("Done with the search");
-	}
-	
-	/* Gets a list of everything in the Inventory table, with appropriate joins
-	public List<Part> getInventory() {
-		List<Part> inventory = new ArrayList<Part>();
-		createConnection();
-		// Select all inventory items for display
-		SQL = "SELECT Parts.PartName, Parts.PartNumber, Parts.Vendor, Parts.ExternalPartNumber, ";
-		SQL += "InventoryItems.ID, InventoryItems.Quantity, Locations.Location, Units.Unit FROM Inventory ";
-		SQL += "INNER JOIN InventoryItems ON Inventory.InventoryItemID = InventoryItems.ID ";
-		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
-		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
-		SQL += "INNER JOIN Units ON Parts.UnitID = Units.ID ";
-		try {
-			stmt = conn.createStatement();
-			stmt.execute(SQL);
-			rs = stmt.getResultSet();
-
-			while (rs.next()) {
-				try {
-					Part p = new Part(rs.getInt("ID"), rs.getInt("Quantity"), rs.getString("Unit"), rs.getString("PartName"), 
-							rs.getString("PartNumber"), rs.getString("ExternalPartNumber"), rs.getString("Location"));
-					inventory.add(p);
-				}
-				catch (IOException ioe) {
-					System.out.println(ioe.getMessage());
-				}
-			}
-			rs.close();
-			stmt.close();
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		closeConnection();
-		System.out.println("Done with the search");
-		return inventory;
-	}
-	
-	*/
-
 	public List<Part> getParts() {
 		List<Part> parts = new ArrayList<Part>();
 		createConnection();
@@ -436,7 +367,6 @@ public class PartsInventoryGateway {
 			e1.printStackTrace();
 		}
 		closeConnection();
-		System.out.println("Done with the search");
 		return parts;
 	}
 	
@@ -481,72 +411,4 @@ public class PartsInventoryGateway {
 		closeConnection();
 		return part;
 	}
-	
-	public List<InventoryItem> getInventory() {
-		List<InventoryItem> inventory = new ArrayList<InventoryItem>();
-		createConnection();
-		// Select all inventory items for display
-		SQL = "SELECT Parts.ID, InventoryItems.Quantity, Locations.Location FROM Inventory ";
-		SQL += "INNER JOIN InventoryItems ON Inventory.InventoryItemID = InventoryItems.ID ";
-		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
-		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
-		try {
-			stmt = conn.createStatement();
-			stmt.execute(SQL);
-			rs = stmt.getResultSet();
-
-			while (rs.next()) {
-				try {
-					InventoryItem ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
-					inventory.add(ii);
-				}
-				catch (IOException ioe) {
-					System.out.println(ioe.getMessage());
-				}
-			}
-			closeResultSet();
-			closeStatement();
-
-		} 
-		catch (SQLException e1) {
-			closeResultSet();
-			closeStatement();
-			e1.printStackTrace();
-		}
-		closeConnection();
-		return inventory;
-	}
-	/*
-	public InventoryItem getInventoryItem() {
-		InventoryItem item = null;
-		createConnection();
-		
-		SQL = "SELECT Parts.ID, InventoryItems.Quantity, Locations.Location FROM Inventory ";
-		SQL += "INNER JOIN InventoryItems ON Inventory.InventoryItemID = InventoryItems.ID ";
-		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
-		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
-		try {
-			stmt = conn.createStatement();
-			stmt.execute(SQL);
-			rs = stmt.getResultSet();
-
-			while (rs.next()) {
-				try {
-					InventoryItem ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
-					inventory.add(ii);
-				}
-				catch (IOException ioe) {
-					System.out.println(ioe.getMessage());
-				}
-			}
-			rs.close();
-			stmt.close();
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		closeConnection();
-		return inventory;
-	}
-*/
 }

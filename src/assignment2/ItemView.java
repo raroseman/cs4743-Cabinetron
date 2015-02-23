@@ -137,11 +137,9 @@ public class ItemView extends JFrame {
 		Integer i = 0;
 		try {
 			i = model.getPartIDByPartNumber(partField.getSelectedItem().toString());
-			System.out.println("HERE; i = " + i);
 		}
 		catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			errorMessage.setText(e.getMessage());
 		}
 		return i;
 	}
@@ -172,7 +170,7 @@ public class ItemView extends JFrame {
 		}
 	}
 	
-	public String getQuantityUnitType() {
+	public String getLocationName() {
 		int index = locationField.getSelectedIndex();
 		return locationField.getItemAt(index);
 	}

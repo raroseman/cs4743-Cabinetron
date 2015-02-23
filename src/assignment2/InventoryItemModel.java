@@ -73,7 +73,6 @@ public class InventoryItemModel {
 	
 	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException {
 		try {
-			System.out.println("TO GATEWAY: " + iiOld.getID() + " | " + iiNew.getPartID()+ " | " +  iiNew.getLocation()+ " | " +  iiNew.getQuantity());
 			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity());
 			inventoryItems = iig.getInventory(); // gets list of inventory items
 		}

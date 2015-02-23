@@ -349,6 +349,7 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
+					
 					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
 				}
 				catch (IOException ioe) {
