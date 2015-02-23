@@ -211,6 +211,10 @@ public class PartsInventoryView extends JFrame  {
 		errorMessage.setText(message);
 	}
 	
+	public void setSelectedRow(Integer rowIndex) {
+		tableSelectionModel.setSelectionInterval(0, rowIndex);
+	}
+	
 	public Part getObjectInRow(int index) {
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			if (table.getColumnName(i).equals("Part Name")) {

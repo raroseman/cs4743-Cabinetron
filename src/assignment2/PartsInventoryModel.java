@@ -1,6 +1,7 @@
 package assignment2;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -124,8 +125,8 @@ public class PartsInventoryModel {
 		return partsInventory;
 	}
 	
-	public String[] getValidQuantityUnitTypes() {
-		return Part.getValidQuantityUnitTypes();
+	public ArrayList<String> getQuantityUnitTypes() throws SQLException {
+		return pdg.getQuantityUnitTypes();
 	}
 	
 	public void sortByCurrentSortMethod() {

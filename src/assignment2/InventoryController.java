@@ -16,6 +16,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 	private InventoryView inventoryView;
 	private ItemView itemView;
 	private InventoryItem selectedItem = null;
+	private int selectedRow = 0;
 	private boolean hasItemViewOpen;
 	
 	public InventoryController(InventoryItemModel inventoryItemModel, InventoryView inventoryView) {
@@ -35,13 +36,15 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				if (hasItemViewOpen) {
 					itemView.dispose();
 				}
-				ClearSelection();
+				clearSelection();
 				itemView = new ItemView(inventoryItemModel, "Add New Item");
 				itemView.register(this);
 				itemView.disableIDEdit();
 				itemView.hideSaveButton();
 				itemView.hideEditButton();
 				hasItemViewOpen = true;
+				inventoryView.updatePanel();
+				inventoryView.repaint();
 				break;
 			case "Delete":
 				inventoryView.clearErrorMessage();
@@ -52,18 +55,17 @@ public class InventoryController implements ActionListener, ListSelectionListene
 					}
 					try {
 						inventoryItemModel.deletePart(selectedItem);
+						clearSelection();
+						inventoryView.updatePanel();
+						inventoryView.repaint();
 					} 
 					catch (SQLException sqe) {
 						inventoryView.setErrorMessage(sqe.getMessage());
-					//	System.out.println(sqe.getMessage());
 					}
 					catch (IOException ioe) {
 						inventoryView.setErrorMessage(ioe.getMessage());
-					//	System.out.println(ioe.getMessage());
 					}
-					ClearSelection();
-					inventoryView.updatePanel();
-					inventoryView.repaint();
+					
 				}
 				break;
 			case "View":
@@ -128,11 +130,15 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;
 			case "Cancel":
 				itemView.dispose();
+				if (selectedItem != null) {
+					inventoryView.enableDelete();
+					inventoryView.enableView();
+				}
 				break;
 		}
 	}
 
-	private void ClearSelection() {
+	private void clearSelection() {
 		selectedItem = null;
 		inventoryView.disableDelete();
 		inventoryView.disableView();
@@ -146,7 +152,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 			return;
 		}
 		else {
-			int selectedRow = lsm.getMinSelectionIndex();	
+			selectedRow = lsm.getMinSelectionIndex();	
 			selectedItem = inventoryView.getObjectInRow(selectedRow);
 			inventoryView.clearErrorMessage();
 			inventoryView.enableDelete();
@@ -157,13 +163,14 @@ public class InventoryController implements ActionListener, ListSelectionListene
 
 	@Override
 	public void windowGainedFocus(WindowEvent e) {
-		System.out.println("Gained focus");
-		inventoryView.updatePanel();
+		if (selectedItem != null) {
+			inventoryView.updatePanel();
+			inventoryView.setSelectedRow(selectedRow);
+		}	
 	}
 
 	@Override
 	public void windowLostFocus(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		// Nothing
 	}
 }

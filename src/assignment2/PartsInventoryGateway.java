@@ -334,6 +334,32 @@ public class PartsInventoryGateway {
 		}
 	}
 	
+	public ArrayList<String> getQuantityUnitTypes() throws SQLException {
+		ArrayList<String> units = new ArrayList<String>();
+		createConnection();
+		
+		SQL = "SELECT Unit FROM Units";
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(SQL);
+			rs = stmt.getResultSet();
+			
+			while (rs.next()) {
+				units.add(rs.getString("Unit"));
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+		closeConnection();
+		return units;
+	}
+	
 	public List<Part> getParts() {
 		List<Part> parts = new ArrayList<Part>();
 		createConnection();

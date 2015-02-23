@@ -35,11 +35,11 @@ public class ItemView extends JFrame {
 		labelLeft = 15;
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
-		buttonW = 96;
+		buttonW = viewWidth / 4;
 		buttonH = 32;
 		buttonLeft = viewWidth / 3 - buttonW / 3;
 		buttonBottom = viewHeight - buttonH - 64;
-		fieldW = 200;
+		fieldW = viewWidth / 2;
 		fieldH = 32;
 		fieldLeft = labelW + 25;
 		fieldTop = labelTop;
@@ -59,7 +59,7 @@ public class ItemView extends JFrame {
 		ID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
 		partFrame.add(ID);
 		
-		partID = new JLabel("Part ID");
+		partID = new JLabel("Part Number");
 		partID.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
 		partFrame.add(partID);
 		
