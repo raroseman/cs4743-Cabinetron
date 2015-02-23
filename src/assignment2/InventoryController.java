@@ -42,6 +42,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				itemView.disableIDEdit();
 				itemView.hideSaveButton();
 				itemView.hideEditButton();
+				itemView.hideID();
 				hasItemViewOpen = true;
 				inventoryView.updatePanel();
 				inventoryView.repaint();

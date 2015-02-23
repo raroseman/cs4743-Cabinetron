@@ -43,6 +43,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				partView.disableIDEdit();
 				partView.hideSaveButton();
 				partView.hideEditButton();
+				partView.hideID();
 				hasPartViewOpen = true;
 				inventoryView.updatePanel();
 				inventoryView.repaint();

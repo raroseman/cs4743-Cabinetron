@@ -205,6 +205,11 @@ public class ItemView extends JFrame {
 		locationField.setSelectedItem(quantityUnitType);
 	}
 	
+	public void hideID() {
+		idField.setVisible(false);
+		ID.setVisible(false);
+	}
+	
 	public void hideEditButton() {
 		edit.setVisible(false);
 	}

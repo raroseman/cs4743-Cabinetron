@@ -55,13 +55,13 @@ public class PartView extends JFrame {
 		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
-		partName = new JLabel("Name");
-		partName.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
-		partFrame.add(partName);
-		
 		partID = new JLabel("ID");
-		partID.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
 		partFrame.add(partID);
+		
+		partName = new JLabel("Name");
+		partName.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partFrame.add(partName);
 		
 		partNumber = new JLabel("Part Number");
 		partNumber.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
@@ -100,13 +100,13 @@ public class PartView extends JFrame {
 		save.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
 		partFrame.add(save);
 		
-		nameField = new JTextField();
-		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		partFrame.add(nameField);
-		
 		idField = new JTextField();
-		idField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(idField);
+		
+		nameField = new JTextField();
+		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		partFrame.add(nameField);
 		
 		numberField = new JTextField();
 		numberField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
@@ -198,6 +198,11 @@ public class PartView extends JFrame {
 	
 	public void setQuantityUnitType(String quantityUnitType) {
 		quantityUnitTypeField.setSelectedItem(quantityUnitType);
+	}
+	
+	public void hideID() {
+		idField.setVisible(false);
+		partID.setVisible(false);
 	}
 	
 	public void hideEditButton() {

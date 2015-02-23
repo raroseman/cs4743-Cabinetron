@@ -1,6 +1,7 @@
 package assignment2;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
@@ -9,6 +10,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
@@ -64,6 +66,20 @@ public class PartsInventoryView extends JFrame  {
 			public boolean isCellEditable(int row, int col)
 		    {
 		        return false;
+		    }
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
+		    {
+		        Component c = super.prepareRenderer(renderer, row, column);
+
+		        if (!isRowSelected(row)) {
+		        	if (row % 2 == 0) {
+		        		c.setBackground(new Color(237, 252, 252));
+		        	}
+		        	else {
+		        		c.setBackground(getBackground());
+		        	}
+		        }
+		        return c;
 		    }
 		};
 		tableModel = (DefaultTableModel) table.getModel();

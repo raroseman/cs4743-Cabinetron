@@ -1,6 +1,7 @@
 package assignment2;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
@@ -15,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
@@ -41,7 +43,7 @@ public class InventoryView extends JFrame {
 		this.model = model;
 		
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 200;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;
@@ -68,7 +70,6 @@ public class InventoryView extends JFrame {
 		inventoryFrame.setOpaque(true);
 		setContentPane(inventoryFrame);
 		inventoryFrame.setLayout(null);
-		
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
@@ -97,6 +98,20 @@ public class InventoryView extends JFrame {
 			public boolean isCellEditable(int row, int col)
 		    {
 		        return false;
+		    }
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
+		    {
+		        Component c = super.prepareRenderer(renderer, row, column);
+
+		        if (!isRowSelected(row)) {
+		        	if (row % 2 == 0) {
+		        		c.setBackground(new Color(236, 249, 221));
+		        	}
+		        	else {
+		        		c.setBackground(getBackground());
+		        	}
+		        }
+		        return c;
 		    }
 		};
 		
