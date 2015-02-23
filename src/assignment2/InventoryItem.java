@@ -9,7 +9,6 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer quantity = 0;
 	private Part part = null;
 	private String location = "Unknown";
-	private static String[] locationTypes = new String[] { "Unknown", "Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2" };
 	
 	/*
 	 * Does not include the optional parameters: ID (required for reference only),
@@ -60,10 +59,6 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
-	}
-	
-	public static String[] getValidLocationTypes() {
-		return locationTypes;
 	}
 	
 	public Integer getID() {
@@ -124,16 +119,12 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	}
 	
 	private void setLocation(String location) throws IOException {
-		for (String loc : locationTypes) {
-			if (loc.equals(location) && !loc.equals("Unknown")) {
-				this.location = location.trim();
-				return;
-			}
-			else if (loc.equals(location) && loc.equals("Unknown")) {
-				throw new IOException("Error: location cannot be listed as \"unknown.\"");
-			}
+		if (location.equals("Unknown")) {
+			throw new IOException("Error: location cannot be listed as \"unknown.\"");
 		}
-		throw new IOException("Error: location unrecognized.");
+		else {
+			this.location = location;
+		}
 	}
 	
 	// sort by ID in descending order
@@ -151,6 +142,96 @@ public class InventoryItem implements Comparable<InventoryItem> {
 			Integer id1 = item.getID();
 			Integer id2 = anotherItem.getID();
 			return id2.compareTo(id1);
+		}
+	};
+	
+	// sort by Part ID in descending order
+	public static Comparator<InventoryItem> PartIDDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer partID1 = item.getPart().getID();
+			Integer partID2 = anotherItem.getPart().getID();
+			return partID1.compareTo(partID2);
+		}
+	};
+	
+	// sort by Part ID in ascending order
+	public static Comparator<InventoryItem> PartIDAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer partID1 = item.getPart().getID();
+			Integer partID2 = anotherItem.getPart().getID();
+			return partID2.compareTo(partID1);
+		}
+	};
+	
+	// sort by Part Name in descending order
+	public static Comparator<InventoryItem> PartNameDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getPart().getPartName();
+			String name2 = anotherItem.getPart().getPartName();
+			return name1.compareTo(name2);
+		}
+	};
+	
+	// sort by Part Name in ascending order
+	public static Comparator<InventoryItem> PartNameAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getPart().getPartName();
+			String name2 = anotherItem.getPart().getPartName();
+			return name2.compareTo(name1);
+		}
+	};
+	
+	// sort by Part Number in descending order
+	public static Comparator<InventoryItem> PartNumberDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getPart().getPartNumber();
+			String name2 = anotherItem.getPart().getPartNumber();
+			return name1.compareTo(name2);
+		}
+	};
+	
+	// sort by Part Number in ascending order
+	public static Comparator<InventoryItem> PartNumberAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getPart().getPartNumber();
+			String name2 = anotherItem.getPart().getPartNumber();
+			return name2.compareTo(name1);
+		}
+	};
+	
+	// sort by Location in descending order
+	public static Comparator<InventoryItem> LocationDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getLocation();
+			String name2 = anotherItem.getLocation();
+			return name1.compareTo(name2);
+		}
+	};
+	
+	// sort by Location in ascending order
+	public static Comparator<InventoryItem> LocationAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			String name1 = item.getLocation();
+			String name2 = anotherItem.getLocation();
+			return name2.compareTo(name1);
+		}
+	};
+	
+	// sort by Quantity in descending order
+	public static Comparator<InventoryItem> QuantityDescending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer q1 = item.getQuantity();
+			Integer q2 = anotherItem.getQuantity();
+			return q1.compareTo(q2);
+		}
+	};
+	
+	// sort by Quantity in ascending order
+	public static Comparator<InventoryItem> QuantityAscending = new Comparator<InventoryItem>() {
+		public int compare(InventoryItem item, InventoryItem anotherItem) {
+			Integer q1 = item.getQuantity();
+			Integer q2 = anotherItem.getQuantity();
+			return q2.compareTo(q1);
 		}
 	};
 	

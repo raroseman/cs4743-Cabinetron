@@ -2,6 +2,8 @@ package assignment2;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -9,11 +11,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-public class PartsInventoryController implements ActionListener, ListSelectionListener {
+public class PartsInventoryController implements ActionListener, ListSelectionListener, WindowFocusListener {
 	private PartsInventoryModel partsInventoryModel;
 	private PartsInventoryView inventoryView;
 	private PartView partView;
 	private Part selectedPart = null;
+	private int selectedRow = 0;
 	private boolean hasPartViewOpen;
 	
 	public PartsInventoryController(PartsInventoryModel inventoryModel, PartsInventoryView inventoryView) {
@@ -34,13 +37,16 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				if (hasPartViewOpen) {
 					partView.dispose();
 				}
-				ClearSelection();
+				clearSelection();
 				partView = new PartView(partsInventoryModel, "Add New Part");
 				partView.register(this);
 				partView.disableIDEdit();
 				partView.hideSaveButton();
 				partView.hideEditButton();
+				partView.hideID();
 				hasPartViewOpen = true;
+				inventoryView.updatePanel();
+				inventoryView.repaint();
 				break;
 			case "Delete":
 				inventoryView.clearErrorMessage();
@@ -51,18 +57,17 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					}
 					try {
 						partsInventoryModel.deletePart(selectedPart);
+						clearSelection();
+						inventoryView.updatePanel();
+						inventoryView.repaint();
 					} 
 					catch (SQLException sqe) {
 						inventoryView.setErrorMessage(sqe.getMessage());
-					//	System.out.println(sqe.getMessage());
 					}
 					catch (IOException ioe) {
 						inventoryView.setErrorMessage(ioe.getMessage());
-					//	System.out.println(ioe.getMessage());
 					}
-					ClearSelection();
-					inventoryView.updatePanel();
-					inventoryView.repaint();
+					
 				}
 				break;
 			case "View":
@@ -97,6 +102,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 						partsInventoryModel.editPart(selectedPart, newPart);
 						partView.dispose();
 						inventoryView.updatePanel();
+						inventoryView.setSelectedRow(selectedRow);
 						inventoryView.repaint();
 					} catch (NumberFormatException noint) {
 						partView.setErrorMessage(noint.getMessage());
@@ -128,12 +134,14 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				}
 				break;
 			case "Cancel":
+				inventoryView.enableDelete();
+				inventoryView.enableView();
 				partView.dispose();
 				break;
 		}
 	}
 	
-	private void ClearSelection() {
+	private void clearSelection() {
 		selectedPart = null;
 		inventoryView.disableDelete();
 		inventoryView.disableView();
@@ -148,9 +156,25 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			return;
 		}
 		else {
-			int selectedRow = lsm.getMinSelectionIndex();	
+			selectedRow = lsm.getMinSelectionIndex();	
 			selectedPart = inventoryView.getObjectInRow(selectedRow);
 			inventoryView.clearErrorMessage();
+			inventoryView.enableDelete();
+			inventoryView.enableView();
+		}
+	}
+	
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		if (selectedPart != null) {
+			inventoryView.updatePanel();
+			inventoryView.setSelectedRow(selectedRow);
+		}	
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+		if (selectedPart != null) {
 			inventoryView.enableDelete();
 			inventoryView.enableView();
 		}

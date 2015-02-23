@@ -10,7 +10,6 @@ public class Part implements Comparable<Part> {
 	private String externalPartNumber = null;
 	private String vendor = null;
 	private String quantityUnitType = "Unknown";
-	private static String[] unitTypes = new String[] { "Unknown", "Linear Feet", "Pieces" };
 	private static int maxPartNameLength = 255;
 	private static int maxPartNumberLength = 20;
 	private static int maxVendorLength = 255;
@@ -102,10 +101,6 @@ public class Part implements Comparable<Part> {
 		return this.quantityUnitType;
 	}
 	
-	public static String[] getValidQuantityUnitTypes() {
-		return unitTypes;
-	}
-	
 	public String getPartName() {
 		return this.partName;
 	}
@@ -148,16 +143,10 @@ public class Part implements Comparable<Part> {
 	}
 	
 	private void setQuantityUnitType(String quantityUnitType) throws IOException {
-		for (String unit : unitTypes) {
-			if (unit.equals(quantityUnitType) && !unit.equals("Unknown")) {
-				this.quantityUnitType = quantityUnitType.trim();
-				return;
-			}
-			else if (unit.equals(quantityUnitType) && unit.equals("Unknown")) {
-				throw new IOException("Error: unit type cannot be listed as \"unknown.\"");
-			}
+		if (quantityUnitType.equals("Unknown")) {
+			throw new IOException("Error: unit type cannot be listed as \"unknown.\"");
 		}
-		throw new IOException("Error: unit type unrecognized.");
+		this.quantityUnitType = quantityUnitType;
 	}
 	
 	private void setPartName(String partName) throws IOException {

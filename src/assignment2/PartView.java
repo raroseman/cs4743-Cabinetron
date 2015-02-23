@@ -2,6 +2,7 @@ package assignment2;
 
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,18 +28,18 @@ public class PartView extends JFrame {
 		super(title);
 		
 		viewWidth = 400;
-		viewHeight = 400;
-		labelW = viewWidth / 4;
+		viewHeight = 350;
+		labelW = viewWidth / 3;
 		labelH = 32;
 		labelTop = 15;
 		labelLeft = 15;
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
-		buttonW = 96;
+		buttonW = viewWidth / 4;
 		buttonH = 32;
 		buttonLeft = viewWidth / 3 - buttonW / 3;
 		buttonBottom = viewHeight - buttonH - 64;
-		fieldW = 200;
+		fieldW = viewWidth / 2;
 		fieldH = 32;
 		fieldLeft = labelW + 25;
 		fieldTop = labelTop;
@@ -54,19 +55,19 @@ public class PartView extends JFrame {
 		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
-		partName = new JLabel("Name");
-		partName.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
-		partFrame.add(partName);
-		
 		partID = new JLabel("ID");
-		partID.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
 		partFrame.add(partID);
 		
-		partNumber = new JLabel("Part #");
+		partName = new JLabel("Name");
+		partName.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partFrame.add(partName);
+		
+		partNumber = new JLabel("Part Number");
 		partNumber.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
 		partFrame.add(partNumber);
 		
-		externalPartNumber = new JLabel("External Part #");
+		externalPartNumber = new JLabel("External Part Number");
 		externalPartNumber.setBounds(labelLeft, labelTop + (labelH * 3), labelW, labelH);
 		partFrame.add(externalPartNumber);
 		
@@ -99,13 +100,13 @@ public class PartView extends JFrame {
 		save.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
 		partFrame.add(save);
 		
-		nameField = new JTextField();
-		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		partFrame.add(nameField);
-		
 		idField = new JTextField();
-		idField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(idField);
+		
+		nameField = new JTextField();
+		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		partFrame.add(nameField);
 		
 		numberField = new JTextField();
 		numberField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
@@ -120,9 +121,14 @@ public class PartView extends JFrame {
 		partFrame.add(vendorField);
 		
 		quantityUnitTypeField = new JComboBox<String>();
-		for (String unitType : model.getValidQuantityUnitTypes()) {
-			quantityUnitTypeField.addItem(unitType);
+		try {
+			for (String unitType : model.getQuantityUnitTypes()) {
+				quantityUnitTypeField.addItem(unitType);
+			}
+		} catch (SQLException e) {
+			errorMessage.setText(e.getMessage());
 		}
+		quantityUnitTypeField.setSelectedItem("Unknown"); // default Unknown; if not in list, defaults to first item in list
 		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
 		partFrame.add(quantityUnitTypeField);
 	}
@@ -132,6 +138,7 @@ public class PartView extends JFrame {
 		cancel.addActionListener(controller);
 		edit.addActionListener(controller);
 		save.addActionListener(controller);
+		this.addWindowFocusListener(controller);
 	}
 	
 	public String getName() {
@@ -191,6 +198,11 @@ public class PartView extends JFrame {
 	
 	public void setQuantityUnitType(String quantityUnitType) {
 		quantityUnitTypeField.setSelectedItem(quantityUnitType);
+	}
+	
+	public void hideID() {
+		idField.setVisible(false);
+		partID.setVisible(false);
 	}
 	
 	public void hideEditButton() {

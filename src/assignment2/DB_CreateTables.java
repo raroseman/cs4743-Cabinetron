@@ -120,17 +120,6 @@ public class DB_CreateTables {
 			e1.printStackTrace();
 		}
 		
-		SQL = "CREATE TABLE Inventory (";
-		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
-		SQL += "InventoryItemID INT(10) NOT NULL UNIQUE, ";
-		SQL += "PRIMARY KEY (ID), ";
-		SQL += "FOREIGN KEY (InventoryItemID) REFERENCES InventoryItems(ID) )";
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
 		// Close all JDBC objects
 		try {
 			if (conn != null)

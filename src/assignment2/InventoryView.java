@@ -1,6 +1,7 @@
 package assignment2;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
@@ -15,16 +16,18 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
 public class InventoryView extends JFrame {
+	private PartsInventoryModel partsModel;
 	private InventoryItemModel model;
 	private JPanel inventoryFrame;
 	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
-	private String[] columnNames = {"ID", "Part", "Location", "Quantity"};
+	private String[] columnNames = {"ID", "Part ID", "Part Name", "Part Number", "Location", "Quantity"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
 	private JPanel p;
@@ -32,107 +35,147 @@ public class InventoryView extends JFrame {
 	private DefaultTableModel tableModel;
 	private Object[] rowData;
 	private JLabel errorMessage;
+	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
 	
-	public InventoryView(InventoryItemModel model) {
+	public InventoryView(PartsInventoryModel partsModel, InventoryItemModel model) {
 		super("Cabinetron: Inventory");
-			this.model = model;
-			
-			GUIWidth = 800;
-			GUIHeight = 600;
-			
-			this.setSize(GUIWidth, GUIHeight);
-			this.setVisible(true);
-			this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 32) - (GUIWidth / 32), 
-							 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (GUIHeight / 2));
-			
-			// Sets up the inventory frame 
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			inventoryFrame = new JPanel();
-			inventoryFrame.setSize(1200, 1000);
-			inventoryFrame.setBackground(Color.LIGHT_GRAY);
-			inventoryFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
-			inventoryFrame.setOpaque(true);
-			setContentPane(inventoryFrame);
-			inventoryFrame.setLayout(null);
-			
-			table = new JTable() {
-				public boolean isCellEditable(int row, int col)
-			    {
-			        return false;
-			    }
-			};
-			tableModel = (DefaultTableModel) table.getModel();
-			table.setColumnSelectionAllowed(false);
-			tableModel.setColumnIdentifiers(columnNames);
-			table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));		
-			
-			for (InventoryItem p: model.getInventory()) {
-				rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
-				tableModel.addRow(rowData);
-			}
-			
-			table.setModel(tableModel);
-			p = new JPanel();
-			p.setBounds(0, 0, GUIWidth, GUIHeight);
+		this.partsModel = partsModel;
+		this.model = model;
+		
+		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		tableMargin = 15;
+		tableW = GUIWidth - (tableMargin * 2);
+		tableH = GUIHeight - 100;
+		buttonW = 125;
+		buttonH = 30;
+		buttonX = 100;
+		buttonY = GUIHeight - 75;
+		errorW = GUIWidth - 20;
+		errorH = 32;
+		errorX = tableMargin;
+		errorY = GUIHeight - 100;
+		
+		
+		this.setSize(GUIWidth, GUIHeight);
+		this.setVisible(true);
+		this.setLocation(0, 50);
+		
+		// Sets up the inventory frame 
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		inventoryFrame = new JPanel();
+		inventoryFrame.setSize(1200, 1000);
+		inventoryFrame.setBackground(Color.LIGHT_GRAY);
+		inventoryFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
+		inventoryFrame.setOpaque(true);
+		setContentPane(inventoryFrame);
+		inventoryFrame.setLayout(null);
+		
+		// Creates and adds the "add" button to the inventory frame
+		addPart = new JButton("Add");
+		addPart.setBounds(buttonX, buttonY, buttonW, buttonH);
+		inventoryFrame.add(addPart);
+		
+		// Creates and adds the "delete" button to the inventory frame
+		deletePart = new JButton("Delete");
+		deletePart.setBounds((GUIWidth / 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		disableDelete();
+		inventoryFrame.add(deletePart);
+		
+		// Creates and adds the "view" button to the inventory frame
+		viewPart = new JButton("View");
+		viewPart.setBounds((GUIWidth - buttonX) - buttonW, buttonY, buttonW, buttonH);
+		disableView();
+		inventoryFrame.add(viewPart);
+		
+		errorMessage = new JLabel("");
+		errorMessage.setForeground(Color.red);
+		errorMessage.setBounds(errorX, errorY, errorW, errorH);
+		inventoryFrame.add(errorMessage);
+		
+		
+		table = new JTable() {
+			public boolean isCellEditable(int row, int col)
+		    {
+		        return false;
+		    }
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
+		    {
+		        Component c = super.prepareRenderer(renderer, row, column);
 
-			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			tableSelectionModel = table.getSelectionModel();
-			
-			tableScrollPane = new JScrollPane(table);
-			tableScrollPane.setPreferredSize(new Dimension(GUIWidth - 30, GUIHeight - 100));
-			tableScrollPane.setVisible(true);
-			
-			TableColumn column = null;
-			
-			for (int i = 0; i < columnNames.length; i++) {
-				column = table.getColumnModel().getColumn(i);
-				if (column.getHeaderValue().toString() == "ID") {
-					column.setPreferredWidth(GUIWidth / 32);
-				} if (column.getHeaderValue().toString() == "Vendor") {
-					column.setPreferredWidth(GUIWidth / 16);
-				} 
-			}
+		        if (!isRowSelected(row)) {
+		        	if (row % 2 == 0) {
+		        		c.setBackground(new Color(236, 249, 221));
+		        	}
+		        	else {
+		        		c.setBackground(getBackground());
+		        	}
+		        }
+		        return c;
+		    }
+		};
+		
+		tableModel = (DefaultTableModel) table.getModel();
+		table.setColumnSelectionAllowed(false);
+		tableModel.setColumnIdentifiers(columnNames);
+		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));		
+		
+		refreshInventoryList();
+		
+		p = new JPanel();
+		p.setBounds(0, 0, GUIWidth, GUIHeight);
 
-			p.add(tableScrollPane);
-			
-			// Creates and adds the "add" button to the inventory frame
-			addPart = new JButton("Add");
-			addPart.setBounds(15, 515, 70, 30);
-			inventoryFrame.add(addPart);
-			
-			// Creates and adds the "delete" button to the inventory frame
-			deletePart = new JButton("Delete");
-			deletePart.setBounds(105, 515, 70, 30);
-			disableDelete();
-			inventoryFrame.add(deletePart);
-			
-			// Creates and adds the "view" button to the inventory frame
-			viewPart = new JButton("View");
-			viewPart.setBounds(695, 515, 70, 30);
-			disableView();
-			inventoryFrame.add(viewPart);
-			
-			errorMessage = new JLabel("");
-			errorMessage.setForeground(Color.red);
-			errorMessage.setBounds(185, 515, 515, 30);
-			inventoryFrame.add(errorMessage);
-			
-			p.setVisible(true);
-			inventoryFrame.add(p);
-			inventoryFrame.setVisible(true);
-			this.setVisible(true);
-			
-			repaint();
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tableSelectionModel = table.getSelectionModel();
+		
+		tableScrollPane = new JScrollPane(table);
+		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
+		tableScrollPane.setVisible(true);
+		
+		TableColumn column = null;
+		
+		for (int i = 0; i < columnNames.length; i++) {
+			column = table.getColumnModel().getColumn(i);
+			if (column.getHeaderValue().toString().equals("ID") ||
+				column.getHeaderValue().toString().equals("Part ID")) {
+				column.setPreferredWidth(GUIWidth / 15);
+			}
+			else if (column.getHeaderValue().toString().equals("Quantity")) {
+				column.setPreferredWidth(GUIWidth / 10);
+			}
+			else {
+				column.setPreferredWidth(GUIWidth / 5);
+			}
+		}
+
+		p.add(tableScrollPane);
+	
+		p.setVisible(true);
+		inventoryFrame.add(p);
+		inventoryFrame.setVisible(true);
+		this.setVisible(true);
+		
+		repaint();
 	}
 	
 	public void updatePanel() { // tears down the entire table and re-populates it
+		refreshInventoryList();
+	}
+	
+	private void refreshInventoryList() {
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
-			rowData = new Object[] {p.getID(), p.getPartID(), p.getLocation(), p.getQuantity()};
+			Part part = p.getPart();
+			rowData = new Object[] { p.getID(), part.getID(), part.getPartName(), part.getPartNumber(), p.getLocation(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
-
+		if (partsModel.getSize() == 0) {
+			disableAdd();
+		}
+		else {
+			enableAdd();
+		}
 		table.setModel(tableModel);
 	}
 	
@@ -150,10 +193,26 @@ public class InventoryView extends JFrame {
 		        case "ID":
 		        	model.sortByID();
 		        	break;
+		        case "Part ID":
+		        	model.sortByPartID();
+		        	break;
+		        case "Part Name":
+		        	model.sortByPartName();
+		        	break;
+		        case "Part Number":
+		        	model.sortByPartNumber();
+		        	break;
+		        case "Location":
+		        	model.sortByLocation();
+		        	break;
+		        case "Quantity":
+		        	model.sortByQuantity();
+		        	break;
 		        }
 		        updatePanel();
 		    }
 		});
+		this.addWindowFocusListener(controller);
 	}
 	
 	public int getWidth() {
@@ -162,6 +221,14 @@ public class InventoryView extends JFrame {
 	
 	public int getHeight() {
 		return GUIHeight;
+	}
+	
+	public void disableAdd() {
+		addPart.setEnabled(false);
+	}
+	
+	public void enableAdd() {
+		addPart.setEnabled(true);
 	}
 	
 	public void disableDelete() {
@@ -188,11 +255,15 @@ public class InventoryView extends JFrame {
 		errorMessage.setText(message);
 	}
 	
+	public void setSelectedRow(Integer rowIndex) {
+		tableSelectionModel.setSelectionInterval(0, rowIndex);
+	}
+	
 	
 	public InventoryItem getObjectInRow(int index) {
 		for (int i = 0; i < table.getColumnCount(); i++) {
-			if (table.getColumnName(i).equals("Part Name")) {
-				return model.findItemName(table.getValueAt(index, i).toString());
+			if (table.getColumnName(i).equals("ID")) {
+				return model.findItemByID(Integer.parseInt(table.getValueAt(index, i).toString()));
 			}
 		}
 		return null;
