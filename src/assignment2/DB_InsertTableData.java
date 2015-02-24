@@ -77,7 +77,15 @@ public class DB_InsertTableData {
 		
 		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity) VALUES ";
 		for (int i = 25; i > 0; i--) {
-			SQL += "("+i+", 3, "+i+"), ";
+			if (i % 3 == 0) {
+				SQL += "("+i+", 2, "+i+"), ";
+			}
+			else if (i % 3 == 1){
+				SQL += "("+i+", 3, "+i+"), ";
+			}
+			else {
+				SQL += "("+i+", 4, "+i+"), ";
+			}
 		}
 		SQL += "(1, 2, 1) ";
 		try {
