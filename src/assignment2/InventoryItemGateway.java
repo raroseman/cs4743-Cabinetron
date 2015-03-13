@@ -43,6 +43,8 @@ public class InventoryItemGateway {
 			// Create a database connection object
 			try {
 				conn = ds.getConnection();
+				conn.setAutoCommit(false);
+				conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -114,10 +116,12 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -135,10 +139,12 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException sqe) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(sqe.getMessage()); // "Failed to delete entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -181,10 +187,12 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	

@@ -45,6 +45,8 @@ public class PartsInventoryGateway {
 			// Create a database connection object
 			try {
 				conn = ds.getConnection();
+				conn.setAutoCommit(false);
+				conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -146,10 +148,12 @@ public class PartsInventoryGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -167,12 +171,14 @@ public class PartsInventoryGateway {
 		}
 		catch (SQLException sqe) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(sqe.getMessage()); // "Failed to delete entry..."
 		} catch (IOException ioe) {
 			throw new IOException(ioe.getMessage());
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -226,10 +232,12 @@ public class PartsInventoryGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	

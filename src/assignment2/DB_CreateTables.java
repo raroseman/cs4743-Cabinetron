@@ -97,6 +97,7 @@ public class DB_CreateTables {
 		SQL += "Vendor VARCHAR(255), ";
 		SQL += "UnitID INT(10) NOT NULL DEFAULT 0, ";
 		SQL += "ExternalPartNumber VARCHAR(50), ";
+		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
 		SQL += "PRIMARY KEY (ID), ";
 		SQL += "FOREIGN KEY (UnitID) REFERENCES Units(ID) )";
 		try {
@@ -110,6 +111,7 @@ public class DB_CreateTables {
 		SQL += "PartID INT(10) NOT NULL, ";
 		SQL += "LocationID INT(10) NOT NULL, ";
 		SQL += "Quantity INT(10) NOT NULL, ";
+		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
 		SQL += "PRIMARY KEY (ID), ";
 		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
 		SQL += "FOREIGN KEY (LocationID) REFERENCES Locations(ID), ";
