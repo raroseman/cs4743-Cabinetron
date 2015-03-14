@@ -16,6 +16,9 @@ public class InventoryController implements ActionListener, ListSelectionListene
 	private InventoryView inventoryView;
 	private ItemView itemView;
 	private InventoryItem selectedItem = null;
+	private InventoryItem oldDatabaseItem = null;
+	private InventoryItem userModifiedItem = null;
+	private InventoryItem newDatabaseItem = null;
 	private int selectedRow = 0;
 	private boolean hasItemViewOpen;
 	
@@ -39,7 +42,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				clearSelection();
 				itemView = new ItemView(inventoryItemModel, "Add New Item");
 				itemView.register(this);
-				itemView.disableIDEdit();
 				itemView.hideSaveButton();
 				itemView.hideEditButton();
 				itemView.hideID();
@@ -88,24 +90,51 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				}
 				break;	
 			case "Edit":
+				oldDatabaseItem = selectedItem;
 				itemView.enableEditable();
 				itemView.hideEditButton();
 				itemView.repaint();
 				break;
 			case "Save":
-				if (selectedItem != null) {
+			case "Override":
+				if (oldDatabaseItem != null) {
+					if (newDatabaseItem != null) {
+						oldDatabaseItem = newDatabaseItem; // user had an edit conflict already; move "new" to "old"
+					}
 					try {
-						InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
-						inventoryItemModel.editInventoryItem(selectedItem, newItem);
+						userModifiedItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
+						inventoryItemModel.editInventoryItem(oldDatabaseItem, userModifiedItem);
 						itemView.dispose();
 						inventoryView.updatePanel();
 						inventoryView.repaint();
-					} catch (NumberFormatException noint) {
+						
+						oldDatabaseItem = null;
+						userModifiedItem = null;
+						newDatabaseItem = null;
+					} 
+					catch (NumberFormatException noint) {
 						itemView.setErrorMessage(noint.getMessage());
-					} catch (SQLException sqe) {
+					} 
+					catch (SQLException sqe) {
 						itemView.setErrorMessage(sqe.getMessage());
-					} catch (IOException ex) {
+					} 
+					catch (IOException ex) {
+//4						// Item was added at the same part at location. Update list view and display changes side-by-side in edit view.
+						try {
+							newDatabaseItem = inventoryItemModel.getUpdatedInventoryItem(selectedItem.getID());
+						} 
+						catch (IOException e1) {
+							itemView.setErrorMessage(e1.getMessage());
+						} 
+						catch (SQLException e1) {
+							itemView.setErrorMessage(e1.getMessage());
+						}
+						
+						inventoryView.updatePanel();
+						inventoryView.repaint();
 						itemView.setErrorMessage(ex.getMessage());
+						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem);
+
 					} catch (Exception e1) {
 						itemView.setErrorMessage(e1.getMessage());
 					} 				

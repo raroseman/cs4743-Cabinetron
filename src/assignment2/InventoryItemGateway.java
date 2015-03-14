@@ -32,6 +32,7 @@ public class InventoryItemGateway {
 	PreparedStatement prepstmt;
 	ResultSet rs; // the results of an executed statement
 	
+	
 	private void createConnection() {
 		if (conn == null) {
 			if (ds == null) {
@@ -43,6 +44,8 @@ public class InventoryItemGateway {
 			// Create a database connection object
 			try {
 				conn = ds.getConnection();
+				conn.setAutoCommit(false);
+				conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -95,12 +98,50 @@ public class InventoryItemGateway {
 		}
 	}
 	
+	public boolean checkTimestamp(Integer itemID, String prevTimestamp) throws SQLException, IOException {
+		String currTimestamp = null;
+		
+		SQL = "SELECT Timestamp FROM InventoryItems ";
+		SQL += "WHERE InventoryItems.ID=?";
+		try {
+			prepstmt = conn.prepareStatement(SQL);
+			prepstmt.setInt(1, itemID);
+			rs = prepstmt.executeQuery();
+
+			if (rs.next()) {
+				currTimestamp = rs.getString("Timestamp");
+			}
+			else {
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				throw new SQLException("Error: No InventoryItem found with the given ID.");
+			}
+		} catch (SQLException e1) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException(e1.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+
+		if (prevTimestamp.equals(currTimestamp)) {
+			return true; // matching time stamps
+		}
+		else {
+			return false; // time stamps do not match - concurrency issue
+		}
+		
+	}
+	
 	public void addInventoryItem(Integer partID, String location, Integer quantity) throws SQLException, IOException {
 		createConnection();
 		
 		int locationID = convertLocationTypeToID(location);
 		if (!isPartAndLocationUnique(partID, locationID)) {
 			closeConnection();
+//4			// Concurrency issue - part was added but was not displayed in list view.
 			throw new IOException("Error: The Part ID is already associated with that location.");
 		}
 		try {	
@@ -114,10 +155,12 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -135,14 +178,16 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException sqe) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(sqe.getMessage()); // "Failed to delete entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
-	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity) throws SQLException, IOException {
+	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity, String prevTimestamp) throws SQLException, IOException {
 		createConnection();
 		
 		InventoryItem ii = null;
@@ -159,6 +204,13 @@ public class InventoryItemGateway {
 			throw new SQLException(sqe.getMessage());
 		}
 		int locationID = convertLocationTypeToID(location);
+		if (!checkTimestamp(ii.getID(), prevTimestamp)) {
+			closeConnection();
+			
+			throw new IOException("Error: This InventoryItem was recently changed. You may wish to review these changes before submitting your own.");
+//4
+		}
+		
 		if (!(ii.getPartID().equals(partID) && ii.getLocation().equals(location))) { // part ID or location have changed	
 			if (!isPart(partID)) {
 				closeConnection();
@@ -170,7 +222,6 @@ public class InventoryItemGateway {
 			}
 		}
 		try {
-			createConnection();
 			SQL = "UPDATE InventoryItems SET PartID=?, LocationID=?, Quantity=? WHERE ID=?";
 			prepstmt = conn.prepareStatement(SQL);
 			prepstmt.setInt(1, partID);
@@ -181,10 +232,12 @@ public class InventoryItemGateway {
 		}
 		catch (SQLException e) {
 			closePreparedStatement();
+			conn.rollback();
 			closeConnection();
 			throw new SQLException(e.getMessage()); // "Duplicate entry..."
 		}
 		closePreparedStatement();
+		conn.commit();
 		closeConnection();
 	}
 	
@@ -220,7 +273,6 @@ public class InventoryItemGateway {
 	}
 	
 	private boolean isPartAndLocationUnique(Integer partID, Integer locationID) throws SQLException, IOException {
-		createConnection();
 		SQL = "SELECT InventoryItems.ID FROM InventoryItems ";
 		SQL += "WHERE InventoryItems.PartID=? AND InventoryItems.LocationID=?";
 		try {
@@ -246,7 +298,6 @@ public class InventoryItemGateway {
 	}
 	
 	private boolean isPart(Integer partID) throws SQLException, IOException {
-		createConnection();
 		SQL = "SELECT Parts.ID FROM Parts ";
 		SQL += "WHERE Parts.ID=?";
 		try {
@@ -272,7 +323,6 @@ public class InventoryItemGateway {
 	
 	private int convertLocationTypeToID(String location) throws SQLException {
 		int locationID = -1;
-		createConnection();
 		
 		SQL = "SELECT Locations.ID FROM Locations WHERE Location=?";
 		try {
@@ -296,7 +346,7 @@ public class InventoryItemGateway {
 		}
 		closeResultSet();
 		closePreparedStatement();
-		closeConnection();
+		
 		return locationID;
 		
 	}
@@ -306,7 +356,7 @@ public class InventoryItemGateway {
 		createConnection();
 		// Select all inventory items for display
 		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
-		SQL += "InventoryItems.Quantity, Locations.Location FROM InventoryItems ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp FROM InventoryItems ";
 		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
 		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
@@ -318,7 +368,7 @@ public class InventoryItemGateway {
 			while (rs.next()) {
 				try {
 					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
-					InventoryItem ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"));
+					InventoryItem ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
 					inventory.add(ii);
 				}
 				catch (IOException ioe) {
@@ -338,13 +388,17 @@ public class InventoryItemGateway {
 		return inventory;
 	}
 	
-	public InventoryItem getInventoryItem(Integer itemID) throws SQLException, IOException {
+	public InventoryItem getUpdatedInventoryItem(Integer itemID) throws SQLException, IOException {
 		InventoryItem ii = null;
 		createConnection();
 		
-		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Locations.Location, InventoryItems.Quantity FROM InventoryItems ";
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
 		SQL += "WHERE InventoryItems.ID=?";
+		
 		try {
 			prepstmt = conn.prepareStatement(SQL);
 			prepstmt.setInt(1, itemID);
@@ -352,7 +406,9 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
-					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"));
+					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+					ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
+					
 				}
 				catch (IOException ioe) {
 					closeResultSet();
@@ -377,6 +433,48 @@ public class InventoryItemGateway {
 		closeResultSet();
 		closePreparedStatement();
 		closeConnection();
+		return ii;
+	}
+	
+	public InventoryItem getInventoryItem(Integer itemID) throws SQLException, IOException {
+		InventoryItem ii = null;
+//		createConnection();
+		
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Locations.Location, InventoryItems.Quantity, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "WHERE InventoryItems.ID=?";
+		try {
+			prepstmt = conn.prepareStatement(SQL);
+			prepstmt.setInt(1, itemID);
+			rs = prepstmt.executeQuery();
+
+			if (rs.next()) {
+				try {
+					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
+				}
+				catch (IOException ioe) {
+					closeResultSet();
+					closePreparedStatement();
+					closeConnection();
+					throw new IOException(ioe.getMessage());
+				}
+			}
+			else {
+				closeResultSet();
+				closePreparedStatement();
+				closeConnection();
+				throw new SQLException("Error: No InventoryItem found with the given ID.");
+			}
+
+		} catch (SQLException e1) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException(e1.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+//		closeConnection();
 		return ii;
 	}
 	

@@ -73,14 +73,14 @@ public class InventoryItemModel {
 	
 	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException {
 		try {
-			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity());
+			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity(), iiOld.getTimestamp());
 			inventoryItems = iig.getInventory(); // gets list of inventory items
 		}
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
 		}
-		catch (IOException ioe) {
-			throw new SQLException(ioe.getMessage());
+		catch (IOException ioe) { // passes along edit conflict notification
+			throw new IOException(ioe.getMessage());
 		}
 	}
 	
@@ -97,8 +97,17 @@ public class InventoryItemModel {
 		return inventoryItems.size();
 	}
 	
+//4 ADDED - may be duplicitous or produce unexpected results
+	public void refreshInventory() {
+		inventoryItems = iig.getInventory();
+	}
+	
 	public List<InventoryItem> getInventory() { // for GUI output
 		return inventoryItems;
+	}
+	
+	public InventoryItem getUpdatedInventoryItem(Integer itemID) throws SQLException, IOException { // for edit view upon edit conflict (gets latest version)
+		return iig.getUpdatedInventoryItem(itemID);
 	}
 	
 	public ArrayList<String> getLocations() throws SQLException {

@@ -164,6 +164,7 @@ public class InventoryView extends JFrame {
 	
 	private void refreshInventoryList() {
 		tableModel.setRowCount(0);
+		model.refreshInventory();
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
 			Part part = p.getPart();
@@ -212,7 +213,7 @@ public class InventoryView extends JFrame {
 		        updatePanel();
 		    }
 		});
-		this.addWindowFocusListener(controller);
+//		this.addWindowFocusListener(controller);
 	}
 	
 	public int getWidth() {
