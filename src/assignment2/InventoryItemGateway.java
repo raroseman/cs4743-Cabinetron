@@ -392,9 +392,13 @@ public class InventoryItemGateway {
 		InventoryItem ii = null;
 		createConnection();
 		
-		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Locations.Location, InventoryItems.Quantity, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
 		SQL += "WHERE InventoryItems.ID=?";
+		
 		try {
 			prepstmt = conn.prepareStatement(SQL);
 			prepstmt.setInt(1, itemID);
@@ -402,7 +406,9 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
-					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
+					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+					ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
+					
 				}
 				catch (IOException ioe) {
 					closeResultSet();

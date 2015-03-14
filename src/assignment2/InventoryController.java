@@ -39,7 +39,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				clearSelection();
 				itemView = new ItemView(inventoryItemModel, "Add New Item");
 				itemView.register(this);
-				itemView.disableIDEdit();
 				itemView.hideSaveButton();
 				itemView.hideEditButton();
 				itemView.hideID();
