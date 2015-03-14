@@ -9,6 +9,7 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer quantity = 0;
 	private Part part = null;
 	private String location = "Unknown";
+	private String timestamp = null;
 	
 	/*
 	 * Does not include the optional parameters: ID (required for reference only),
@@ -37,24 +38,27 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		}
 	}
 	
-	public InventoryItem(Integer id, Integer partID, String location, Integer quantity) throws IOException {
+	// used by IIG getInventoryItem()
+	public InventoryItem(Integer id, Integer partID, String location, Integer quantity, String timestamp) throws IOException {
 		try {
 			setID(id);
 			setPartID(partID);
 			setQuantity(quantity);
 			setLocation(location);
+			setTimestamp(timestamp);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
 	
-	public InventoryItem(Integer id, Part p, String location, Integer quantity) throws IOException {
+	public InventoryItem(Integer id, Part p, String location, Integer quantity, String timestamp) throws IOException {
 		try {
 			setID(id);
 			setPart(p);
 			setQuantity(quantity);
 			setLocation(location);
+			setTimestamp(timestamp);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -79,6 +83,10 @@ public class InventoryItem implements Comparable<InventoryItem> {
 
 	public Integer getQuantity() {
 		return this.quantity;
+	}
+	
+	public String getTimestamp() {
+		return this.timestamp;
 	}
 	
 	
@@ -125,6 +133,10 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		else {
 			this.location = location;
 		}
+	}
+	
+	private void setTimestamp(String timestamp) throws IOException {
+		this.timestamp = timestamp;
 	}
 	
 	// sort by ID in descending order

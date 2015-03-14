@@ -23,6 +23,32 @@ public class ItemView extends JFrame {
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonLeft, buttonBottom,
 				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop;
 	
+	public void showEditConflictWindow(InventoryItem oldDatabaseItem, InventoryItem userModifiedItem, InventoryItem newDatabaseItem) {
+		viewWidth = 800;
+		viewHeight = 275;
+		labelW = viewWidth / 4;
+		labelH = 32;
+		labelTop = 15;
+		labelLeft = 15;
+		errorW = viewWidth - (labelLeft * 2);
+		errorH = 32;
+		buttonW = viewWidth / 4;
+		buttonH = 32;
+		buttonLeft = viewWidth / 3 - buttonW / 3;
+		buttonBottom = viewHeight - buttonH - 64;
+		fieldW = viewWidth / 2;
+		fieldH = 32;
+		fieldLeft = labelW + 25;
+		fieldTop = labelTop;
+		this.setSize(viewWidth, viewHeight);
+		this.setVisible(true);
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (viewWidth / 2) + 50, 
+				 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (viewHeight / 2));
+		this.repaint();
+		System.out.println("TESTING in ITEMVIEW line 44: Quantities: ");
+		System.out.println(oldDatabaseItem.getQuantity() + " | " + userModifiedItem.getQuantity() + " | " + newDatabaseItem.getQuantity());
+	}
+	
 	public ItemView(InventoryItemModel model, String title) {
 		super(title);
 		this.model = model;

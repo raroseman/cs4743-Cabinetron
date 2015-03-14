@@ -94,9 +94,12 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;
 			case "Save":
 				if (selectedItem != null) {
+					InventoryItem oldDatabaseItem = selectedItem;
+					InventoryItem userModifiedItem = null;
+					InventoryItem newDatabaseItem = null;
 					try {
-						InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
-						inventoryItemModel.editInventoryItem(selectedItem, newItem);
+						userModifiedItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
+						inventoryItemModel.editInventoryItem(selectedItem, userModifiedItem);
 						itemView.dispose();
 						inventoryView.updatePanel();
 						inventoryView.repaint();
@@ -105,6 +108,23 @@ public class InventoryController implements ActionListener, ListSelectionListene
 					} catch (SQLException sqe) {
 						itemView.setErrorMessage(sqe.getMessage());
 					} catch (IOException ex) {
+//4						// Item was added at the same part at location. Update list view and display changes side-by-side in edit view.
+						
+						try {
+							newDatabaseItem = inventoryItemModel.getUpdatedInventoryItem(selectedItem.getID());
+						} 
+						catch (IOException e1) {
+							itemView.setErrorMessage(e1.getMessage());
+						} 
+						catch (SQLException e1) {
+							itemView.setErrorMessage(e1.getMessage());
+						}
+						
+						inventoryView.updatePanel();
+						inventoryView.repaint();
+						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem);
+
+						System.out.println("INV CTRL LINE 110");
 						itemView.setErrorMessage(ex.getMessage());
 					} catch (Exception e1) {
 						itemView.setErrorMessage(e1.getMessage());
