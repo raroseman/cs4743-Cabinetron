@@ -16,6 +16,9 @@ public class InventoryController implements ActionListener, ListSelectionListene
 	private InventoryView inventoryView;
 	private ItemView itemView;
 	private InventoryItem selectedItem = null;
+	private InventoryItem oldDatabaseItem = null;
+	private InventoryItem userModifiedItem = null;
+	private InventoryItem newDatabaseItem = null;
 	private int selectedRow = 0;
 	private boolean hasItemViewOpen;
 	
@@ -87,21 +90,28 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				}
 				break;	
 			case "Edit":
+				oldDatabaseItem = selectedItem;
 				itemView.enableEditable();
 				itemView.hideEditButton();
 				itemView.repaint();
 				break;
 			case "Save":
-				if (selectedItem != null) {
-					InventoryItem oldDatabaseItem = selectedItem;
-					InventoryItem userModifiedItem = null;
-					InventoryItem newDatabaseItem = null;
+				if (oldDatabaseItem != null) {
+					if (newDatabaseItem != null) {
+						oldDatabaseItem = newDatabaseItem; // user had an edit conflict already; move "new" to "old"
+					}
+					//userModifiedItem = null;
+					//newDatabaseItem = null;
 					try {
 						userModifiedItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
-						inventoryItemModel.editInventoryItem(selectedItem, userModifiedItem);
+						inventoryItemModel.editInventoryItem(oldDatabaseItem, userModifiedItem);
 						itemView.dispose();
 						inventoryView.updatePanel();
 						inventoryView.repaint();
+						
+						oldDatabaseItem = null;
+						userModifiedItem = null;
+						newDatabaseItem = null;
 					} catch (NumberFormatException noint) {
 						itemView.setErrorMessage(noint.getMessage());
 					} catch (SQLException sqe) {
@@ -123,7 +133,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						inventoryView.repaint();
 						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem);
 
-						System.out.println("INV CTRL LINE 110");
 						itemView.setErrorMessage(ex.getMessage());
 					} catch (Exception e1) {
 						itemView.setErrorMessage(e1.getMessage());

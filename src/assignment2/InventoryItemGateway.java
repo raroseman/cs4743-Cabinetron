@@ -207,7 +207,7 @@ public class InventoryItemGateway {
 		if (!checkTimestamp(ii.getID(), prevTimestamp)) {
 			closeConnection();
 			
-			throw new IOException("Error: Timestamp changed - TO BE RESOLVED (LINE 210).");
+			throw new IOException("Error: This InventoryItem was recently changed. You may wish to review these changes before submitting your own.");
 //4
 		}
 		

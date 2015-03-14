@@ -79,9 +79,7 @@ public class InventoryItemModel {
 		catch (SQLException sqe) {
 			throw new SQLException(sqe.getMessage());
 		}
-		catch (IOException ioe) {
-//4 		// Update view and notify user
-			System.out.println("IIM Line 83.");
+		catch (IOException ioe) { // passes along edit conflict notification
 			throw new IOException(ioe.getMessage());
 		}
 	}
@@ -97,6 +95,11 @@ public class InventoryItemModel {
 	
 	public int getSize() {
 		return inventoryItems.size();
+	}
+	
+//4 ADDED - may be duplicitous or produce unexpected results
+	public void refreshInventory() {
+		inventoryItems = iig.getInventory();
 	}
 	
 	public List<InventoryItem> getInventory() { // for GUI output
