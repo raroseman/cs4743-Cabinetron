@@ -17,9 +17,9 @@ import javax.swing.border.EmptyBorder;
 @SuppressWarnings("serial")
 public class ItemView extends JFrame {
 	private InventoryItemModel model;
-	private JPanel partFrame, sideSeparator = null, topSeparator = null;
+	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
-	private JLabel ID, errorMessage, oldColumn = null, newColumn = null;
+	private JLabel ID, errorMessage, mergeMessage, oldColumn = null, newColumn = null;
 	private JLabel partIDLabel, itemQuantityLabel, partLocationLabel, timestampLabel;
 	private JLabel oldPartID = null, oldItemQuantity = null, oldPartLocation = null;
 	private JLabel newPartID = null, newItemQuantity = null, newPartLocation = null;
@@ -32,8 +32,9 @@ public class ItemView extends JFrame {
 	private Font labelFont;
 	
 	public void showEditConflictWindow(InventoryItem oldDatabaseItem, InventoryItem userModifiedItem, InventoryItem newDatabaseItem) {
+		
 		viewWidth = 800;
-		viewHeight = 300;
+		viewHeight = 325;
 		
 		labelW = viewWidth / 9 + (viewWidth / 18);
 		sideW = (viewWidth / 9) * 2;
@@ -71,25 +72,6 @@ public class ItemView extends JFrame {
 		if (newColumn != null) partFrame.remove(newColumn);
 		if (oldTimestamp != null) partFrame.remove(oldTimestamp);
 		if (newTimestamp != null) partFrame.remove(newTimestamp);
-
-		/*
-		if (sideSeparator != null) partFrame.remove(sideSeparator);
-		if (topSeparator != null) partFrame.remove(topSeparator);
-		
-		sideSeparator = new JPanel();
-		sideSeparator.setBackground(Color.DARK_GRAY);
-		sideSeparator.setBounds(labelW + 4, labelTop + (labelH * 1), 2, viewHeight);
-		sideSeparator.setVisible(true);
-		partFrame.add(sideSeparator);
-		
-		topSeparator = new JPanel();
-		topSeparator.setBackground(Color.DARK_GRAY);
-		topSeparator.setBounds(labelW + 4, labelTop + (labelH * 1), viewWidth, 2);
-		topSeparator.setVisible(true);
-		partFrame.add(topSeparator);
-		*/
-		
-//4		// Show timestamp?	
 		
 		timestampLabel = new JLabel("Timestamp");
 		timestampLabel.setFont(labelFont);
@@ -97,19 +79,19 @@ public class ItemView extends JFrame {
 		timestampLabel.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
 		partFrame.add(timestampLabel);
 		
-		oldTimestamp = new JLabel(oldDatabaseItem.getTimestamp());
+		oldTimestamp = new JLabel(oldDatabaseItem.getTimestamp().substring(0, oldDatabaseItem.getTimestamp().length() - 2));
 	//	oldTimestamp.setFont(labelFont);
 		oldTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
 		oldTimestamp.setBounds(column1Left, labelTop + (labelH * 1), sideW, labelH);
 		partFrame.add(oldTimestamp);
 		
-		newTimestamp = new JLabel(newDatabaseItem.getTimestamp());
+		newTimestamp = new JLabel(newDatabaseItem.getTimestamp().substring(0, newDatabaseItem.getTimestamp().length() - 2));
 	//	newTimestamp.setFont(labelFont);
 		newTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
 		newTimestamp.setBounds(column3Left, labelTop + (labelH * 1), sideW, labelH);
 		partFrame.add(newTimestamp);
 		
-		oldColumn = new JLabel("Last seen as: "); // maybe show timestamp as well?
+		oldColumn = new JLabel("Last seen as: ");
 		oldColumn.setFont(labelFont);
 		oldColumn.setHorizontalAlignment(SwingConstants.CENTER);
 		oldColumn.setBounds(column1Left, labelTop + (labelH * 0), sideW, labelH);
@@ -179,12 +161,39 @@ public class ItemView extends JFrame {
 		newPartLocation.setBounds(column3Left, labelTop + (labelH * 4), sideW, labelH);
 		partFrame.add(newPartLocation);
 		
-		
 		errorMessage.setBounds(center - (errorW / 2), labelTop + (labelH * 5), errorW, errorH);
+		
+		if (oldDatabaseItem.getQuantity() != newDatabaseItem.getQuantity()) {
+			int dataDiff = newDatabaseItem.getQuantity() - oldDatabaseItem.getQuantity();
+			int userDiff = getQuantity() - oldDatabaseItem.getQuantity();
+			int mergeQuantity = getQuantity() + (dataDiff);
+			String dataMod = "";
+			String userMod = "";
+			if (dataDiff > 0) {
+				dataMod = "The latest change added " + dataDiff + ". ";
+			}
+			else {
+				dataMod = "The latest change removed "  + Math.abs(dataDiff) + ". ";
+			}
+			if (userDiff > 0) {
+				userMod = "You added " + userDiff + ". ";
+			}
+			else {
+				userMod = "You removed" + Math.abs(dataDiff) + ". ";
+			}
+			mergeMessage = new JLabel("");
+			mergeMessage.setHorizontalAlignment(SwingConstants.CENTER);
+			mergeMessage.setForeground(Color.red);
+			mergeMessage.setBounds(labelLeft, labelTop + (int)(labelH * 5.5), errorW, errorH);
+			partFrame.add(mergeMessage);
+			mergeMessage.setText("Quantity: " + userMod + dataMod + "Recommended value to save: " + mergeQuantity);
+		}
+		
 		cancel.setBounds((int) (center - buttonW), buttonBottom, buttonW, buttonH);		
 		ok.setBounds((int) (center), buttonBottom, buttonW, buttonH);
 		edit.setBounds((int) (center), buttonBottom, buttonW, buttonH);
 		save.setBounds((int) (center), buttonBottom, buttonW, buttonH);
+		save.setText("Override");
 
 		
 		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (viewWidth / 2) + 50, 
@@ -197,7 +206,7 @@ public class ItemView extends JFrame {
 		this.model = model;
 		
 		viewWidth = 400;
-		viewHeight = 300;
+		viewHeight = 325;
 		
 		labelW = (viewWidth / 9) * 2; // 2/9 wide
 		centerW = (viewWidth / 9) * 6; // 6/9 wide (about 266px)
@@ -353,6 +362,10 @@ public class ItemView extends JFrame {
 	public String getLocationName() {
 		int index = locationField.getSelectedIndex();
 		return locationField.getItemAt(index);
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage.getText();
 	}
 	
 	public void setErrorMessage(String error) {
