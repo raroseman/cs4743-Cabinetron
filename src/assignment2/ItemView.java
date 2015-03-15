@@ -24,7 +24,7 @@ public class ItemView extends JFrame {
 	private JLabel oldPartID = null, oldItemQuantity = null, oldPartLocation = null;
 	private JLabel newPartID = null, newItemQuantity = null, newPartLocation = null;
 	private JLabel oldTimestamp = null, newTimestamp = null;
-	private JTextField idField, quantityField;
+	private JTextField quantityField;
 	private JComboBox<String> partField, locationField;	
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonBottom,
 				labelW, labelH, labelTop, labelLeft,
@@ -340,7 +340,8 @@ public class ItemView extends JFrame {
 	public Integer getID() throws NumberFormatException {
 		Integer i = 0;
 		try {
-			i = Integer.parseInt(idField.getText().trim());
+			String IDstr = ID.getText().split("/ /")[1]; // Splits "ID: ###";
+			i = Integer.parseInt(IDstr.trim());
 			return i;
 		}
 		catch (NumberFormatException nfe) {
@@ -399,7 +400,6 @@ public class ItemView extends JFrame {
 	}
 	
 	public void hideID() {
-		idField.setVisible(false);
 		ID.setVisible(false);
 	}
 	
