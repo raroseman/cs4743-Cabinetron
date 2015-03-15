@@ -94,6 +94,43 @@ public class DB_InsertTableData {
 			e1.printStackTrace();
 		}
 		
+		SQL = "INSERT INTO ProductTemplates (ProductNumber, Description) VALUES ";
+
+		SQL += "('Product1', 'A poor product.'), ";
+		SQL += "('Product2', 'A mediocre product.'), ";
+		SQL += "('Product3', 'A good product.'), ";
+		SQL += "('Product4', 'A great product.'), ";
+		SQL += "('Product5', 'An exceptional product.') ";
+
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "INSERT INTO ProductTemplateParts (ProductTemplateID, PartID, Quantity) VALUES ";
+		SQL += "(1, 1, 10), ";
+		SQL += "(1, 2, 5), ";
+		SQL += "(1, 3, 2), ";
+		SQL += "(1, 4, 1), ";
+		SQL += "(2, 1, 20), ";
+		SQL += "(2, 2, 12), ";
+		SQL += "(2, 3, 2), ";
+		SQL += "(3, 3, 2), ";
+		SQL += "(3, 5, 2), ";
+		SQL += "(3, 7, 2), ";
+		SQL += "(3, 11, 2), ";
+		SQL += "(4, 6, 5), ";
+		SQL += "(5, 8, 1), ";
+		SQL += "(5, 9, 1), ";
+		SQL += "(5, 10, 1) ";
+
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 		// Close all JDBC objects
 		try {
 			if (conn != null)

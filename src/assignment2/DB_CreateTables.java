@@ -30,6 +30,20 @@ public class DB_CreateTables {
 		
 		// Drop table if it existed
 		
+		SQL = "DROP TABLE IF EXISTS ProductTemplateParts";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "DROP TABLE IF EXISTS ProductTemplates";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 		SQL = "DROP TABLE IF EXISTS Inventory"; // depends on InventoryItems
 		try {
 			stmt.execute(SQL);
@@ -116,6 +130,34 @@ public class DB_CreateTables {
 		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
 		SQL += "FOREIGN KEY (LocationID) REFERENCES Locations(ID), ";
 		SQL += "CONSTRAINT PartLocation UNIQUE (PartID, LocationID) )";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "CREATE TABLE ProductTemplates (";
+		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
+		SQL += "ProductNumber VARCHAR(20) NOT NULL UNIQUE, ";
+		SQL += "Description VARCHAR(255) NOT NULL, ";
+		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
+		SQL += "PRIMARY KEY (ID) )";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "CREATE TABLE ProductTemplateParts (";
+		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
+		SQL += "ProductTemplateID INT(10) NOT NULL, ";
+		SQL += "PartID INT(10) NOT NULL, ";
+		SQL += "Quantity INT(10) NOT NULL, ";
+		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
+		SQL += "PRIMARY KEY (ID), ";
+		SQL += "FOREIGN KEY (ProductTemplateID) REFERENCES ProductTemplates(ID), ";
+		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
+		SQL += "CONSTRAINT ProductTemplatePart UNIQUE (PartID, ProductTemplateID) )";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {
