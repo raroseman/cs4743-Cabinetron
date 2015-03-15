@@ -19,14 +19,15 @@ public class Tester {
 	private static InventoryItemModel inventoryItemModel;
 	
 	private static ProductTemplatePartModel templatePartModel;
+	private static ProductTemplateModel ptm;
 	
 	public static void main(String args[]) {
-		
+		/*
 		DB_CreateTables c = new DB_CreateTables();
 		c.Setup();
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
-		
+		*/
 		partsInventoryModel = new PartsInventoryModel();
 	
 		partsInventoryView = new PartsInventoryView(partsInventoryModel);
@@ -43,9 +44,70 @@ public class Tester {
 		
 		inventoryView.register(inventoryController);
 		
+		/*
 		templatePartModel = new ProductTemplatePartModel(5);
 
+		ptm = new ProductTemplateModel();
 		
+		for (ProductTemplate template : ptm.getProductTemplates()) {
+			System.out.println(template.getID() + " | " + template.getProductNumber() + " | " + template.getDescription() + " | " + template.getTimestamp());
+		}
+		*/
+		
+		/* // add test
+		
+		try {
+			ProductTemplate newTemp = new ProductTemplate("AProductTest", "A test product.");
+			ptm.addProductTemplate(newTemp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for (ProductTemplate template : ptm.getProductTemplates()) {
+			System.out.println(template.getID() + " | " + template.getProductNumber() + " | " + template.getDescription() + " | " + template.getTimestamp());
+		}
+		
+		*/
+		
+		/*  // delete test
+		
+		try {
+			ptm.deleteProductTemplate(3);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for (ProductTemplate template : ptm.getProductTemplates()) {
+			System.out.println(template.getID() + " | " + template.getProductNumber() + " | " + template.getDescription() + " | " + template.getTimestamp());
+		}
+		
+		*/
+		
+		/*  // edit test
+		ProductTemplate oldTemp = ptm.getProductTemplate(1);
+		ProductTemplate newTemp;
+		try {
+			newTemp = new ProductTemplate(oldTemp.getID(), "AProductNEWNUMBER", oldTemp.getDescription(), oldTemp.getTimestamp());
+			ptm.editProductTemplate(oldTemp, newTemp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (ProductTemplate template : ptm.getProductTemplates()) {
+			System.out.println(template.getID() + " | " + template.getProductNumber() + " | " + template.getDescription() + " | " + template.getTimestamp());
+		}
+		*/
 		
 		/*  //add test
 		for (ProductTemplatePart ptp : templatePartModel.getProductTemplateParts()) {

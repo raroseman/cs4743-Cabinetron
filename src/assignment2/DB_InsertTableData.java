@@ -96,11 +96,11 @@ public class DB_InsertTableData {
 		
 		SQL = "INSERT INTO ProductTemplates (ProductNumber, Description) VALUES ";
 
-		SQL += "('Product1', 'A poor product.'), ";
-		SQL += "('Product2', 'A mediocre product.'), ";
-		SQL += "('Product3', 'A good product.'), ";
-		SQL += "('Product4', 'A great product.'), ";
-		SQL += "('Product5', 'An exceptional product.') ";
+		SQL += "('AProduct1', 'A poor product.'), ";
+		SQL += "('AProduct2', 'A mediocre product.'), ";
+		SQL += "('AProduct3', 'A good product.'), ";
+		SQL += "('AProduct4', 'A great product.'), ";
+		SQL += "('AProduct5', 'An exceptional product.') ";
 
 		try {
 			stmt.execute(SQL);
