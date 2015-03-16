@@ -21,7 +21,6 @@ public class Tester {
 	private static InventoryItemModel inventoryItemModel;
 	private static ProductTemplateModel productTemplateModel;
 	
-	
 	private static ProductTemplatePartModel templatePartModel;
 	private static ProductTemplateModel ptm;
 	

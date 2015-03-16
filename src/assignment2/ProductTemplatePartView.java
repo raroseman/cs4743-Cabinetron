@@ -14,14 +14,13 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
-public class ProductTemplateListView extends JFrame  {	
-	private ProductTemplateModel model;
-
+public class ProductTemplatePartView extends JFrame  {	
+	private ProductTemplatePartModel model;
 	private JPanel inventoryFrame;
-	private JButton addPart, deletePart, viewPart, templatePart;
+	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
-	private String[] columnNames = {"ID", "Product Number", "Product Description"};
+	private String[] columnNames = {"Product Template ID", "Part ID", "Quantity"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
 	private JPanel p;
@@ -31,8 +30,8 @@ public class ProductTemplateListView extends JFrame  {
 	private JLabel errorMessage;
 	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
 
-	public ProductTemplateListView(ProductTemplateModel model) {
-		super("Cabinetron: Product Templates");
+	public ProductTemplatePartView(ProductTemplatePartModel model) {
+		super("Cabinetron: Product Template Parts");
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
@@ -50,7 +49,8 @@ public class ProductTemplateListView extends JFrame  {
 		errorY = GUIHeight - 100;
 
 		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 50);
+		this.setVisible(true);
+		this.setLocation(0, 50);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,8 +87,8 @@ public class ProductTemplateListView extends JFrame  {
 		tableModel.setColumnIdentifiers(columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
 		model.sortByCurrentSortMethod();
-		for (ProductTemplate p: model.getProductTemplates()) {
-			rowData = new Object[] {p.getID(), p.getProductNumber(), p.getDescription()};
+		for (ProductTemplatePart p: model.getProductTemplateParts()) {
+			rowData = new Object[] {p.getProductTemplateID(), p.getID(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
 	
@@ -115,10 +115,6 @@ public class ProductTemplateListView extends JFrame  {
 		}
 
 		p.add(tableScrollPane);
-		
-		templatePart = new JButton("Parts List");
-		templatePart.setBounds((GUIWidth - buttonX) - buttonW + 25, buttonY, buttonW, buttonH);
-		inventoryFrame.add(templatePart);
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
@@ -151,7 +147,6 @@ public class ProductTemplateListView extends JFrame  {
 	}
 	
 	public void register(ProductTemplateListController controller) {
-		templatePart.addActionListener(controller);
 		addPart.addActionListener(controller);
 		deletePart.addActionListener(controller);
 		viewPart.addActionListener(controller);
@@ -162,15 +157,14 @@ public class ProductTemplateListView extends JFrame  {
 		        int col = table.columnAtPoint(e.getPoint());
 		        String columnName = table.getColumnName(col);
 		        switch (columnName) {
-		        case "ID":
-		        	model.sortByID();
-		        	break;
-		        case "Part Number":
-		        	model.sortByPartNumber();
-		        	break;
-		        case "Product Description":
-		        	model.sortByDescription();
-		        	break;
+		        	case "Template ID":
+		        		model.sortByTemplateID();
+		        	case "ID":
+		        		model.sortByID();
+		        		break;
+		        	case "Quantity":
+		        		model.sortByQuantity();
+		        		break;
 		        }
 		        updatePanel();
 		    }
@@ -180,8 +174,8 @@ public class ProductTemplateListView extends JFrame  {
 	public void updatePanel() { // tears down the entire table and re-populates it
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
-		for (ProductTemplate p: model.getProductTemplates()) {
-			rowData = new Object[] {p.getID(), p.getProductNumber(), p.getDescription()};
+		for (ProductTemplatePart p: model.getProductTemplateParts()) {
+			rowData = new Object[] {p.getProductTemplateID(), p.getID(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
 
@@ -216,7 +210,7 @@ public class ProductTemplateListView extends JFrame  {
 		tableSelectionModel.setSelectionInterval(0, rowIndex);
 	}
 	
-	public ProductTemplate getObjectInRow(int index) {
+	public ProductTemplatePart getObjectInRow(int index) {
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			if (table.getColumnName(i).equals("ID")) {
 				return model.findItemByID(Integer.parseInt(table.getValueAt(index, i).toString()));

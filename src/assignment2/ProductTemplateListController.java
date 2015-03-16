@@ -13,8 +13,10 @@ import javax.swing.event.ListSelectionListener;
 
 public class ProductTemplateListController implements ActionListener, ListSelectionListener, WindowFocusListener {
 	private ProductTemplateModel productTemplateModel;
+	private ProductTemplatePartModel productTemplatePartModel;
 	private ProductTemplateListView productTemplateListView;
 	private ProductTemplateDetailView productTemplateDetailView;
+	private ProductTemplatePartView productTemplatePartView;
 	private ProductTemplate selectedTemplate = null;
 	private int selectedRow = 0;
 	private boolean hasPartViewOpen;
@@ -32,6 +34,9 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 		e.paramString();
 		
 		switch(command) {
+			case "Parts List":
+				productTemplatePartModel = new ProductTemplatePartModel(selectedTemplate.getID());
+				productTemplatePartView = new ProductTemplatePartView(productTemplatePartModel);
 			case "Add": 
 				productTemplateListView.clearErrorMessage(); 
 				if (hasPartViewOpen) {

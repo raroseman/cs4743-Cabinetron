@@ -105,5 +105,47 @@ public class ProductTemplatePartModel {
 				throw new IOException(ioe.getMessage());
 			}
 		}
+		
+		public void sortByTemplateID() {
+			if (sortingMode == ProductTemplatePart.IDDescending) {
+				sortingMode = ProductTemplatePart.IDAscending;
+			}
+			else {
+				sortingMode = ProductTemplatePart.IDDescending;
+			}
+			productTemplateParts.sort(sortingMode);
+		}
+		
+		public void sortByID() {
+			if (sortingMode == ProductTemplatePart.IDDescending) {
+				sortingMode = ProductTemplatePart.IDAscending;
+			}
+			else {
+				sortingMode = ProductTemplatePart.IDDescending;
+			}
+			productTemplateParts.sort(sortingMode);
+		}
+		
+		public void sortByQuantity() {
+			if (sortingMode == ProductTemplatePart.IDDescending) {
+				sortingMode = ProductTemplatePart.IDAscending;
+			}
+			else {
+				sortingMode = ProductTemplatePart.IDDescending;
+			}
+			productTemplateParts.sort(sortingMode);
+		}
+		
+		public ProductTemplatePart findItemByID(Integer i) {
+			for (ProductTemplatePart templatePart : productTemplateParts) { // this is O(n)
+				if (templatePart.getID().equals(i)) {
+					return templatePart;
+				}
+			}
+			return null;
+		}
+		public void sortByCurrentSortMethod() {
+			productTemplateParts.sort(sortingMode);
+		}
 }
 
