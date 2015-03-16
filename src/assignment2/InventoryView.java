@@ -260,7 +260,6 @@ public class InventoryView extends JFrame {
 		tableSelectionModel.setSelectionInterval(0, rowIndex);
 	}
 	
-	
 	public InventoryItem getObjectInRow(int index) {
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			if (table.getColumnName(i).equals("ID")) {
