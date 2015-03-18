@@ -17,6 +17,7 @@ public class Tester {
 	private static PartsInventoryController partsInventoryController;
 	private static InventoryController inventoryController;
 	private static ProductTemplateListController productTemplateListController;
+	private static ProductTemplatePartDetailController productTemplatePartDetailController;
 	private static PartsInventoryModel partsInventoryModel;
 	private static InventoryItemModel inventoryItemModel;
 	private static ProductTemplateModel productTemplateModel;

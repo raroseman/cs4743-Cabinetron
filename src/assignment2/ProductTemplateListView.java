@@ -36,7 +36,7 @@ public class ProductTemplateListView extends JFrame  {
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 575;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;
@@ -50,7 +50,7 @@ public class ProductTemplateListView extends JFrame  {
 		errorY = GUIHeight - 100;
 
 		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 50);
+		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 525);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,24 +117,25 @@ public class ProductTemplateListView extends JFrame  {
 		p.add(tableScrollPane);
 		
 		templatePart = new JButton("Parts List");
-		templatePart.setBounds((GUIWidth - buttonX) - buttonW + 25, buttonY, buttonW, buttonH);
+		templatePart.setBounds((GUIWidth - buttonX) - buttonW + 20, buttonY, buttonW, buttonH);
+		disablePartsList();
 		inventoryFrame.add(templatePart);
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
-		addPart.setBounds(buttonX, buttonY, buttonW, buttonH);
+		addPart.setBounds(buttonX - 50, buttonY, buttonW, buttonH);
 		inventoryFrame.add(addPart);
 		
 		// Creates and adds the "delete" button to the inventory frame
 		deletePart = new JButton("Delete");
-		deletePart.setBounds((GUIWidth / 2) - (buttonW / 2), buttonY, buttonW, buttonH);
-		//disableDelete();
+		deletePart.setBounds((GUIWidth / 2) - (buttonW + 50), buttonY, buttonW, buttonH);
+		disableDelete();
 		inventoryFrame.add(deletePart);
 		
 		// Creates and adds the "view" button to the inventory frame
 		viewPart = new JButton("View");
-		viewPart.setBounds((GUIWidth - buttonX) - buttonW, buttonY, buttonW, buttonH);
-		//disableView();
+		viewPart.setBounds((GUIWidth - buttonX) - ((buttonW * 2) + 50), buttonY, buttonW, buttonH);
+		disableView();
 		inventoryFrame.add(viewPart);
 		
 		errorMessage = new JLabel("");
@@ -194,6 +195,14 @@ public class ProductTemplateListView extends JFrame  {
 	
 	public void disableDelete() {
 		deletePart.setEnabled(false);
+	}
+	
+	public void disablePartsList() {
+		templatePart.setEnabled(false);
+	}
+	
+	public void enablePartsList() {
+		templatePart.setEnabled(true);
 	}
 	
 	public void enableDelete() {

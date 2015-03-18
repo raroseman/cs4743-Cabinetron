@@ -36,7 +36,7 @@ public class PartsInventoryView extends JFrame  {
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 575;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;

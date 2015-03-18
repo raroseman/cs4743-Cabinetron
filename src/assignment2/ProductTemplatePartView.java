@@ -35,7 +35,7 @@ public class ProductTemplatePartView extends JFrame  {
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 575;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;
@@ -50,7 +50,7 @@ public class ProductTemplatePartView extends JFrame  {
 
 		this.setSize(GUIWidth, GUIHeight);
 		this.setVisible(true);
-		this.setLocation(0, 50);
+		this.setLocation(0, 525);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -124,13 +124,13 @@ public class ProductTemplatePartView extends JFrame  {
 		// Creates and adds the "delete" button to the inventory frame
 		deletePart = new JButton("Delete");
 		deletePart.setBounds((GUIWidth / 2) - (buttonW / 2), buttonY, buttonW, buttonH);
-		//disableDelete();
+		disableDelete();
 		inventoryFrame.add(deletePart);
 		
 		// Creates and adds the "view" button to the inventory frame
 		viewPart = new JButton("View");
 		viewPart.setBounds((GUIWidth - buttonX) - buttonW, buttonY, buttonW, buttonH);
-		//disableView();
+		disableView();
 		inventoryFrame.add(viewPart);
 		
 		errorMessage = new JLabel("");
@@ -146,11 +146,11 @@ public class ProductTemplatePartView extends JFrame  {
 		repaint();
 	}
 	
-	public void register(ProductTemplateListController controller) {
-		addPart.addActionListener(controller);
-		deletePart.addActionListener(controller);
-		viewPart.addActionListener(controller);
-		tableSelectionModel.addListSelectionListener(controller);
+	public void register(ProductTemplatePartDetailController productTemplatePartDetailController) {
+		addPart.addActionListener(productTemplatePartDetailController);
+		deletePart.addActionListener(productTemplatePartDetailController);
+		viewPart.addActionListener(productTemplatePartDetailController);
+		tableSelectionModel.addListSelectionListener(productTemplatePartDetailController);
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {
