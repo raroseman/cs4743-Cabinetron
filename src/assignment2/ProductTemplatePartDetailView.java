@@ -2,10 +2,9 @@ package assignment2;
 
 import java.awt.Color;
 import java.awt.Toolkit;
-import java.sql.SQLException;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -160,7 +159,11 @@ public class ProductTemplatePartDetailView extends JFrame {
 	
 	public void hideID() {
 		productPartIDField.setVisible(false);
-		productPartIDField.setVisible(false);
+	}
+	
+	public void hideTemplateID() {
+		productTemplateIDField.setVisible(false);
+		productTemplateID.setVisible(false);
 	}
 	
 	public void hideEditButton() {
@@ -175,10 +178,14 @@ public class ProductTemplatePartDetailView extends JFrame {
 		productPartIDField.setEnabled(false);
 	}
 	
+	public void disableTemplateIDEdit() {
+		productTemplateIDField.setEnabled(false);
+	}
+	
 	public void disableEditable() {
 		ok.setVisible(false);
 		save.setVisible(false);
-		productPartIDField.setEnabled(false);
+		productTemplateIDField.setEnabled(false);
 		productPartIDField.setEnabled(false);
 		productQuantityField.setEnabled(false);
 	}

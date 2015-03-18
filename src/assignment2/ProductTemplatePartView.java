@@ -50,7 +50,7 @@ public class ProductTemplatePartView extends JFrame  {
 
 		this.setSize(GUIWidth, GUIHeight);
 		this.setVisible(true);
-		this.setLocation(0, 525);
+		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 525);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -212,7 +212,7 @@ public class ProductTemplatePartView extends JFrame  {
 	
 	public ProductTemplatePart getObjectInRow(int index) {
 		for (int i = 0; i < table.getColumnCount(); i++) {
-			if (table.getColumnName(i).equals("ID")) {
+			if (table.getColumnName(i).equals("Part ID")) {
 				return model.findItemByID(Integer.parseInt(table.getValueAt(index, i).toString()));
 			}
 		}

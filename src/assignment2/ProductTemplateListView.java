@@ -50,7 +50,7 @@ public class ProductTemplateListView extends JFrame  {
 		errorY = GUIHeight - 100;
 
 		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 525);
+		this.setLocation(0, 525);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -197,6 +197,10 @@ public class ProductTemplateListView extends JFrame  {
 		deletePart.setEnabled(false);
 	}
 	
+	public void disableTemplateParts() {
+		templatePart.setEnabled(false);
+	}
+	
 	public void disablePartsList() {
 		templatePart.setEnabled(false);
 	}
@@ -211,6 +215,10 @@ public class ProductTemplateListView extends JFrame  {
 	
 	public void enableView() {
 		viewPart.setEnabled(true);
+	}
+	
+	public void enableTemplateParts() {
+		templatePart.setEnabled(true);
 	}
 	
 	public void clearErrorMessage() {

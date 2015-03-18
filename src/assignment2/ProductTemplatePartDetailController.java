@@ -40,6 +40,7 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 				clearSelection();
 				productTemplatePartDetailView = new ProductTemplatePartDetailView(productTemplatePartModel, "Add New Template Part");
 				productTemplatePartDetailView.register(this);
+				productTemplatePartDetailView.disableTemplateIDEdit();
 				productTemplatePartDetailView.hideSaveButton();
 				productTemplatePartDetailView.hideEditButton();
 				hasPartViewOpen = true;
@@ -48,7 +49,6 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 				break;
 			case "Delete":
 				productTemplatePartView.clearErrorMessage();
-				System.out.println(selectedTemplatePart);
 				if (selectedTemplatePart != null) {
 					if (hasPartViewOpen) {
 						productTemplatePartDetailView.dispose();

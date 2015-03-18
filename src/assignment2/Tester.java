@@ -1,8 +1,5 @@
 package assignment2;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 /*
  * 
  * CS 4743 assignment 3
@@ -17,13 +14,10 @@ public class Tester {
 	private static PartsInventoryController partsInventoryController;
 	private static InventoryController inventoryController;
 	private static ProductTemplateListController productTemplateListController;
-	private static ProductTemplatePartDetailController productTemplatePartDetailController;
+
 	private static PartsInventoryModel partsInventoryModel;
 	private static InventoryItemModel inventoryItemModel;
 	private static ProductTemplateModel productTemplateModel;
-	
-	private static ProductTemplatePartModel templatePartModel;
-	private static ProductTemplateModel ptm;
 	
 	public static void main(String args[]) {
 		/*
