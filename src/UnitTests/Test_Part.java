@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import assignment2.Part;
+import Parts.Part;
 
 public class Test_Part {
 	Integer id;

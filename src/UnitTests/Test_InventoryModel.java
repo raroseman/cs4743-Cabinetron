@@ -1,6 +1,6 @@
 package UnitTests;
-import assignment2.Part;
-import assignment2.PartsInventoryModel;
+import Parts.Part;
+import Parts.PartsInventoryModel;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
