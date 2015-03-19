@@ -1,10 +1,13 @@
 package UnitTests;
 
 import static org.junit.Assert.*;
+
 import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
-import assignment2.InventoryItem;
+
+import InventoryItems.InventoryItem;
 
 public class Test_InventoryItem {
 	Integer itemID;
