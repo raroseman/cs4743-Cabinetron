@@ -168,6 +168,9 @@ public class Part implements Comparable<Part> {
 		else if (partNumber.trim().length() == 0) {
 			throw new IOException("Error: part number is required.");
 		}
+		else if (!partNumber.trim().startsWith("P")) {
+			throw new IOException("Error: part number must start with a \"P\".");
+		}
 		else {
 			this.partNumber = partNumber.trim();
 		}

@@ -20,13 +20,13 @@ public class Tester {
 	private static ProductTemplateModel productTemplateModel;
 	
 	public static void main(String args[]) {
-		/*
+		
 		DB_CreateTables c = new DB_CreateTables();
 		c.Setup();
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
-		*/
 		
+	
 		partsInventoryModel = new PartsInventoryModel();
 	
 		partsInventoryView = new PartsInventoryView(partsInventoryModel);

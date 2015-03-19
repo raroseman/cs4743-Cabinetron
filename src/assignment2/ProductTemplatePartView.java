@@ -35,7 +35,7 @@ public class ProductTemplatePartView extends JFrame  {
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 575;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - 50;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;
@@ -50,7 +50,7 @@ public class ProductTemplatePartView extends JFrame  {
 
 		this.setSize(GUIWidth, GUIHeight);
 		this.setVisible(true);
-		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 525);
+		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 + 50);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,7 +88,7 @@ public class ProductTemplatePartView extends JFrame  {
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
 		model.sortByCurrentSortMethod();
 		for (ProductTemplatePart p: model.getProductTemplateParts()) {
-			rowData = new Object[] {p.getProductTemplateID(), p.getID(), p.getQuantity()};
+			rowData = new Object[] {p.getProductTemplateID(), p.getPartID(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
 	
@@ -157,10 +157,10 @@ public class ProductTemplatePartView extends JFrame  {
 		        int col = table.columnAtPoint(e.getPoint());
 		        String columnName = table.getColumnName(col);
 		        switch (columnName) {
-		        	case "Template ID":
+		        	case "Product Template ID":
 		        		model.sortByTemplateID();
-		        	case "ID":
-		        		model.sortByID();
+		        	case "Part ID":
+		        		model.sortByPartID();
 		        		break;
 		        	case "Quantity":
 		        		model.sortByQuantity();
@@ -175,7 +175,7 @@ public class ProductTemplatePartView extends JFrame  {
 		tableModel.setRowCount(0);
 		model.sortByCurrentSortMethod();
 		for (ProductTemplatePart p: model.getProductTemplateParts()) {
-			rowData = new Object[] {p.getProductTemplateID(), p.getID(), p.getQuantity()};
+			rowData = new Object[] {p.getProductTemplateID(), p.getPartID(), p.getQuantity()};
 			tableModel.addRow(rowData);
 		}
 

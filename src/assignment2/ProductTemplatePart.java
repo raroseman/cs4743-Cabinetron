@@ -191,8 +191,8 @@ public class ProductTemplatePart implements Comparator<ProductTemplatePart> {
 	// used to sort by PartID in descending order
 	public static Comparator<ProductTemplatePart> PartIDAscending = new Comparator<ProductTemplatePart>() {
 		public int compare(ProductTemplatePart template, ProductTemplatePart anotherTemplate) {
-			Integer ID2 = template.getPartID();
-			Integer ID1 = anotherTemplate.getPartID();
+			Integer ID1 = template.getPartID();
+			Integer ID2 = anotherTemplate.getPartID();
 			return ID2.compareTo(ID1);
 		}
 	};

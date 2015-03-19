@@ -58,17 +58,17 @@ public class DB_InsertTableData {
 		for (int i = 1; i < 50; i++) {
 			if (i % 2 == 0) {
 				if (i % 4 == 0) {
-					SQL += "('A"+i+"', 'MyPart"+i+"', 2, 'EX"+i+"', '"+vendor+"'), ";
+					SQL += "('P"+i+"', 'MyPart"+i+"', 2, 'EX"+i+"', '"+vendor+"'), ";
 				}
 				else {
-					SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', '"+vendor+"'), ";
+					SQL += "('P"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', '"+vendor+"'), ";
 				}
 			}
 			else {
-				SQL += "('A"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', ''), ";
+				SQL += "('P"+i+"', 'MyPart"+i+"', 3, 'EX"+i+"', ''), ";
 			}
 		}
-		SQL += "('C4', 'PartC4', 3, 'EX-C499', '') ";
+		SQL += "('PC4', 'PartC4', 3, 'EX-C499', '') ";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {

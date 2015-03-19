@@ -15,7 +15,7 @@ import javax.swing.border.EmptyBorder;
 public class ProductTemplatePartDetailView extends JFrame {
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
-
+	private Integer templateID;
 
 	private JLabel productTemplateID, productPartID, productQuantity, errorMessage;
 	private JTextField productTemplateIDField, productPartIDField, productQuantityField;	
@@ -53,6 +53,7 @@ public class ProductTemplatePartDetailView extends JFrame {
 		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
+		templateID = model.getProductTemplateID();
 		productTemplateID = new JLabel("Product Template ID");
 		productTemplateID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
 		partFrame.add(productTemplateID);
@@ -67,7 +68,7 @@ public class ProductTemplatePartDetailView extends JFrame {
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
-		errorMessage.setBounds(labelLeft, labelTop + (labelH * 6), errorW, errorH);
+		errorMessage.setBounds(labelLeft, buttonBottom - 32, errorW, errorH);
 		partFrame.add(errorMessage);
 		
 		cancel = new JButton("Cancel");
@@ -87,6 +88,7 @@ public class ProductTemplatePartDetailView extends JFrame {
 		partFrame.add(save);
 		
 		productTemplateIDField = new JTextField();
+		productTemplateIDField.setText(model.getProductTemplateID().toString());
 		productTemplateIDField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(productTemplateIDField);
 		
@@ -108,15 +110,8 @@ public class ProductTemplatePartDetailView extends JFrame {
 		this.addWindowFocusListener(controller);	
 	}
 	
-	public Integer getProductTemplateID() throws NumberFormatException {
-		Integer i = 0;
-		try {
-			i = Integer.parseInt(productTemplateIDField.getText().trim());
-			return i;
-		}
-		catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Error: template id must be in the form of an integer.");
-		}
+	public Integer getProductTemplateID() {
+		return this.templateID;
 	}
 	
 	public Integer getPartID() throws NumberFormatException {

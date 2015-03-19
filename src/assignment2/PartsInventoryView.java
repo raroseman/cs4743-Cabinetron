@@ -36,7 +36,7 @@ public class PartsInventoryView extends JFrame  {
 		this.model = model;
 
 		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 575;
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height / 2;
 		tableMargin = 15;
 		tableW = GUIWidth - (tableMargin * 2);
 		tableH = GUIHeight - 100;
@@ -50,7 +50,7 @@ public class PartsInventoryView extends JFrame  {
 		errorY = GUIHeight - 100;
 
 		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2, 50);
+		this.setLocation(0, 50);
 		
 		// Sets up the inventory frame 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

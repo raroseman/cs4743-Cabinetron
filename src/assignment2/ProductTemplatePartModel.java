@@ -33,6 +33,10 @@ public class ProductTemplatePartModel {
 		return null;
 	}
 	
+	public Integer getProductTemplateID() {
+		return templateID;
+	}
+	
 	// implicitly adds with an association to this product template ID
 	public void addProductTemplatePart(ProductTemplatePart ptp) throws Exception {
 		if (ptp.getProductTemplateID() != templateID) {
@@ -126,19 +130,29 @@ public class ProductTemplatePartModel {
 			productTemplateParts.sort(sortingMode);
 		}
 		
-		public void sortByQuantity() {
-			if (sortingMode == ProductTemplatePart.IDDescending) {
-				sortingMode = ProductTemplatePart.IDAscending;
+		public void sortByPartID() {
+			if (sortingMode == ProductTemplatePart.PartIDDescending) {
+				sortingMode = ProductTemplatePart.PartIDAscending;
 			}
 			else {
-				sortingMode = ProductTemplatePart.IDDescending;
+				sortingMode = ProductTemplatePart.PartIDDescending;
+			}
+			productTemplateParts.sort(sortingMode);
+		}
+		
+		public void sortByQuantity() {
+			if (sortingMode == ProductTemplatePart.QuantityDescending) {
+				sortingMode = ProductTemplatePart.QuantityAscending;
+			}
+			else {
+				sortingMode = ProductTemplatePart.QuantityDescending;
 			}
 			productTemplateParts.sort(sortingMode);
 		}
 		
 		public ProductTemplatePart findItemByID(Integer i) {
 			for (ProductTemplatePart templatePart : productTemplateParts) { // this is O(n)
-				if (templatePart.getID().equals(i)) {
+				if (templatePart.getPartID().equals(i)) {
 					return templatePart;
 				}
 			}
