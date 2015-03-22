@@ -13,25 +13,20 @@ import ProductTemplates.ProductTemplateModel;
 
 /*
  * 
- * CS 4743 assignment 3
+ * CS 4743 assignment 5
  * Written by Josef Klein and Ryan Roseman
  * 
  */
 
 public class Tester {
-	private static PartsInventoryView partsInventoryView;
-	private static InventoryView inventoryView;
-	private static ProductTemplateListView productTemplateListView;
-	private static PartsInventoryController partsInventoryController;
-	private static InventoryController inventoryController;
-	private static ProductTemplateListController productTemplateListController;
-
-	private static PartsInventoryModel partsInventoryModel;
-	private static InventoryItemModel inventoryItemModel;
-	private static ProductTemplateModel productTemplateModel;
 	
 	public static void main(String args[]) {
+		CabinetronModel model = new CabinetronModel();
+		CabinetronView view = new CabinetronView(model);
+		CabinetronController controller = new CabinetronController(model, view);
+		view.register(controller);
 		
+		/*
 		DB_CreateTables c = new DB_CreateTables();
 		c.Setup();
 		DB_InsertTableData i = new DB_InsertTableData();
@@ -61,6 +56,6 @@ public class Tester {
 		inventoryView.register(inventoryController);
 		
 		productTemplateListView.register(productTemplateListController);
-
+		*/
 	}
 }

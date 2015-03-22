@@ -11,17 +11,21 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import assignment4.CabinetronView;
+
 public class PartsInventoryController implements ActionListener, ListSelectionListener, WindowFocusListener {
 	private PartsInventoryModel partsInventoryModel;
 	private PartsInventoryView inventoryView;
+	private CabinetronView view;
 	private PartView partView;
 	private Part selectedPart = null;
 	private int selectedRow = 0;
 	private boolean hasPartViewOpen;
 	
-	public PartsInventoryController(PartsInventoryModel inventoryModel, PartsInventoryView inventoryView) {
+	public PartsInventoryController(PartsInventoryModel inventoryModel, PartsInventoryView inventoryView, CabinetronView view) {
 		this.partsInventoryModel = inventoryModel;
 		this.inventoryView = inventoryView;
+		this.view = view;
 		hasPartViewOpen = false;
 	}
 
@@ -35,15 +39,12 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			case "Add": 
 				inventoryView.clearErrorMessage();
 				if (hasPartViewOpen) {
-					partView.dispose();
+					//
 				}
 				clearSelection();
-				partView = new PartView(partsInventoryModel, "Add New Part");
+				partView = view.ViewPartDetails("Add New Part");
 				partView.register(this);
-				partView.disableIDEdit();
-				partView.hideSaveButton();
-				partView.hideEditButton();
-				partView.hideID();
+				partView.enableAdd();
 				hasPartViewOpen = true;
 				inventoryView.updatePanel();
 				inventoryView.repaint();
@@ -52,7 +53,8 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				inventoryView.clearErrorMessage();
 				if (selectedPart != null) {
 					if (hasPartViewOpen) {
-						partView.dispose();
+						if (selectedPart.getID() == partView.getID())
+						view.closePartDetailView();
 						hasPartViewOpen = false;
 					}
 					try {
@@ -73,12 +75,12 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			case "View":
 				inventoryView.clearErrorMessage();
 				if (hasPartViewOpen) {
-					partView.dispose();
+					view.closePartDetailView();
 				}
 				if (selectedPart != null) {
 					inventoryView.disableDelete();
 					inventoryView.disableView();
-					partView = new PartView(partsInventoryModel, "View/Edit Part: " + selectedPart.getPartName());
+					partView = view.ViewPartDetails("View/Edit Part");
 					partView.register(this);
 					partView.disableEditable();
 					partView.setName(selectedPart.getPartName());
@@ -100,7 +102,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					try {
 						Part newPart = new Part(partView.getID(), partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalPartNumber(), partView.getVendor());
 						partsInventoryModel.editPart(selectedPart, newPart);
-						partView.dispose();
+			//			view.closePartDetailView();
 						inventoryView.updatePanel();
 						inventoryView.setSelectedRow(selectedRow);
 						inventoryView.repaint();
@@ -119,7 +121,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				try {
 					Part part = new Part(partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalPartNumber(), partView.getVendor());			
 					partsInventoryModel.addPart(part);
-					partView.dispose();
+					view.closePartDetailView();
 					inventoryView.updatePanel();
 					inventoryView.repaint();
 				}
@@ -136,7 +138,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			case "Cancel":
 				inventoryView.enableDelete();
 				inventoryView.enableView();
-				partView.dispose();
+			//	partView.dispose();
 				break;
 		}
 	}

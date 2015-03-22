@@ -1,66 +1,67 @@
 package Parts;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
-public class PartsInventoryView extends JFrame  {	
+public class PartsInventoryView extends JPanel {	
 	private PartsInventoryModel model;
 
-	private JPanel inventoryFrame;
+	private JPanel tablePanel;
 	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
 	private String[] columnNames = {"ID", "Part Name", "Part Number", "External Part Number", "Vendor", "Quantity Unit Type"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
-	private JPanel p;
 	private ListSelectionModel tableSelectionModel;
 	private DefaultTableModel tableModel;
 	private Object[] rowData;
 	private JLabel errorMessage;
-	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
+	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH, minX, minY;
 
-	public PartsInventoryView(PartsInventoryModel model) {
-		super("Cabinetron: Parts");
+	public PartsInventoryView(PartsInventoryModel model, int width, int height, int minX, int minY) {
 		this.model = model;
-
-		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height / 2;
+		this.minX = minX;
+		this.minY = minY;
+		this.setSize(width, height);
+		createPanel();
+		
+	}
+	
+	private void createPanel() {
 		tableMargin = 15;
+		GUIWidth = Math.max(minX - tableMargin * 2, this.getWidth());
+		GUIHeight = Math.max(minY - tableMargin * 2, this.getHeight());
 		tableW = GUIWidth - (tableMargin * 2);
-		tableH = GUIHeight - 100;
-		buttonW = 125;
-		buttonH = 30;
-		buttonX = 100;
-		buttonY = GUIHeight - 75;
+		tableH = GUIHeight - 85;
 		errorW = GUIWidth - 20;
 		errorH = 32;
 		errorX = tableMargin;
-		errorY = GUIHeight - 100;
+		errorY = GUIHeight - 85;
+		buttonW = GUIWidth / 4;
+		buttonH = 30;
+		buttonX = GUIWidth / 4;
+		buttonY = GUIHeight - 50;
 
-		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(0, 50);
+	
+		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
+		this.setLayout(new BorderLayout());
 		
-		// Sets up the inventory frame 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		inventoryFrame = new JPanel();
-		inventoryFrame.setSize(GUIWidth, GUIHeight);
-		inventoryFrame.setBackground(Color.LIGHT_GRAY);
-		inventoryFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
-		inventoryFrame.setOpaque(true);
-		setContentPane(inventoryFrame);
-		inventoryFrame.setLayout(null);
+		tablePanel = new JPanel();
+		tablePanel.setBounds(0, 0, GUIWidth, GUIHeight);
+		tablePanel.setLayout(null);
 
 		table = new JTable() {
 			public boolean isCellEditable(int row, int col)
@@ -86,6 +87,7 @@ public class PartsInventoryView extends JFrame  {
 		table.setColumnSelectionAllowed(false);
 		tableModel.setColumnIdentifiers(columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
+
 		model.sortByCurrentSortMethod();
 		for (Part p: model.getInventory()) {
 			rowData = new Object[] {p.getID(), p.getPartName(), p.getPartNumber(), p.getExternalPartNumber(), p.getVendor(), p.getQuantityUnitType()};
@@ -93,14 +95,11 @@ public class PartsInventoryView extends JFrame  {
 		}
 	
 		table.setModel(tableModel);
-		p = new JPanel();
-		p.setBounds(0, 0, GUIWidth, GUIHeight);
-
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableSelectionModel = table.getSelectionModel();
 		
 		tableScrollPane = new JScrollPane(table);
-		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
+		tableScrollPane.setBounds(tableMargin, 10, tableW, tableH);
 		tableScrollPane.setVisible(true);
 		
 		TableColumn column = null;
@@ -114,33 +113,39 @@ public class PartsInventoryView extends JFrame  {
 			} 
 		}
 
-		p.add(tableScrollPane);
+		tablePanel.add(tableScrollPane);
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
-		addPart.setBounds(buttonX, buttonY, buttonW, buttonH);
-		inventoryFrame.add(addPart);
+		addPart.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		addPart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		tablePanel.add(addPart);
 		
 		// Creates and adds the "delete" button to the inventory frame
 		deletePart = new JButton("Delete");
-		deletePart.setBounds((GUIWidth / 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		deletePart.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		disableDelete();
-		inventoryFrame.add(deletePart);
+		tablePanel.add(deletePart);
 		
 		// Creates and adds the "view" button to the inventory frame
 		viewPart = new JButton("View");
-		viewPart.setBounds((GUIWidth - buttonX) - buttonW, buttonY, buttonW, buttonH);
+		viewPart.setBounds((buttonX * 3) - (buttonW / 2), buttonY, buttonW, buttonH);
 		disableView();
-		inventoryFrame.add(viewPart);
+		tablePanel.add(viewPart);
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
-		inventoryFrame.add(errorMessage);
 		
-		p.setVisible(true);
-		inventoryFrame.add(p);
-		inventoryFrame.setVisible(true);
+		tablePanel.add(errorMessage);
+		tablePanel.setVisible(true);
+		
+		this.add(tablePanel, BorderLayout.CENTER);
 		this.setVisible(true);
 		
 		repaint();
@@ -193,11 +198,11 @@ public class PartsInventoryView extends JFrame  {
 		});
 	}
 	
-	public int getWidth() {
+	public int getViewWidth() {
 		return GUIWidth;
 	}
 	
-	public int getHeight() {
+	public int getViewHeight() {
 		return GUIHeight;
 	}
 	
@@ -236,5 +241,10 @@ public class PartsInventoryView extends JFrame  {
 			}
 		}
 		return null;
+	}
+
+	public void resized() {
+		this.removeAll();
+		createPanel();
 	}
 }
