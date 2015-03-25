@@ -97,7 +97,7 @@ public class ProductTemplatePart implements Comparator<ProductTemplatePart> {
 	
 	private void setQuantity(Integer quantity) throws IOException {
 		if (quantity <= 0) {
-			throw new IOException("Error: quantity of a part in a product template must be > 0.");
+			throw new IOException("Error: quantity must be > 0.");
 		}
 		this.quantity = quantity;
 	}
