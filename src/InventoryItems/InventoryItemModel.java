@@ -73,7 +73,7 @@ public class InventoryItemModel {
 		}
 	}
 	
-	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException {
+	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException, Exception {
 		try {
 			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity(), iiOld.getTimestamp());
 			inventoryItems = iig.getInventory(); // gets list of inventory items
@@ -83,6 +83,9 @@ public class InventoryItemModel {
 		}
 		catch (IOException ioe) { // passes along edit conflict notification
 			throw new IOException(ioe.getMessage());
+		}
+		catch (Exception e) {
+			throw new Exception(e.getMessage());
 		}
 	}
 	

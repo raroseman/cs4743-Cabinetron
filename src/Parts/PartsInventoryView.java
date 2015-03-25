@@ -118,12 +118,6 @@ public class PartsInventoryView extends JPanel {
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
 		addPart.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
-		addPart.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
 		tablePanel.add(addPart);
 		
 		// Creates and adds the "delete" button to the inventory frame
@@ -141,14 +135,51 @@ public class PartsInventoryView extends JPanel {
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
-		
 		tablePanel.add(errorMessage);
+		
 		tablePanel.setVisible(true);
 		
 		this.add(tablePanel, BorderLayout.CENTER);
 		this.setVisible(true);
 		
 		repaint();
+	}
+	
+	private void resizePanel() {
+		tableMargin = 15;
+		GUIWidth = Math.max(minX - tableMargin * 2, this.getWidth());
+		GUIHeight = Math.max(minY - tableMargin * 2, this.getHeight());
+		tableW = GUIWidth - (tableMargin * 2);
+		tableH = GUIHeight - 85;
+		errorW = GUIWidth - 20;
+		errorH = 32;
+		errorX = tableMargin;
+		errorY = GUIHeight - 85;
+		buttonW = GUIWidth / 4;
+		buttonH = 30;
+		buttonX = GUIWidth / 4;
+		buttonY = GUIHeight - 50;
+
+		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
+		tablePanel.setBounds(0, 0, GUIWidth, GUIHeight);
+		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
+		tableScrollPane.setBounds(tableMargin, 10, tableW, tableH);
+		tableScrollPane.setVisible(true);
+		
+		TableColumn column = null;
+		for (int i = 0; i < columnNames.length; i++) {
+			column = table.getColumnModel().getColumn(i);
+			if (column.getHeaderValue().toString() == "ID") {
+				column.setPreferredWidth(GUIWidth / 32);
+			} if (column.getHeaderValue().toString() == "Vendor") {
+				column.setPreferredWidth(GUIWidth / 16);
+			} 
+		}
+
+		addPart.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		deletePart.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		viewPart.setBounds((buttonX * 3) - (buttonW / 2), buttonY, buttonW, buttonH);
+		errorMessage.setBounds(errorX, errorY, errorW, errorH);
 	}
 	
 	public void updatePanel() { // tears down the entire table and re-populates it
@@ -244,7 +275,6 @@ public class PartsInventoryView extends JPanel {
 	}
 
 	public void resized() {
-		this.removeAll();
-		createPanel();
+		resizePanel();
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import InventoryItems.InventoryController;
+import InventoryItems.InventoryView;
 import Parts.PartsInventoryController;
 import Parts.PartsInventoryView;
 import ProductTemplates.ProductTemplateListController;
@@ -27,9 +28,13 @@ public class CabinetronController implements ActionListener {
 		
 		switch(command) {
 			case "Part":
-				PartsInventoryView partsView = view.ViewParts();
-				partsInventoryController = new PartsInventoryController(model.GetPartsModel(), partsView, view);
-				partsView.register(partsInventoryController);
+				view.ViewParts();
+				break;
+			case "Inventory":
+				view.ViewInventoryItems();
+				break;
+			case "View Product Template List":
+				view.ViewProductTemplateList();
 				break;
 		}
 	}

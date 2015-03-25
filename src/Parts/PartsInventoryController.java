@@ -53,9 +53,10 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				inventoryView.clearErrorMessage();
 				if (selectedPart != null) {
 					if (hasPartViewOpen) {
-						if (selectedPart.getID() == partView.getID())
-						view.closePartDetailView();
-						hasPartViewOpen = false;
+						if (selectedPart.getID() == partView.getID()) {
+							view.closePartDetailView();
+							hasPartViewOpen = false;
+						}
 					}
 					try {
 						partsInventoryModel.deletePart(selectedPart);

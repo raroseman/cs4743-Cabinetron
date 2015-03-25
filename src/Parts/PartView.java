@@ -25,7 +25,6 @@ public class PartView extends JPanel {
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonX, buttonY,
 				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop, minX, minY;
 	private List<String> unitTypes;
-	private String name = "", part = "", external = "", vendor = "", ID = "", unitType = "Unknown";
 	private boolean inEditMode = false, inAddMode = false;
 	
 	public PartView(PartsInventoryModel model, int width, int height, int minX, int minY) {
@@ -50,10 +49,8 @@ public class PartView extends JPanel {
 		viewHeight = Math.max(minY, this.getHeight());
 		labelW = viewWidth / 3;
 		labelH = 32;
-		
 		labelTop = 10;
 		labelLeft = 15;
-		
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
 		buttonW = viewWidth / 3;
@@ -67,7 +64,6 @@ public class PartView extends JPanel {
 		
 		this.setSize(viewWidth, viewHeight);
 		this.setVisible(true);
-		this.setBackground(Color.BLUE);
 		this.setLayout(new BorderLayout());
 		
 		partFrame = new JPanel();
@@ -103,34 +99,29 @@ public class PartView extends JPanel {
 	
 		idField = new JTextField();
 		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		idField.setText(ID);
 		partFrame.add(idField);
 		
 		nameField = new JTextField();
 		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
-		nameField.setText(name);
 		partFrame.add(nameField);
 		
 		numberField = new JTextField();
 		numberField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
-		numberField.setText(part);
 		partFrame.add(numberField);
 		
 		externalField = new JTextField();
 		externalField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
-		externalField.setText(external);
 		partFrame.add(externalField);
 		
 		vendorField = new JTextField();
 		vendorField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
-		vendorField.setText(vendor);
 		partFrame.add(vendorField);
 		
 		quantityUnitTypeField = new JComboBox<String>();
 		for (String unitType : unitTypes) {
 			quantityUnitTypeField.addItem(unitType);
 		}
-		quantityUnitTypeField.setSelectedItem(unitType); // default Unknown; if not in list, defaults to first item in list
+		quantityUnitTypeField.setSelectedItem("Unknown"); // default Unknown; if not in list, defaults to first item in list
 		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
 		partFrame.add(quantityUnitTypeField);
 		
@@ -159,6 +150,46 @@ public class PartView extends JPanel {
 		this.add(partFrame, BorderLayout.CENTER);
 
 		this.setVisible(true);
+	}
+	
+	private void resizePanel() {
+		viewWidth = Math.max(minX, this.getWidth());
+		viewHeight = Math.max(minY, this.getHeight());
+		labelW = viewWidth / 3;
+		labelH = 32;
+		labelTop = 10;
+		labelLeft = 15;
+		errorW = viewWidth - (labelLeft * 2);
+		errorH = 32;
+		buttonW = viewWidth / 3;
+		buttonH = 32;
+		buttonX = viewWidth / 3;
+		buttonY = viewHeight - 100;
+		fieldW = viewWidth / 2;
+		fieldH = 32;
+		fieldLeft = labelW + 25;
+		fieldTop = labelTop;
+		
+		this.setSize(viewWidth, viewHeight);
+		
+		partFrame.setSize(viewWidth, viewHeight);
+		partID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
+		partName.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partNumber.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
+		externalPartNumber.setBounds(labelLeft, labelTop + (labelH * 3), labelW, labelH);
+		partVendor.setBounds(labelLeft, labelTop + (labelH * 4), labelW, labelH);
+		partQuantityUnitType.setBounds(labelLeft, labelTop + (labelH * 5), labelW, labelH);
+		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
+		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		numberField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
+		externalField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
+		vendorField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
+		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
+		errorMessage.setBounds(fieldLeft, fieldTop + (fieldH * 6), errorW, errorH);
+		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 	}
 	
 	public void register(PartsInventoryController controller) {
@@ -275,22 +306,6 @@ public class PartView extends JPanel {
 	}
 	
 	public void resized() {
-		ID = idField.getText();
-		name = nameField.getText();
-		part = numberField.getText();
-		external = externalField.getText();
-		vendor = vendorField.getText();
-		unitType = (String) quantityUnitTypeField.getSelectedItem();
-		this.removeAll();
-		createPanel();
-		if (inEditMode) {
-			enableEditable();
-		}
-		else if (inAddMode) {
-			enableAdd();
-		}
-		else {
-			disableEditable();
-		}
+		resizePanel();
 	}
 }

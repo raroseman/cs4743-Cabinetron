@@ -23,20 +23,12 @@ public class CabinetronModel {
 	
 	public CabinetronModel() {
 		partsInventoryModel = new PartsInventoryModel();
+		inventoryItemModel = new InventoryItemModel();
+		productTemplateModel = new ProductTemplateModel();
+		
 		GUIWidth = (Toolkit.getDefaultToolkit().getScreenSize().width / 3) * 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 50;
-//		partsInventoryView = new PartsInventoryView(partsInventoryModel);
-		
-		//inventoryItemModel = new InventoryItemModel();
-//		inventoryView = new InventoryView(partsInventoryModel, inventoryItemModel);
-		
-		//productTemplateModel = new ProductTemplateModel();
-//		productTemplateListView = new ProductTemplateListView(productTemplateModel);
-		
-		//inventoryController = new InventoryController(inventoryItemModel, inventoryView);
-		//productTemplateListController = new ProductTemplateListController(productTemplateModel, productTemplateListView);
-			
-		}
+		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height - 50;	
+	}
 	
 	public PartsInventoryModel GetPartsModel() {
 		return partsInventoryModel;
