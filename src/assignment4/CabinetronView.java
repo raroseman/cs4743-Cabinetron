@@ -43,7 +43,7 @@ public class CabinetronView extends JFrame {
 	private int GUIWidth;
 	private int GUIHeight;
 	private JMenuBar menuBar;
-	private JMenu menuParts, menuTemplates;
+	private JMenu menuParts, menuTemplates, login;
 	private JMenuItem itemParts, itemInventory, itemTemplates;
 	private int minX = 300;
 	private int minY = 300;
@@ -90,6 +90,7 @@ public class CabinetronView extends JFrame {
 		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		
+		login = new JMenu("Login");
 		menuParts = new JMenu("Parts");
 		menuTemplates = new JMenu("Templates");
 		
