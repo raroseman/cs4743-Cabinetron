@@ -221,7 +221,7 @@ public class PartsInventoryView extends JPanel {
 		        	model.sortByQuantityUnitType();
 		        	break;
 		        case "External Part Number":
-		        	model.sortByPartName();
+		        	model.sortByExternalPartNumber();
 		        	break;
 		        }
 		        updatePanel();

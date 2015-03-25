@@ -62,7 +62,6 @@ public class ItemView extends JPanel {
 		this.setSize(viewWidth, viewHeight);
 		partFrame.removeAll();
 		partFrame.setLayout(new GridBagLayout());
-		
 		GridBagConstraints constraints;
 		x = 0; y = 0;
 		
@@ -201,8 +200,10 @@ public class ItemView extends JPanel {
 		partFrame.add(edit, constraints);
 		save.setText("Override");
 		partFrame.add(save, constraints);
-
-		this.add(partFrame, BorderLayout.CENTER);
+		partFrame.validate();
+		partFrame.setVisible(true);
+		this.validate();
+		this.repaint();
 	}
 	
 	public ItemView(InventoryItemModel model, int width, int height, int minX, int minY) {
@@ -384,6 +385,7 @@ public class ItemView extends JPanel {
 	public Integer getID() throws NumberFormatException {
 		Integer i = 0;
 		try {
+			System.out.println("LINE 387 ITEMVIEW: ID = " + ID.getText());
 			String IDstr = ID.getText().split("/ /")[1]; // Splits "ID: ###";
 			i = Integer.parseInt(IDstr.trim());
 			return i;

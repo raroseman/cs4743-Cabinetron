@@ -11,7 +11,7 @@ public class ProductTemplatePartModel {
 	private Integer templateID;
 
 	private List<ProductTemplatePart> productTemplateParts;
-	private Comparator<ProductTemplatePart> sortingMode = ProductTemplatePart.IDDescending; // default sort
+	private Comparator<ProductTemplatePart> sortingMode = ProductTemplatePart.PartIDDescending; // default sort
 	private ProductTemplatePartGateway templatePartGateway;
 	
 	public ProductTemplatePartModel(Integer productTemplateID) {

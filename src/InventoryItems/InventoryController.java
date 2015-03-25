@@ -23,7 +23,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 	private InventoryItem newDatabaseItem = null;
 	private CabinetronView view = null;
 	private int selectedRow = 0;
-	private boolean hasItemViewOpen;
+	private boolean hasItemViewOpen = false;
 	
 	public InventoryController(InventoryItemModel inventoryItemModel, InventoryView inventoryView, CabinetronView view) {
 		this.inventoryItemModel = inventoryItemModel;
@@ -42,6 +42,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				inventoryView.clearErrorMessage();
 				if (hasItemViewOpen) {
 					view.closeInventoryItemDetailView();
+					hasItemViewOpen = false;
 				}
 				clearSelection();
 				itemView = view.ViewInventoryItemDetails("Add Inventory Item");
@@ -57,10 +58,8 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				inventoryView.clearErrorMessage();
 				if (selectedItem != null) {
 					if (hasItemViewOpen) {
-						if (selectedItem.getID() == itemView.getID()) {
-							view.closePartDetailView();
-							hasItemViewOpen = false;
-						}
+						view.closeInventoryItemDetailView();
+						hasItemViewOpen = false;
 					}
 					try {
 						inventoryItemModel.deletePart(selectedItem);
@@ -97,9 +96,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;	
 			case "Edit":
 				oldDatabaseItem = selectedItem;
-				if (itemView == null) {
-					System.out.println("INVENTORYCONTROLLER LINE 101: ITEMVIEW IS NULL");
-				}
 				itemView.enableEditable();
 				itemView.hideEditButton();
 				itemView.repaint();
@@ -111,7 +107,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						oldDatabaseItem = newDatabaseItem; // user had an edit conflict already; move "new" to "old"
 					}
 					try {
-						System.out.println("TRYING");
 						userModifiedItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
 						// should generate an IOException here if location is Unknown or other parameters are incorrect
 						inventoryItemModel.editInventoryItem(oldDatabaseItem, userModifiedItem);
@@ -121,6 +116,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						newDatabaseItem = null;
 						
 						view.closeInventoryItemDetailView();
+						hasItemViewOpen = false;
 						inventoryView.updatePanel();
 						inventoryView.repaint();
 					} 
@@ -132,25 +128,6 @@ public class InventoryController implements ActionListener, ListSelectionListene
 					} 
 					catch (IOException ex) {
 						itemView.setErrorMessage(ex.getMessage());
-						
-//4						// Item was added at the same part at location. Update list view and display changes side-by-side in edit view.
-						/*
-						try {
-							newDatabaseItem = inventoryItemModel.getUpdatedInventoryItem(selectedItem.getID());
-						} 
-						catch (IOException e1) {
-							itemView.setErrorMessage(e1.getMessage());
-						} 
-						catch (SQLException e1) {
-							itemView.setErrorMessage(e1.getMessage());
-						}
-						
-						inventoryView.updatePanel();
-						inventoryView.repaint();
-						itemView.setErrorMessage(e1.getMessage());
-						view.showInventoryItemEditConflictWindow();
-						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem, view.getWidth());
-						*/
 
 					} catch (Exception e1) { // Timestamp discrepancy
 						try {
@@ -168,6 +145,8 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						itemView.setErrorMessage(e1.getMessage());
 						view.showInventoryItemEditConflictWindow();
 						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem, view.getWidth());
+						itemView.repaint();
+						
 					} 				
 				}	
 				break;

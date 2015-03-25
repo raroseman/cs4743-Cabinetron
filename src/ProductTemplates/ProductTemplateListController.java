@@ -80,10 +80,8 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 				productTemplateListView.clearErrorMessage();
 				if (selectedTemplate != null) {
 					if (hasPartViewOpen) {
-						if (selectedTemplate.getID() == productTemplateDetailView.getID()) {
-							view.closeProductTemplateDetailView();
-							hasPartViewOpen = false;
-						}
+						view.closeProductTemplateDetailView();
+						hasPartViewOpen = false;
 					}
 					try {
 						productTemplateModel.deleteProductTemplate(selectedTemplate);
@@ -104,6 +102,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 				productTemplateListView.clearErrorMessage();
 				if (hasPartViewOpen) {
 					view.closeProductTemplateDetailView();
+					hasPartViewOpen = false;
 				}
 				if (selectedTemplate != null) {
 					productTemplateListView.disableDelete();
@@ -128,6 +127,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 						ProductTemplate newTemplate = new ProductTemplate(productTemplateDetailView.getID(), productTemplateDetailView.getNumber(), productTemplateDetailView.getDescription());
 						productTemplateModel.editProductTemplate(selectedTemplate, newTemplate);
 						view.closeProductTemplateDetailView();
+						hasPartViewOpen = false;
 						productTemplateListView.updatePanel();
 						productTemplateListView.setSelectedRow(selectedRow);
 						productTemplateListView.repaint();
@@ -147,6 +147,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 					ProductTemplate newTemplate = new ProductTemplate(productTemplateDetailView.getNumber(), productTemplateDetailView.getDescription());			
 					productTemplateModel.addProductTemplate(newTemplate);
 					view.closeProductTemplateDetailView();
+					hasPartViewOpen = false;
 					productTemplateListView.updatePanel();
 					productTemplateListView.repaint();
 				}
@@ -165,6 +166,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 				productTemplateListView.enableView();
 				productTemplateListView.enableTemplateParts();
 				view.closeProductTemplateDetailView();
+				hasPartViewOpen = false;
 				break;
 		}
 	}

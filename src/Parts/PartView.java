@@ -56,7 +56,7 @@ public class PartView extends JPanel {
 		buttonW = viewWidth / 3;
 		buttonH = 32;
 		buttonX = viewWidth / 3;
-		buttonY = viewHeight - 100;
+		buttonY = viewHeight - 50;
 		fieldW = viewWidth / 2;
 		fieldH = 32;
 		fieldLeft = labelW + 25;
@@ -157,14 +157,14 @@ public class PartView extends JPanel {
 		viewHeight = Math.max(minY, this.getHeight());
 		labelW = viewWidth / 3;
 		labelH = 32;
-		labelTop = 10;
+		labelTop = 1;
 		labelLeft = 15;
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
 		buttonW = viewWidth / 3;
 		buttonH = 32;
 		buttonX = viewWidth / 3;
-		buttonY = viewHeight - 100;
+		buttonY = viewHeight - 75;
 		fieldW = viewWidth / 2;
 		fieldH = 32;
 		fieldLeft = labelW + 25;
@@ -185,7 +185,7 @@ public class PartView extends JPanel {
 		externalField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
 		vendorField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
 		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
-		errorMessage.setBounds(fieldLeft, fieldTop + (fieldH * 6), errorW, errorH);
+		errorMessage.setBounds(labelLeft, fieldTop + (fieldH * 6), errorW, errorH);
 		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
 		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);

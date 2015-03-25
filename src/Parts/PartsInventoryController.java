@@ -53,10 +53,8 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 				inventoryView.clearErrorMessage();
 				if (selectedPart != null) {
 					if (hasPartViewOpen) {
-						if (selectedPart.getID() == partView.getID()) {
-							view.closePartDetailView();
-							hasPartViewOpen = false;
-						}
+						view.closePartDetailView();
+						hasPartViewOpen = false;
 					}
 					try {
 						partsInventoryModel.deletePart(selectedPart);
@@ -103,7 +101,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 					try {
 						Part newPart = new Part(partView.getID(), partView.getQuantityUnitType(), partView.getName(), partView.getNumber(), partView.getExternalPartNumber(), partView.getVendor());
 						partsInventoryModel.editPart(selectedPart, newPart);
-			//			view.closePartDetailView();
+						view.closePartDetailView();
 						inventoryView.updatePanel();
 						inventoryView.setSelectedRow(selectedRow);
 						inventoryView.repaint();
@@ -139,7 +137,7 @@ public class PartsInventoryController implements ActionListener, ListSelectionLi
 			case "Cancel":
 				inventoryView.enableDelete();
 				inventoryView.enableView();
-			//	partView.dispose();
+				view.closePartDetailView();
 				break;
 		}
 	}

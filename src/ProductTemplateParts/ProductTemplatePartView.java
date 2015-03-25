@@ -76,7 +76,7 @@ public class ProductTemplatePartView extends JPanel  {
 
 		        if (!isRowSelected(row)) {
 		        	if (row % 2 == 0) {
-		        		c.setBackground(new Color(237, 252, 219));
+		        		c.setBackground(new Color(243, 232, 209));
 		        	}
 		        	else {
 		        		c.setBackground(getBackground());
@@ -103,17 +103,6 @@ public class ProductTemplatePartView extends JPanel  {
 		tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setBounds(tableMargin, 10, tableW, tableH);
 		tableScrollPane.setVisible(true);
-		
-		TableColumn column = null;
-		
-		for (int i = 0; i < columnNames.length; i++) {
-			column = table.getColumnModel().getColumn(i);
-			if (column.getHeaderValue().toString() == "ID") {
-				column.setPreferredWidth(GUIWidth / 32);
-			} if (column.getHeaderValue().toString() == "Vendor") {
-				column.setPreferredWidth(GUIWidth / 16);
-			} 
-		}
 
 		tablePanel.add(tableScrollPane);
 		

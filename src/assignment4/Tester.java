@@ -31,7 +31,6 @@ public class Tester {
 		c.Setup();
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
-		
 	
 		partsInventoryModel = new PartsInventoryModel();
 	
