@@ -1,5 +1,6 @@
 package ProductTemplates;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -14,10 +15,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
-public class ProductTemplateListView extends JFrame  {	
+public class ProductTemplateListView extends JPanel  {	
 	private ProductTemplateModel model;
 
-	private JPanel inventoryFrame;
+	private JPanel tablePanel;
 	private JButton addPart, deletePart, viewPart, templatePart;
 	private int GUIWidth;
 	private int GUIHeight;
@@ -30,37 +31,38 @@ public class ProductTemplateListView extends JFrame  {
 	private Object[] rowData;
 	private JLabel errorMessage;
 	private int buttonH, buttonW, buttonX, buttonY, errorW, errorH, errorX, errorY, tableMargin, tableW, tableH;
-
-	public ProductTemplateListView(ProductTemplateModel model) {
-		super("Cabinetron: Product Templates");
+	private int minX, minY;
+	
+	public ProductTemplateListView(ProductTemplateModel model, int width, int height, int minX, int minY) {
 		this.model = model;
-
-		GUIWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
-		GUIHeight = Toolkit.getDefaultToolkit().getScreenSize().height / 2 - 50;
+		this.minX = minX;
+		this.minY = minY;
+		this.setSize(width, height);
+		createPanel();
+		
+	}
+	
+	private void createPanel() {
 		tableMargin = 15;
+		GUIWidth = Math.max(minX - tableMargin * 2, this.getWidth());
+		GUIHeight = Math.max(minY - tableMargin * 2, this.getHeight());
 		tableW = GUIWidth - (tableMargin * 2);
-		tableH = GUIHeight - 100;
-		buttonW = 125;
-		buttonH = 30;
-		buttonX = GUIWidth / 5;
-		buttonY = GUIHeight - 75;
+		tableH = GUIHeight - 85;
 		errorW = GUIWidth - 20;
 		errorH = 32;
 		errorX = tableMargin;
-		errorY = GUIHeight - 100;
+		errorY = GUIHeight - 85;
+		buttonW = GUIWidth / 5;
+		buttonH = 30;
+		buttonX = GUIWidth / 5;
+		buttonY = GUIHeight - 50;
 
-		this.setSize(GUIWidth, GUIHeight);
-		this.setLocation(0, Toolkit.getDefaultToolkit().getScreenSize().height / 2 + 50);
+		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
+		this.setLayout(new BorderLayout());
 		
-		// Sets up the inventory frame 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		inventoryFrame = new JPanel();
-		inventoryFrame.setSize(GUIWidth, GUIHeight);
-		inventoryFrame.setBackground(Color.LIGHT_GRAY);
-		inventoryFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
-		inventoryFrame.setOpaque(true);
-		setContentPane(inventoryFrame);
-		inventoryFrame.setLayout(null);
+		tablePanel = new JPanel();
+		tablePanel.setBounds(0, 0, GUIWidth, GUIHeight);
+		tablePanel.setLayout(null);
 
 		table = new JTable() {
 			public boolean isCellEditable(int row, int col)
@@ -73,7 +75,7 @@ public class ProductTemplateListView extends JFrame  {
 
 		        if (!isRowSelected(row)) {
 		        	if (row % 2 == 0) {
-		        		c.setBackground(new Color(237, 252, 252));
+		        		c.setBackground(new Color(241, 209, 243));
 		        	}
 		        	else {
 		        		c.setBackground(getBackground());
@@ -86,6 +88,7 @@ public class ProductTemplateListView extends JFrame  {
 		table.setColumnSelectionAllowed(false);
 		tableModel.setColumnIdentifiers(columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(GUIWidth, GUIHeight));
+
 		model.sortByCurrentSortMethod();
 		for (ProductTemplate p: model.getProductTemplates()) {
 			rowData = new Object[] {p.getID(), p.getProductNumber(), p.getDescription()};
@@ -93,62 +96,71 @@ public class ProductTemplateListView extends JFrame  {
 		}
 	
 		table.setModel(tableModel);
-		p = new JPanel();
-		p.setBounds(0, 0, GUIWidth, GUIHeight);
-
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableSelectionModel = table.getSelectionModel();
 		
 		tableScrollPane = new JScrollPane(table);
-		tableScrollPane.setPreferredSize(new Dimension(tableW, tableH));
+		tableScrollPane.setBounds(tableMargin, 10, tableW, tableH);
 		tableScrollPane.setVisible(true);
-		
-		TableColumn column = null;
-		
-		for (int i = 0; i < columnNames.length; i++) {
-			column = table.getColumnModel().getColumn(i);
-			if (column.getHeaderValue().toString() == "ID") {
-				column.setPreferredWidth(GUIWidth / 32);
-			} if (column.getHeaderValue().toString() == "Vendor") {
-				column.setPreferredWidth(GUIWidth / 16);
-			} 
-		}
 
-		p.add(tableScrollPane);
-		
-		templatePart = new JButton("Parts List");
-		templatePart.setBounds((buttonX * 4) - (buttonW / 2), buttonY, buttonW, buttonH);
-		disablePartsList();
-		inventoryFrame.add(templatePart);
+		tablePanel.add(tableScrollPane);
 		
 		// Creates and adds the "add" button to the inventory frame
 		addPart = new JButton("Add");
 		addPart.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
-		inventoryFrame.add(addPart);
+		tablePanel.add(addPart);
 		
 		// Creates and adds the "delete" button to the inventory frame
 		deletePart = new JButton("Delete");
 		deletePart.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		disableDelete();
-		inventoryFrame.add(deletePart);
+		tablePanel.add(deletePart);
 		
 		// Creates and adds the "view" button to the inventory frame
 		viewPart = new JButton("View");
 		viewPart.setBounds((buttonX * 3) - (buttonW / 2), buttonY, buttonW, buttonH);
 		disableView();
-		inventoryFrame.add(viewPart);
+		tablePanel.add(viewPart);
+		
+		templatePart = new JButton("Parts List");
+		templatePart.setBounds((buttonX * 4) - (buttonW / 2), buttonY, buttonW, buttonH);
+		disablePartsList();
+		tablePanel.add(templatePart);
 		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
-		inventoryFrame.add(errorMessage);
+		tablePanel.add(errorMessage);
 		
-		p.setVisible(true);
-		inventoryFrame.add(p);
-		inventoryFrame.setVisible(true);
+		this.add(tablePanel, BorderLayout.CENTER);
 		this.setVisible(true);
 		
 		repaint();
+	}
+	
+	private void resizePanel() {
+		tableMargin = 15;
+		GUIWidth = Math.max(minX - tableMargin * 2, this.getWidth());
+		GUIHeight = Math.max(minY - tableMargin * 2, this.getHeight());
+		tableW = GUIWidth - (tableMargin * 2);
+		tableH = GUIHeight - 85;
+		errorW = GUIWidth - 20;
+		errorH = 32;
+		errorX = tableMargin;
+		errorY = GUIHeight - 85;
+		buttonW = GUIWidth / 5;
+		buttonH = 30;
+		buttonX = GUIWidth / 5;
+		buttonY = GUIHeight - 50;
+
+		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
+		tablePanel.setBounds(0, 0, GUIWidth, GUIHeight);
+		tableScrollPane.setBounds(tableMargin, 10, tableW, tableH);
+		addPart.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		deletePart.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		viewPart.setBounds((buttonX * 3) - (buttonW / 2), buttonY, buttonW, buttonH);
+		templatePart.setBounds((buttonX * 4) - (buttonW / 2), buttonY, buttonW, buttonH);
+		errorMessage.setBounds(errorX, errorY, errorW, errorH);
 	}
 	
 	public void register(ProductTemplateListController controller) {
@@ -240,5 +252,9 @@ public class ProductTemplateListView extends JFrame  {
 			}
 		}
 		return null;
+	}
+	
+	public void resized() {
+		resizePanel();
 	}
 }

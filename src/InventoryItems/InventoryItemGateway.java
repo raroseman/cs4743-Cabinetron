@@ -189,7 +189,7 @@ public class InventoryItemGateway {
 		closeConnection();
 	}
 	
-	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity, String prevTimestamp) throws SQLException, IOException {
+	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity, String prevTimestamp) throws SQLException, IOException, Exception {
 		createConnection();
 		
 		InventoryItem ii = null;
@@ -208,8 +208,7 @@ public class InventoryItemGateway {
 		int locationID = convertLocationTypeToID(location);
 		if (!checkTimestamp(ii.getID(), prevTimestamp)) {
 			closeConnection();
-			
-			throw new IOException("Error: This InventoryItem was recently changed. You may wish to review these changes before submitting your own.");
+			throw new Exception("Error: This InventoryItem was recently changed. You may wish to review these changes before submitting your own.");
 //4
 		}
 		

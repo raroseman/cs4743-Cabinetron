@@ -11,17 +11,21 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-public class ProductTemplatePartDetailController implements ActionListener, ListSelectionListener, WindowFocusListener {
+import assignment4.CabinetronView;
+
+public class ProductTemplatePartDetailController implements ActionListener, ListSelectionListener {
 	private ProductTemplatePartModel productTemplatePartModel;
 	private ProductTemplatePartDetailView productTemplatePartDetailView;
 	private ProductTemplatePartView productTemplatePartView;
 	private ProductTemplatePart selectedTemplatePart = null;
+	private CabinetronView view;
 	private int selectedRow = 0;
 	private boolean hasPartViewOpen;
 	
-	public ProductTemplatePartDetailController(ProductTemplatePartModel productTemplatePartModel, ProductTemplatePartView productTemplatePartView) {
+	public ProductTemplatePartDetailController(ProductTemplatePartModel productTemplatePartModel, ProductTemplatePartView productTemplatePartView, CabinetronView view) {
 		this.productTemplatePartModel = productTemplatePartModel;
 		this.productTemplatePartView = productTemplatePartView;
+		this.view = view;
 		hasPartViewOpen = false;
 	}
 
@@ -35,10 +39,11 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 			case "Add": 
 				productTemplatePartView.clearErrorMessage(); 
 				if (hasPartViewOpen) {
-					productTemplatePartDetailView.dispose();
+					view.closeProductTemplatePartDetailView();
+					hasPartViewOpen = false;
 				}
 				clearSelection();
-				productTemplatePartDetailView = new ProductTemplatePartDetailView(productTemplatePartModel, "Add New Template Part");
+				productTemplatePartDetailView = view.ViewProductTemplatePartDetails("Add Part to Product Template", productTemplatePartView.getID());
 				productTemplatePartDetailView.register(this);
 				productTemplatePartDetailView.disableTemplateIDEdit();
 				productTemplatePartDetailView.hideSaveButton();
@@ -51,7 +56,7 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 				productTemplatePartView.clearErrorMessage();
 				if (selectedTemplatePart != null) {
 					if (hasPartViewOpen) {
-						productTemplatePartDetailView.dispose();
+						view.closeProductTemplatePartDetailView();
 						hasPartViewOpen = false;
 					}
 					try {
@@ -71,12 +76,12 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 			case "View":
 				productTemplatePartView.clearErrorMessage();
 				if (hasPartViewOpen) {
-					productTemplatePartDetailView.dispose();
+					view.closeProductTemplatePartDetailView();
 				}
 				if (selectedTemplatePart != null) {
 					productTemplatePartView.disableDelete();
 					productTemplatePartView.disableView();
-					productTemplatePartDetailView = new ProductTemplatePartDetailView(productTemplatePartModel, "View/Edit Template Part: " + selectedTemplatePart.getProductTemplateID());
+					productTemplatePartDetailView = view.ViewProductTemplatePartDetails("View/Edit Product Template Part", selectedTemplatePart.getProductTemplateID());
 					productTemplatePartDetailView.register(this);
 					productTemplatePartDetailView.disableEditable();
 					productTemplatePartDetailView.setTemplateID(selectedTemplatePart.getProductTemplateID());
@@ -95,7 +100,7 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 					try {
 						ProductTemplatePart newTemplatePart = new ProductTemplatePart(productTemplatePartDetailView.getProductTemplateID(), productTemplatePartDetailView.getPartID(), productTemplatePartDetailView.getQuantity());
 						productTemplatePartModel.editProductTemplatePart(selectedTemplatePart, newTemplatePart);
-						productTemplatePartDetailView.dispose();
+						view.closeProductTemplatePartDetailView();
 						productTemplatePartView.updatePanel();
 						productTemplatePartView.setSelectedRow(selectedRow);
 						productTemplatePartView.repaint();
@@ -114,7 +119,7 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 				try {
 					ProductTemplatePart newTemplatePart = new ProductTemplatePart(productTemplatePartDetailView.getProductTemplateID(), productTemplatePartDetailView.getPartID(), productTemplatePartDetailView.getQuantity());			
 					productTemplatePartModel.addProductTemplatePart(newTemplatePart);
-					productTemplatePartDetailView.dispose();
+					view.closeProductTemplatePartDetailView();
 					productTemplatePartView.updatePanel();
 					productTemplatePartView.repaint();
 				}
@@ -131,7 +136,7 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 			case "Cancel":
 				productTemplatePartView.enableDelete();
 				productTemplatePartView.enableView();
-				productTemplatePartDetailView.dispose();
+				view.closeProductTemplatePartDetailView();
 				break;
 		}
 	}
@@ -154,22 +159,6 @@ public class ProductTemplatePartDetailController implements ActionListener, List
 			selectedRow = lsm.getMinSelectionIndex();	
 			selectedTemplatePart = productTemplatePartView.getObjectInRow(selectedRow);
 			productTemplatePartView.clearErrorMessage();
-			productTemplatePartView.enableDelete();
-			productTemplatePartView.enableView();
-		}
-	}
-	
-	@Override
-	public void windowGainedFocus(WindowEvent e) {
-		if (selectedTemplatePart != null) {
-			productTemplatePartView.updatePanel();
-			productTemplatePartView.setSelectedRow(selectedRow);
-		}	
-	}
-
-	@Override
-	public void windowLostFocus(WindowEvent e) {
-		if (selectedTemplatePart != null) {
 			productTemplatePartView.enableDelete();
 			productTemplatePartView.enableView();
 		}

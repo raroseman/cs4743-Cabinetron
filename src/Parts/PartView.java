@@ -1,19 +1,20 @@
 package Parts;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Toolkit;
+import java.awt.Dimension;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
-public class PartView extends JFrame {
+public class PartView extends JPanel {
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
 
@@ -21,24 +22,41 @@ public class PartView extends JFrame {
 	private JLabel partName, partNumber, partVendor, partQuantityUnitType, partID, externalPartNumber, errorMessage;
 	private JTextField nameField, numberField, vendorField, idField, externalField;
 	private JComboBox<String> quantityUnitTypeField;	
-	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonLeft, buttonBottom,
-				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop;
+	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonX, buttonY,
+				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop, minX, minY;
+	private List<String> unitTypes;
+	private boolean inEditMode = false, inAddMode = false;
 	
-	public PartView(PartsInventoryModel model, String title) {
-		super(title);
+	public PartView(PartsInventoryModel model, int width, int height, int minX, int minY) {
+	//	super(title);
+		unitTypes = new ArrayList<String>();
+		try {
+			for (String unitType : model.getQuantityUnitTypes()) {
+				unitTypes.add(unitType);
+			}
+		} catch (SQLException e) {
+			errorMessage.setText(e.getMessage());
+		}
+		this.minX = minX;
+		this.minY = minY;
+		this.setSize(new Dimension(width, height));
+		createPanel();
 		
-		viewWidth = 400;
-		viewHeight = 350;
+	}
+	
+	void createPanel() {
+		viewWidth = Math.max(minX, this.getWidth());
+		viewHeight = Math.max(minY, this.getHeight());
 		labelW = viewWidth / 3;
 		labelH = 32;
-		labelTop = 15;
+		labelTop = 10;
 		labelLeft = 15;
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
-		buttonW = viewWidth / 4;
+		buttonW = viewWidth / 3;
 		buttonH = 32;
-		buttonLeft = viewWidth / 3 - buttonW / 3;
-		buttonBottom = viewHeight - buttonH - 64;
+		buttonX = viewWidth / 3;
+		buttonY = viewHeight - 50;
 		fieldW = viewWidth / 2;
 		fieldH = 32;
 		fieldLeft = labelW + 25;
@@ -46,13 +64,12 @@ public class PartView extends JFrame {
 		
 		this.setSize(viewWidth, viewHeight);
 		this.setVisible(true);
-		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (viewWidth / 2) + 50, 
-				 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (viewHeight / 2));
+		this.setLayout(new BorderLayout());
 		
 		partFrame = new JPanel();
+		partFrame.setSize(viewWidth, viewHeight);
 		partFrame.setBackground(Color.LIGHT_GRAY);
 		partFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
 		partID = new JLabel("ID");
@@ -79,27 +96,7 @@ public class PartView extends JFrame {
 		partQuantityUnitType.setBounds(labelLeft, labelTop + (labelH * 5), labelW, labelH);
 		partFrame.add(partQuantityUnitType);
 		
-		errorMessage = new JLabel("");
-		errorMessage.setForeground(Color.red);
-		errorMessage.setBounds(labelLeft, labelTop + (labelH * 6), errorW, errorH);
-		partFrame.add(errorMessage);
-		
-		cancel = new JButton("Cancel");
-		cancel.setBounds(buttonLeft, buttonBottom, buttonW, buttonH);
-		partFrame.add(cancel);
-		
-		ok = new JButton("OK");
-		ok.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
-		partFrame.add(ok);
-		
-		edit = new JButton("Edit");
-		edit.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
-		partFrame.add(edit);
-		
-		save = new JButton("Save");
-		save.setBounds(buttonLeft * 2, buttonBottom, buttonW, buttonH);
-		partFrame.add(save);
-		
+	
 		idField = new JTextField();
 		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(idField);
@@ -121,16 +118,78 @@ public class PartView extends JFrame {
 		partFrame.add(vendorField);
 		
 		quantityUnitTypeField = new JComboBox<String>();
-		try {
-			for (String unitType : model.getQuantityUnitTypes()) {
-				quantityUnitTypeField.addItem(unitType);
-			}
-		} catch (SQLException e) {
-			errorMessage.setText(e.getMessage());
+		for (String unitType : unitTypes) {
+			quantityUnitTypeField.addItem(unitType);
 		}
 		quantityUnitTypeField.setSelectedItem("Unknown"); // default Unknown; if not in list, defaults to first item in list
 		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
 		partFrame.add(quantityUnitTypeField);
+		
+		errorMessage = new JLabel("");
+		errorMessage.setForeground(Color.red);
+		errorMessage.setBounds(fieldLeft, fieldTop + (fieldH * 6), errorW, errorH);
+		partFrame.add(errorMessage);
+		
+		cancel = new JButton("Cancel");
+		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		partFrame.add(cancel);
+		
+		ok = new JButton("OK");
+		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		partFrame.add(ok);
+		
+		edit = new JButton("Edit");
+		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		partFrame.add(edit);
+		
+		save = new JButton("Save");
+		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		partFrame.add(save);
+		
+		
+		this.add(partFrame, BorderLayout.CENTER);
+
+		this.setVisible(true);
+	}
+	
+	private void resizePanel() {
+		viewWidth = Math.max(minX, this.getWidth());
+		viewHeight = Math.max(minY, this.getHeight());
+		labelW = viewWidth / 3;
+		labelH = 32;
+		labelTop = 1;
+		labelLeft = 15;
+		errorW = viewWidth - (labelLeft * 2);
+		errorH = 32;
+		buttonW = viewWidth / 3;
+		buttonH = 32;
+		buttonX = viewWidth / 3;
+		buttonY = viewHeight - 75;
+		fieldW = viewWidth / 2;
+		fieldH = 32;
+		fieldLeft = labelW + 25;
+		fieldTop = labelTop;
+		
+		this.setSize(viewWidth, viewHeight);
+		
+		partFrame.setSize(viewWidth, viewHeight);
+		partID.setBounds(labelLeft, labelTop + (labelH * 0), labelW, labelH);
+		partName.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
+		partNumber.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
+		externalPartNumber.setBounds(labelLeft, labelTop + (labelH * 3), labelW, labelH);
+		partVendor.setBounds(labelLeft, labelTop + (labelH * 4), labelW, labelH);
+		partQuantityUnitType.setBounds(labelLeft, labelTop + (labelH * 5), labelW, labelH);
+		idField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
+		nameField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		numberField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
+		externalField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
+		vendorField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
+		quantityUnitTypeField.setBounds(fieldLeft, fieldTop + (fieldH * 5), fieldW, fieldH);
+		errorMessage.setBounds(labelLeft, fieldTop + (fieldH * 6), errorW, errorH);
+		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 	}
 	
 	public void register(PartsInventoryController controller) {
@@ -138,7 +197,6 @@ public class PartView extends JFrame {
 		cancel.addActionListener(controller);
 		edit.addActionListener(controller);
 		save.addActionListener(controller);
-		this.addWindowFocusListener(controller);
 	}
 	
 	public String getName() {
@@ -218,6 +276,7 @@ public class PartView extends JFrame {
 	}
 	
 	public void disableEditable() {
+		inEditMode = false;
 		ok.setVisible(false);
 		save.setVisible(false);
 		nameField.setEnabled(false);
@@ -229,11 +288,24 @@ public class PartView extends JFrame {
 	}
 	
 	public void enableEditable() {
+		inEditMode = true;
 		save.setVisible(true);
 		nameField.setEnabled(true);
 		numberField.setEnabled(true);
 		externalField.setEnabled(true);
 		vendorField.setEnabled(true);
 		quantityUnitTypeField.setEnabled(true);
+	}
+	
+	public void enableAdd() {
+		inAddMode = true;
+		disableIDEdit();
+		hideSaveButton();
+		hideEditButton();
+		hideID();
+	}
+	
+	public void resized() {
+		resizePanel();
 	}
 }

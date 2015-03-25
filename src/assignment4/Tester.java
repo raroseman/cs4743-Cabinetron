@@ -15,26 +15,20 @@ import ProductTemplates.ProductTemplateModel;
 
 /*
  * 
- * CS 4743 assignment 3
+ * CS 4743 assignment 5
  * Written by Josef Klein and Ryan Roseman
  * 
  */
 
 public class Tester {
-	private static PartsInventoryView partsInventoryView;
-	private static InventoryView inventoryView;
-	private static ProductTemplateListView productTemplateListView;
-	private static PartsInventoryController partsInventoryController;
-	private static InventoryController inventoryController;
-	private static ProductTemplateListController productTemplateListController;
-
-	private static PartsInventoryModel partsInventoryModel;
-	private static InventoryItemModel inventoryItemModel;
-	private static ProductTemplateModel productTemplateModel;
 	
 	private static Authenticator authenticator;
 	private static Session session;
 	public static void main(String args[]) {
+		CabinetronModel model = new CabinetronModel();
+		CabinetronView view = new CabinetronView(model);
+		CabinetronController controller = new CabinetronController(model, view);
+		view.register(controller);
 		
 		/*
 		DB_CreateTables c = new DB_CreateTables();
@@ -42,35 +36,10 @@ public class Tester {
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
 		*/
-	
-		partsInventoryModel = new PartsInventoryModel();
-	
-		partsInventoryView = new PartsInventoryView(partsInventoryModel);
-		
-		inventoryItemModel = new InventoryItemModel();
-		
-		inventoryView = new InventoryView(partsInventoryModel, inventoryItemModel);
-		
-		productTemplateModel = new ProductTemplateModel();
-		
-		productTemplateListView = new ProductTemplateListView(productTemplateModel);
-		
-		partsInventoryController = new PartsInventoryController(partsInventoryModel, partsInventoryView);
-		
-		inventoryController = new InventoryController(inventoryItemModel, inventoryView);
-		
-		productTemplateListController = new ProductTemplateListController(productTemplateModel, productTemplateListView);
-			
-		partsInventoryView.register(partsInventoryController);	
-		
-		inventoryView.register(inventoryController);
-		
-		productTemplateListView.register(productTemplateListController);
 
 		authenticator = new Authenticator();
 		
 		session = authenticator.getUserCredentials("TomJones@Cabinetron.com", "TommyJ$$$");
 		
 		System.out.println(session);
-	}
 }
