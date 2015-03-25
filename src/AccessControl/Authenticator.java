@@ -14,7 +14,7 @@ public class Authenticator {
 		} else if (login.equals(logins[1]) && password.equals(passwords[1])) {
 			return new Session(new InventoryManager("Sue Smith", "SueSmith@Cabinetron.com"));
 		} else if (login.equals(logins[2]) && password.equals(passwords[2])) {
-			return new Session(new InventoryManager("Ragnar Nelson", "RagnarNelson@Cabinetron.com"));
+			return new Session(new Administrator("Ragnar Nelson", "RagnarNelson@Cabinetron.com"));
 		} else
 			return null;
 	}

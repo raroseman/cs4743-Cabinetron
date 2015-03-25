@@ -8,4 +8,12 @@ public abstract class User {
 		this.fullName = fullName;
 		this.emailAddress = emailAddress;
 	}
+	
+	public String getUserName() {
+		return fullName;
+	}
+	
+	public String getUserEmail() {
+		return emailAddress;
+	}
 }

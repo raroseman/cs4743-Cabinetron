@@ -50,4 +50,10 @@ public class Session {
 		canDeleteParts = false;
 		canDeleteInventory = false;
 	}
+	
+	// Implement method to disable functions for each constructor
+	// Need the menu first
+	public void disablePermissions() {
+		if (!canViewProductTemplates) { }
+	}
 }

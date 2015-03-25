@@ -1,5 +1,7 @@
 package assignment4;
 
+import AccessControl.Authenticator;
+import AccessControl.Session;
 import Database.*;
 import InventoryItems.InventoryController;
 import InventoryItems.InventoryItemModel;
@@ -30,6 +32,8 @@ public class Tester {
 	private static InventoryItemModel inventoryItemModel;
 	private static ProductTemplateModel productTemplateModel;
 	
+	private static Authenticator authenticator;
+	private static Session session;
 	public static void main(String args[]) {
 		
 		/*
@@ -63,5 +67,10 @@ public class Tester {
 		
 		productTemplateListView.register(productTemplateListController);
 
+		authenticator = new Authenticator();
+		
+		session = authenticator.getUserCredentials("TomJones@Cabinetron.com", "TommyJ$$$");
+		
+		System.out.println(session);
 	}
 }
