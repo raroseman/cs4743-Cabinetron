@@ -1,7 +1,10 @@
 package InventoryItems;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.sql.SQLException;
 
@@ -15,7 +18,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
-public class ItemView extends JFrame {
+public class ItemView extends JPanel {
 	private InventoryItemModel model;
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
@@ -26,142 +29,131 @@ public class ItemView extends JFrame {
 	private JLabel oldTimestamp = null, newTimestamp = null;
 	private JTextField quantityField;
 	private JComboBox<String> partField, locationField;	
-	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonBottom,
+	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonX, buttonY, fieldW, fieldH, fieldLeft, fieldTop, buttonBottom,
 				labelW, labelH, labelTop, labelLeft,
 				column1Left, column2Left, column3Left, center, centerW, sideW;
 	private Font labelFont;
+	private int minX, minY;
+	private boolean inConflictWindow = false;
 	
-	public void showEditConflictWindow(InventoryItem oldDatabaseItem, InventoryItem userModifiedItem, InventoryItem newDatabaseItem) {
-		
-		viewWidth = 800;
+	private int labelWidth = 2;
+	private int oldDataWidth = 3;
+	private int currentDataWidth = 3;
+	private int newDataWidth = 3;
+	private int totalWidth = labelWidth + oldDataWidth + currentDataWidth + newDataWidth + labelWidth; // add margin 
+	private int x = 0, y = 0;
+	
+	void format(JLabel label, int width, int alignment, int gridX, int gridY) {
+		label.setHorizontalAlignment(alignment);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = gridX;
+		constraints.gridy = gridY;
+		constraints.gridwidth = width;
+		x += width;
+		partFrame.add(label, constraints);
+	}
+	
+	public void showEditConflictWindow(InventoryItem oldDatabaseItem, InventoryItem userModifiedItem, InventoryItem newDatabaseItem, int width) {		
+		inConflictWindow = true;
+		viewWidth = width;
 		viewHeight = 325;
-		
-		labelW = viewWidth / 9 + (viewWidth / 18);
-		sideW = (viewWidth / 9) * 2;
-		centerW = (viewWidth / 9) * 3;
-		labelH = 32;
-		labelTop = 15;
-		
-		labelLeft = 0;
-		column1Left = labelW; // start at 1/9 (2/9 width)
-		column2Left = sideW + column1Left; // 3/9 start (3/9 + 1/18 width) = 7/18
-		column3Left = centerW + column2Left; // 7/9 start (2/9 width)
-		
-		center = viewWidth / 2;
-		errorW = viewWidth - (labelLeft * 2);
-		errorH = 32;
-		buttonW = (viewWidth / 6);
-		buttonH = 32;
-		buttonBottom = viewHeight - buttonH - 64;
-		
 		this.setSize(viewWidth, viewHeight);
-		
-		// Only need one ID - all should be the same ID from database
-		partFrame.remove(ID);
-		partFrame.remove(partIDLabel);
-		partFrame.remove(itemQuantityLabel);
-		partFrame.remove(partLocationLabel);
-		if (timestampLabel != null) partFrame.remove(timestampLabel); //4
-		if (oldPartID != null) partFrame.remove(oldPartID);
-		if (oldItemQuantity != null) partFrame.remove(oldItemQuantity);
-		if (oldPartLocation != null) partFrame.remove(oldPartLocation);
-		if (newPartID != null) partFrame.remove(newPartID);
-		if (newItemQuantity != null) partFrame.remove(newItemQuantity);
-		if (newPartLocation != null) partFrame.remove(newPartLocation);
-		if (oldColumn != null) partFrame.remove(oldColumn);
-		if (newColumn != null) partFrame.remove(newColumn);
-		if (oldTimestamp != null) partFrame.remove(oldTimestamp);
-		if (newTimestamp != null) partFrame.remove(newTimestamp);
-		
-		timestampLabel = new JLabel("Timestamp");
-		timestampLabel.setFont(labelFont);
-		timestampLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		timestampLabel.setBounds(labelLeft, labelTop + (labelH * 1), labelW, labelH);
-		partFrame.add(timestampLabel);
-		
-		oldTimestamp = new JLabel(oldDatabaseItem.getTimestamp().substring(0, oldDatabaseItem.getTimestamp().length() - 2));
-	//	oldTimestamp.setFont(labelFont);
-		oldTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
-		oldTimestamp.setBounds(column1Left, labelTop + (labelH * 1), sideW, labelH);
-		partFrame.add(oldTimestamp);
-		
-		newTimestamp = new JLabel(newDatabaseItem.getTimestamp().substring(0, newDatabaseItem.getTimestamp().length() - 2));
-	//	newTimestamp.setFont(labelFont);
-		newTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
-		newTimestamp.setBounds(column3Left, labelTop + (labelH * 1), sideW, labelH);
-		partFrame.add(newTimestamp);
-		
-		oldColumn = new JLabel("Last seen as: ");
-		oldColumn.setFont(labelFont);
-		oldColumn.setHorizontalAlignment(SwingConstants.CENTER);
-		oldColumn.setBounds(column1Left, labelTop + (labelH * 0), sideW, labelH);
-		partFrame.add(oldColumn);
+		partFrame.removeAll();
+		partFrame.setLayout(new GridBagLayout());
+		GridBagConstraints constraints;
+		x = 0; y = 0;
 		
 		ID = new JLabel("ID: " + newDatabaseItem.getID());
 		ID.setFont(labelFont);
-		ID.setHorizontalAlignment(SwingConstants.CENTER);
-		ID.setBounds(center - labelW / 2, labelTop + (labelH * 0), labelW, labelH);
-		partFrame.add(ID);
+		format(ID, totalWidth, SwingConstants.CENTER, x, y);
+	
+		x = 0; y = 1;
 		
-		newColumn = new JLabel("Updated elsewhere as: ");
-		newColumn.setFont(labelFont);
-		newColumn.setHorizontalAlignment(SwingConstants.CENTER);
-		newColumn.setBounds(column3Left, labelTop + (labelH * 0), sideW, labelH);
-		partFrame.add(newColumn);
+		timestampLabel = new JLabel("Timestamp");
+		timestampLabel.setFont(labelFont);
+		format(timestampLabel, labelWidth, SwingConstants.RIGHT, x, y);
+		
+		oldTimestamp = new JLabel(oldDatabaseItem.getTimestamp().substring(0, oldDatabaseItem.getTimestamp().length() - 2));
+		format(oldTimestamp, oldDataWidth, SwingConstants.CENTER, x, y);
+		
+		x += currentDataWidth;
+		
+		newTimestamp = new JLabel(newDatabaseItem.getTimestamp().substring(0, newDatabaseItem.getTimestamp().length() - 2));
+		format(newTimestamp, newDataWidth, SwingConstants.CENTER, x, y);
+		
+		x = 0; y = 2;
 		
 		partIDLabel = new JLabel("Part Number");
 		partIDLabel.setFont(labelFont);
-		partIDLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		partIDLabel.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
-		partFrame.add(partIDLabel);
+		format(partIDLabel, labelWidth, SwingConstants.RIGHT, x, y);
+		
+		oldPartID = new JLabel(oldDatabaseItem.getPart().getPartNumber());
+		format(oldPartID, oldDataWidth, SwingConstants.CENTER, x, y);
+		
+//// NEED TO COPY PARTFIELD INPUT TO THIS NEW FIELD
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = currentDataWidth;
+		x += currentDataWidth;
+		partFrame.add(partField, constraints);
+		
+		newPartID = new JLabel(newDatabaseItem.getPart().getPartNumber());
+		format(newPartID, newDataWidth, SwingConstants.CENTER, x, y);
+		
+		x = 0; y = 3;
 		
 		itemQuantityLabel = new JLabel("Quantity");
 		itemQuantityLabel.setFont(labelFont);
-		itemQuantityLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		itemQuantityLabel.setBounds(labelLeft, labelTop + (labelH * 3), labelW, labelH);
-		partFrame.add(itemQuantityLabel);
-
-		partLocationLabel = new JLabel("Location");
-		partLocationLabel.setFont(labelFont);
-		partLocationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		partLocationLabel.setBounds(labelLeft, labelTop + (labelH * 4), labelW, labelH);
-		partFrame.add(partLocationLabel);
-		
-		oldPartID = new JLabel(oldDatabaseItem.getPart().getPartNumber());
-		oldPartID.setHorizontalAlignment(SwingConstants.CENTER);
-		oldPartID.setBounds(column1Left, labelTop + (labelH * 2), sideW, labelH);
-		partFrame.add(oldPartID);
+		format(itemQuantityLabel, labelWidth, SwingConstants.RIGHT, x, y);
 		
 		oldItemQuantity = new JLabel(oldDatabaseItem.getQuantity().toString());
-		oldItemQuantity.setHorizontalAlignment(SwingConstants.CENTER);
-		oldItemQuantity.setBounds(column1Left, labelTop + (labelH * 3), sideW, labelH);
-		partFrame.add(oldItemQuantity);
-
-		oldPartLocation = new JLabel(oldDatabaseItem.getLocation());
-		oldPartLocation.setHorizontalAlignment(SwingConstants.CENTER);
-		oldPartLocation.setBounds(column1Left, labelTop + (labelH * 4), sideW, labelH);
-		partFrame.add(oldPartLocation);
+		format(oldItemQuantity, oldDataWidth, SwingConstants.CENTER, x, y);
 		
-		partField.setBounds(column2Left, labelTop + (labelH * 2), centerW, labelH);
-		quantityField.setBounds(column2Left, labelTop + (labelH * 3), centerW, labelH);
-		locationField.setBounds(column2Left, labelTop + (labelH * 4), centerW, labelH);
-		
-		newPartID = new JLabel(newDatabaseItem.getPart().getPartNumber());
-		newPartID.setHorizontalAlignment(SwingConstants.CENTER);
-		newPartID.setBounds(column3Left, labelTop + (labelH * 2), sideW, labelH);
-		partFrame.add(newPartID);
+//// NEED TO ADD QUANTITY INPUT TO THIS FIELD
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = currentDataWidth;
+		x += currentDataWidth;
+		partFrame.add(quantityField, constraints);
 		
 		newItemQuantity = new JLabel(newDatabaseItem.getQuantity().toString());
-		newItemQuantity.setHorizontalAlignment(SwingConstants.CENTER);
-		newItemQuantity.setBounds(column3Left, labelTop + (labelH * 3), sideW, labelH);
-		partFrame.add(newItemQuantity);
-
-		newPartLocation = new JLabel(newDatabaseItem.getLocation());
-		newPartLocation.setHorizontalAlignment(SwingConstants.CENTER);
-		newPartLocation.setBounds(column3Left, labelTop + (labelH * 4), sideW, labelH);
-		partFrame.add(newPartLocation);
+		format(newItemQuantity, newDataWidth, SwingConstants.CENTER, x, y);
 		
-		errorMessage.setBounds(center - (errorW / 2), labelTop + (labelH * 5), errorW, errorH);
+		x = 0; y = 4;
+		
+		partLocationLabel = new JLabel("Location");
+		partLocationLabel.setFont(labelFont);
+		format(partLocationLabel, labelWidth, SwingConstants.RIGHT, x, y);
+		
+		oldPartLocation = new JLabel(oldDatabaseItem.getLocation());
+		format(oldPartLocation, oldDataWidth, SwingConstants.CENTER, x, y);
+		
+//// NEED TO ADD LOCATION DATA TO THIS FIELD
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = currentDataWidth;
+		x += currentDataWidth;
+		partFrame.add(locationField, constraints);
+		
+		newPartLocation = new JLabel(newDatabaseItem.getLocation());
+		format(newPartLocation, newDataWidth, SwingConstants.CENTER, x, y);
+		
+		x = 0; y = 5;
+		
+		format(errorMessage, totalWidth, SwingConstants.CENTER, x, y);
+		
+		x = 0; y = 6;
 		
 		if (oldDatabaseItem.getQuantity() != newDatabaseItem.getQuantity()) {
 			int dataDiff = newDatabaseItem.getQuantity() - oldDatabaseItem.getQuantity();
@@ -179,60 +171,76 @@ public class ItemView extends JFrame {
 				userMod = "You added " + userDiff + ". ";
 			}
 			else {
-				userMod = "You removed" + Math.abs(dataDiff) + ". ";
+				userMod = "You removed " + Math.abs(dataDiff) + ". ";
 			}
 			mergeMessage = new JLabel("");
-			mergeMessage.setHorizontalAlignment(SwingConstants.CENTER);
 			mergeMessage.setForeground(Color.red);
-			mergeMessage.setBounds(labelLeft, labelTop + (int)(labelH * 5.5), errorW, errorH);
-			partFrame.add(mergeMessage);
 			mergeMessage.setText("Quantity: " + userMod + dataMod + "Recommended value to save: " + mergeQuantity);
+			format(mergeMessage, totalWidth, SwingConstants.CENTER, x, y);
 		}
 		
-		cancel.setBounds((int) (center - buttonW), buttonBottom, buttonW, buttonH);		
-		ok.setBounds((int) (center), buttonBottom, buttonW, buttonH);
-		edit.setBounds((int) (center), buttonBottom, buttonW, buttonH);
-		save.setBounds((int) (center), buttonBottom, buttonW, buttonH);
-		save.setText("Override");
-
+		x = 0 + labelWidth; y = 7;
 		
-		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (viewWidth / 2) + 50, 
-				 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (viewHeight / 2));
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = oldDataWidth;
+		x += oldDataWidth;
+		partFrame.add(cancel, constraints);
+		
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = newDataWidth;
+		partFrame.add(ok, constraints);
+		partFrame.add(edit, constraints);
+		save.setText("Override");
+		partFrame.add(save, constraints);
+		partFrame.validate();
+		partFrame.setVisible(true);
+		this.validate();
 		this.repaint();
 	}
 	
-	public ItemView(InventoryItemModel model, String title) {
-		super(title);
+	public ItemView(InventoryItemModel model, int width, int height, int minX, int minY) {
 		this.model = model;
-		
-		viewWidth = 400;
-		viewHeight = 325;
-		
-		labelW = (viewWidth / 9) * 2; // 2/9 wide
-		centerW = (viewWidth / 9) * 6; // 6/9 wide (about 266px)
-
+		this.setLayout(new BorderLayout());
+		this.setSize(width, height);
+		this.minX = minX;
+		this.minY = minY;
+		createPanel();
+	}
+	
+	void createPanel() {
+		viewWidth = Math.max(minX, this.getWidth());
+		viewHeight = Math.max(minY, this.getHeight());
+		labelW = viewWidth / 3;
 		labelH = 32;
-		labelTop = 15;
-		
-		labelLeft = 4;
-		column1Left = labelW + (viewWidth / 18); // start at 2/9 + 1/18 (6/9 width with 1/18 margin on both sides)
-		
-		center = viewWidth / 2;
+		labelTop = 10;
+		labelLeft = 15;
 		errorW = viewWidth - (labelLeft * 2);
 		errorH = 32;
 		buttonW = viewWidth / 3;
 		buttonH = 32;
-		buttonBottom = viewHeight - buttonH - 64;
+		buttonX = viewWidth / 3;
+		buttonY = viewHeight - 100;
+		fieldW = viewWidth / 2;
+		fieldH = 32;
+		fieldLeft = labelW + 25;
+		fieldTop = labelTop;
 		
 		this.setSize(viewWidth, viewHeight);
 		this.setVisible(true);
-		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (viewWidth / 2) + 50, 
-				 (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (viewHeight / 2));
+		this.setLayout(new BorderLayout());
 		
 		partFrame = new JPanel();
+		partFrame.setSize(viewWidth, viewHeight);
 		partFrame.setBackground(Color.LIGHT_GRAY);
 		partFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(partFrame);
 		partFrame.setLayout(null);
 		
 		ID = new JLabel();
@@ -241,7 +249,7 @@ public class ItemView extends JFrame {
 		labelFont = new Font(labelFont.getFontName(), Font.BOLD, labelFont.getSize());
 		ID.setFont(labelFont);
 		ID.setHorizontalAlignment(SwingConstants.CENTER);
-		ID.setBounds(center - labelW / 2, labelTop + (labelH * 0), labelW, labelH);
+		ID.setBounds((viewWidth / 2) - (fieldW / 2), fieldTop + (fieldH * 0), fieldW, fieldH);
 		partFrame.add(ID);
 		
 		
@@ -270,19 +278,19 @@ public class ItemView extends JFrame {
 		partFrame.add(errorMessage);
 		
 		cancel = new JButton("Cancel");
-		cancel.setBounds((int) (center - buttonW), buttonBottom, buttonW, buttonH);
+		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partFrame.add(cancel);
 		
 		ok = new JButton("OK");
-		ok.setBounds((int) (center), buttonBottom, buttonW, buttonH);
+		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partFrame.add(ok);
 		
 		edit = new JButton("Edit");
-		edit.setBounds((int) (center), buttonBottom, buttonW, buttonH);
+		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partFrame.add(edit);
 		
 		save = new JButton("Save");
-		save.setBounds((int) (center), buttonBottom, buttonW, buttonH);
+		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partFrame.add(save);
 		
 		partField = new JComboBox<String>();
@@ -294,11 +302,11 @@ public class ItemView extends JFrame {
 		catch (SQLException e) {
 			setErrorMessage(e.getMessage());
 		}
-		partField.setBounds(column1Left, labelTop + (labelH * 2), centerW, labelH);
+		partField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
 		partFrame.add(partField);
 		
 		quantityField = new JTextField();
-		quantityField.setBounds(column1Left, labelTop + (labelH * 3), centerW, labelH);
+		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
 		partFrame.add(quantityField);
 		
 		locationField = new JComboBox<String>();
@@ -311,8 +319,45 @@ public class ItemView extends JFrame {
 			setErrorMessage(e.getMessage());
 		}
 		locationField.setSelectedItem("Unknown"); // default Unknown; if it is not in the list, defaults to first item
-		locationField.setBounds(column1Left, labelTop + (labelH * 4), centerW, labelH);
+		locationField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
 		partFrame.add(locationField);
+		this.add(partFrame, BorderLayout.CENTER);
+		this.setVisible(true);
+	}
+	
+	private void resizePanel() {
+		viewWidth = Math.max(minX, this.getWidth());
+		viewHeight = Math.max(minY, this.getHeight());
+		labelW = viewWidth / 3;
+		labelH = 32;
+		labelTop = 10;
+		labelLeft = 15;
+		errorW = viewWidth - (labelLeft * 2);
+		errorH = 32;
+		buttonW = viewWidth / 3;
+		buttonH = 32;
+		buttonX = viewWidth / 3;
+		buttonY = viewHeight - 100;
+		fieldW = viewWidth / 2;
+		fieldH = 32;
+		fieldLeft = labelW + 25;
+		fieldTop = labelTop;
+		
+		this.setSize(viewWidth, viewHeight);
+		partFrame.setSize(viewWidth, viewHeight);
+		ID.setBounds((viewWidth / 2) - (fieldW / 2), fieldTop + (fieldH * 0), fieldW, fieldH);
+		partIDLabel.setBounds(labelLeft, labelTop + (labelH * 2), labelW, labelH);
+		itemQuantityLabel.setBounds(labelLeft, labelTop + (labelH * 3), labelW, labelH);
+		partLocationLabel.setBounds(labelLeft, labelTop + (labelH * 4), labelW, labelH);
+		errorMessage.setBounds(labelLeft, labelTop + (labelH * 5), errorW, errorH);
+		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
+		ok.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
+		partField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
+		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
+		locationField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
+		
 	}
 	
 	public void register(InventoryController controller) {
@@ -340,6 +385,7 @@ public class ItemView extends JFrame {
 	public Integer getID() throws NumberFormatException {
 		Integer i = 0;
 		try {
+			System.out.println("LINE 387 ITEMVIEW: ID = " + ID.getText());
 			String IDstr = ID.getText().split("/ /")[1]; // Splits "ID: ###";
 			i = Integer.parseInt(IDstr.trim());
 			return i;
@@ -424,5 +470,11 @@ public class ItemView extends JFrame {
 		partField.setEnabled(true);
 		quantityField.setEnabled(true);
 		locationField.setEnabled(true);
+	}
+	
+	public void resized() {
+		if (!inConflictWindow) {
+			resizePanel();
+		}
 	}
 }
