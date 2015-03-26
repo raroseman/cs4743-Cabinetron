@@ -127,7 +127,7 @@ public class CabinetronView extends JFrame {
 		this.add(desktop);
 		this.setVisible(true);
 
-	
+		disableMenu();
 	}
 	
 	public void register(CabinetronController controller) {
@@ -138,26 +138,25 @@ public class CabinetronView extends JFrame {
 		itemInventory.addActionListener(controller);
 		itemTemplates.addActionListener(controller);
 	}
-	/////////////////////////////////////////////////////////////////////////////////////////
+
 	public LoginView ViewLogin() {
 		if (partListWindow == null) {
 			loginView = new LoginView(0, 0, 200, 200);
-			loginController = new LoginController(thisView);
+			loginController = new LoginController(thisView, loginView);
 			loginView.register(loginController);
 			loginWindow = new JInternalFrame("Login", true, true, true, true );
 			loginWindow.setMinimumSize(new Dimension(minX, minY));
-			/*loginWindow.addComponentListener(new ComponentAdapter() {
+			loginWindow.addComponentListener(new ComponentAdapter() {
 				public void componentResized(ComponentEvent e) {
-					partsInventoryView.resized();
+					loginView.resized();
 					
 				}
 			});
-			partListWindow.addInternalFrameListener(new InternalFrameAdapter() {
+			loginWindow.addInternalFrameListener(new InternalFrameAdapter() {
 				public void internalFrameClosed(InternalFrameEvent e) {
-					partListWindow = null;
+					loginWindow = null;
 				}
 			});
-			*/
 			loginWindow.add(loginView, BorderLayout.CENTER);
 			loginWindow.pack();
 			loginWindow.setLocation(0, 0); // child window position in desktop 
@@ -169,7 +168,7 @@ public class CabinetronView extends JFrame {
 		}
 		return loginView;
 	}
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	public PartsInventoryView ViewParts() {
 		if (partListWindow == null) {
 			partsInventoryView = new PartsInventoryView(model.GetPartsModel(), model.GetGUIWidth() / 2, model.GetGUIHeight() / 2, minX, minY);
@@ -438,5 +437,15 @@ public class CabinetronView extends JFrame {
 	
 	public void closeLoginView() {
 		loginWindow.dispose();
+	}
+	
+	public void disableMenu() {
+		menuParts.setEnabled(false);
+		menuTemplates.setEnabled(false);
+	}
+	
+	public void enableMenu() {
+		menuParts.setEnabled(true);
+		menuTemplates.setEnabled(true);
 	}
 }

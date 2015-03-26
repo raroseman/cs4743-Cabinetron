@@ -20,7 +20,7 @@ public class LoginView extends JPanel{
 	private Integer templateID;
 	
 	private JLabel username, password, errorMessage;
-	private JTextField productTemplateIDField, productPartIDField, productQuantityField;	
+	private JTextField usernameField, passwordField;
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonX, buttonY, buttonLeft, buttonBottom,
 				labelW, labelH, labelTop, labelLeft, fieldW, fieldH, fieldLeft, fieldTop;
 	private int minX, minY;
@@ -81,14 +81,13 @@ public class LoginView extends JPanel{
 		login.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partFrame.add(login);
 		
-		productTemplateIDField = new JTextField();
-		//productTemplateIDField.setText(model.getProductTemplateID().toString());
-		productTemplateIDField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		partFrame.add(productTemplateIDField);
+		usernameField = new JTextField();
+		usernameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
+		partFrame.add(usernameField);
 		
-		productPartIDField = new JTextField();
-		productPartIDField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
-		partFrame.add(productPartIDField);
+		passwordField = new JTextField();
+		passwordField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		partFrame.add(passwordField);
 		
 		this.add(partFrame, BorderLayout.CENTER);
 		
@@ -121,8 +120,8 @@ public class LoginView extends JPanel{
 		login.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		//edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		//save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
-		productTemplateIDField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
-		productPartIDField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
+		usernameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
+		passwordField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
 	}
 	
 	public void register(LoginController controller) {
@@ -130,51 +129,22 @@ public class LoginView extends JPanel{
 		cancel.addActionListener(controller);
 	}
 	
+	public String getUsername() {
+		return usernameField.getText();
+	}
+	
+	public String getPassword() {
+		return passwordField.getText();
+	}
+	
 	public Integer getProductTemplateID() {
 		return this.templateID;
-	}
-	
-	public Integer getPartID() throws NumberFormatException {
-		Integer i = 0;
-		try {
-			i = Integer.parseInt(productPartIDField.getText().trim());
-			return i;
-		}
-		catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Error: id must be in the form of an integer.");
-		}
-	}
-	
-	public Integer getQuantity() throws NumberFormatException {
-		Integer i = 0;
-		try {
-			i = Integer.parseInt(productQuantityField.getText().trim());
-			return i;
-		}
-		catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Error: id must be in the form of an integer.");
-		}
 	}
 	
 	public void setErrorMessage(String error) {
 		errorMessage.setText(error);
 	}
 	
-	public void setTemplateID(Integer id) {
-		productTemplateIDField.setText(String.valueOf(id));
-	}
-	
-	public void setPartID(Integer partID) {
-		productPartIDField.setText(String.valueOf(partID));
-	}
-	
-	public void setQuantity(Integer quantity) {
-		productQuantityField.setText(String.valueOf(quantity));
-	}
-	
-	public void hideID() {
-		productPartIDField.setVisible(false);
-	}
 /*	
 	public void hideTemplateID() {
 		productTemplateIDField.setVisible(false);
@@ -189,13 +159,7 @@ public class LoginView extends JPanel{
 		save.setVisible(false);
 	}
 */	
-	public void disableIDEdit() {
-		productPartIDField.setEnabled(false);
-	}
 	
-	public void disableTemplateIDEdit() {
-		productTemplateIDField.setEnabled(false);
-	}
 /*	
 	public void disableEditable() {
 		ok.setVisible(false);

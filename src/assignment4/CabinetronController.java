@@ -30,6 +30,8 @@ public class CabinetronController implements ActionListener {
 				view.ViewLogin();
 				break;
 			case "Logout":
+				view.disableMenu();
+				view.setTitle("Cabinetron");
 				break;
 			case "Exit":
 				System.exit(0);
