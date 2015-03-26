@@ -9,8 +9,7 @@ import Parts.PartsInventoryController;
 import Parts.PartsInventoryView;
 import ProductTemplates.ProductTemplateListController;
 
-public class CabinetronController implements ActionListener {
-	
+public class CabinetronController implements ActionListener {	
 	private PartsInventoryController partsInventoryController;
 	private InventoryController inventoryController;
 	private ProductTemplateListController productTemplateListController;
@@ -27,6 +26,14 @@ public class CabinetronController implements ActionListener {
 		String command = e.getActionCommand();
 		
 		switch(command) {
+			case "Login":
+				view.ViewLogin();
+				break;
+			case "Logout":
+				break;
+			case "Exit":
+				System.exit(0);
+				break;
 			case "Part":
 				view.ViewParts();
 				break;
