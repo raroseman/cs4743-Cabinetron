@@ -9,11 +9,11 @@ import Parts.PartsInventoryController;
 import Parts.PartsInventoryView;
 import ProductTemplates.ProductTemplateListController;
 
-public class CabinetronController implements ActionListener {
-	
+public class CabinetronController implements ActionListener {	
 	private PartsInventoryController partsInventoryController;
 	private InventoryController inventoryController;
 	private ProductTemplateListController productTemplateListController;
+	private boolean hasLoginViewOpen;
 
 	private CabinetronModel model;
 	private CabinetronView view;
@@ -27,6 +27,24 @@ public class CabinetronController implements ActionListener {
 		String command = e.getActionCommand();
 		
 		switch(command) {
+			case "Login":
+				if (hasLoginViewOpen) {
+					view.closeLoginView();
+					hasLoginViewOpen = false;
+				}
+				view.ViewLogin();
+				hasLoginViewOpen = true;
+				break;
+			case "Logout":
+				view.disableMenu();
+				view.setTitle("Cabinetron");
+				view.enableLogin();
+				view.disableLogout();
+				hasLoginViewOpen = false;
+				break;
+			case "Exit":
+				System.exit(0);
+				break;
 			case "Part":
 				view.ViewParts();
 				break;

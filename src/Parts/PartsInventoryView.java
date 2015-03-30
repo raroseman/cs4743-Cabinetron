@@ -253,6 +253,18 @@ public class PartsInventoryView extends JPanel {
 		viewPart.setEnabled(true);
 	}
 	
+	public void hideView() {
+		viewPart.setVisible(false);
+	}
+	
+	public void hideAdd() {
+		addPart.setVisible(false);
+	}
+	
+	public void hideDelete() {
+		deletePart.setVisible(false);
+	}
+	
 	public void clearErrorMessage() {
 		errorMessage.setText("");
 	}

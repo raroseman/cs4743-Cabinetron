@@ -29,7 +29,7 @@ public class Tester {
 		CabinetronView view = new CabinetronView(model);
 		CabinetronController controller = new CabinetronController(model, view);
 		view.register(controller);
-<<<<<<< HEAD
+		
 		
 		/*
 		DB_CreateTables c = new DB_CreateTables();
@@ -37,18 +37,5 @@ public class Tester {
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
 		*/
-
-=======
-				
->>>>>>> AccessControlModel
-		authenticator = new Authenticator();
-		
-		session = authenticator.getUserCredentials("TomJones@Cabinetron.com", "TommyJ$$$");
-		
-		System.out.println(session);
-<<<<<<< HEAD
-=======
-
 	}
->>>>>>> AccessControlModel
 }
