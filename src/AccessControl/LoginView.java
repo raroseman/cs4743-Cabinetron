@@ -118,8 +118,6 @@ public class LoginView extends JPanel{
 		errorMessage.setBounds(labelLeft, labelTop + (labelH * 5), errorW, errorH);
 		cancel.setBounds((buttonX * 1) - (buttonW / 2), buttonY, buttonW, buttonH);
 		login.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
-		//edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
-		//save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		usernameField.setBounds(fieldLeft, fieldTop + (fieldH * 0), fieldW, fieldH);
 		passwordField.setBounds(fieldLeft, fieldTop + (fieldH * 1), fieldW, fieldH);
 	}

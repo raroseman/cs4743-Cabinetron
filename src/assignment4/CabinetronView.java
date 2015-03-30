@@ -26,6 +26,7 @@ import javax.swing.event.InternalFrameListener;
 
 import AccessControl.LoginController;
 import AccessControl.LoginView;
+import AccessControl.Session;
 import InventoryItems.InventoryController;
 import InventoryItems.InventoryView;
 import InventoryItems.ItemView;
@@ -49,6 +50,7 @@ public class CabinetronView extends JFrame {
 	private JMenuItem itemParts, itemInventory, itemTemplates, login, logout, exit;
 	private int minX = 300;
 	private int minY = 300;
+	private boolean[] accessPrivileges;
 	
 	private CabinetronModel model;
 	private CabinetronView thisView;
@@ -128,6 +130,7 @@ public class CabinetronView extends JFrame {
 		this.setVisible(true);
 
 		disableMenu();
+		disableLogout();
 	}
 	
 	public void register(CabinetronController controller) {
@@ -168,7 +171,7 @@ public class CabinetronView extends JFrame {
 		}
 		return loginView;
 	}
-
+	
 	public PartsInventoryView ViewParts() {
 		if (partListWindow == null) {
 			partsInventoryView = new PartsInventoryView(model.GetPartsModel(), model.GetGUIWidth() / 2, model.GetGUIHeight() / 2, minX, minY);
@@ -192,6 +195,9 @@ public class CabinetronView extends JFrame {
 			partListWindow.setLocation(0, 0); // child window position in desktop 
 			desktop.add(partListWindow);
 			partListWindow.setVisible(true);
+			loginController.getController();
+			accessPrivileges = loginController.getPermisions();
+			setPartPermissions();
 		}
 		else {
 			displayOpenFrame(partListWindow);
@@ -253,6 +259,9 @@ public class CabinetronView extends JFrame {
 			inventoryListWindow.setLocation(0, 0); // child window position in desktop 
 			desktop.add(inventoryListWindow);
 			inventoryListWindow.setVisible(true);
+			loginController.getController();
+			accessPrivileges = loginController.getPermisions();
+			setInventoryPermissions();
 		}
 		else {
 			displayOpenFrame(inventoryListWindow);
@@ -330,6 +339,9 @@ public class CabinetronView extends JFrame {
 			templateListWindow.setLocation(0, 0); // child window position in desktop 
 			desktop.add(templateListWindow);
 			templateListWindow.setVisible(true);
+			loginController.getController();
+			accessPrivileges = loginController.getPermisions();
+			setTemplatePermissions();
 		}
 		else {
 			displayOpenFrame(templateListWindow);
@@ -447,5 +459,40 @@ public class CabinetronView extends JFrame {
 	public void enableMenu() {
 		menuParts.setEnabled(true);
 		menuTemplates.setEnabled(true);
+	}
+	
+	public void disableLogin() {
+		login.setEnabled(false);
+	}
+	
+	public void enableLogin() {
+		login.setEnabled(true);
+	}
+	
+	public void disableLogout() {
+		logout.setEnabled(false);
+	}
+	
+	public void enableLogout() {
+		logout.setEnabled(true);
+	}
+	
+	public void setTemplatePermissions() {
+		if (!accessPrivileges[0]) productTemplateListView.hideView();
+		if (!accessPrivileges[1]) productTemplateListView.hideAdd();
+		if (!accessPrivileges[2]) productTemplateListView.hideDelete();
+		//if (accessPrivileges[3]) productTemplateListView.hideCreate();
+	}
+	
+	public void setInventoryPermissions() {
+		if (!accessPrivileges[4]) inventoryView.hideView();
+		if (!accessPrivileges[5]) inventoryView.hideAdd();
+		if (!accessPrivileges[9]) inventoryView.hideDelete();
+	}
+	
+	public void setPartPermissions() {
+		if (!accessPrivileges[6]) partsInventoryView.hideView();
+		if (!accessPrivileges[7]) partsInventoryView.hideAdd();
+		if (!accessPrivileges[8]) partsInventoryView.hideDelete();
 	}
 }

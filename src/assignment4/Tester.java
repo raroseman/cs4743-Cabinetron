@@ -37,12 +37,5 @@ public class Tester {
 		DB_InsertTableData i = new DB_InsertTableData();
 		i.Setup();
 		*/
-
-		authenticator = new Authenticator();
-		
-		session = authenticator.getUserCredentials("TomJones@Cabinetron.com", "TommyJ$$$");
-		
-		System.out.println(session);
-
 	}
 }

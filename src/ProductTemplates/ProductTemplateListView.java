@@ -205,6 +205,18 @@ public class ProductTemplateListView extends JPanel  {
 		viewPart.setEnabled(false);
 	}
 	
+	public void hideView() {
+		viewPart.setVisible(false);
+	}
+	
+	public void hideAdd() {
+		addPart.setVisible(false);
+	}
+	
+	public void hideDelete() {
+		deletePart.setVisible(false);
+	}
+	
 	public void disableDelete() {
 		deletePart.setEnabled(false);
 	}

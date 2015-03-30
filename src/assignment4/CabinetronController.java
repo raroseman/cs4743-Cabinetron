@@ -13,6 +13,7 @@ public class CabinetronController implements ActionListener {
 	private PartsInventoryController partsInventoryController;
 	private InventoryController inventoryController;
 	private ProductTemplateListController productTemplateListController;
+	private boolean hasLoginViewOpen;
 
 	private CabinetronModel model;
 	private CabinetronView view;
@@ -27,11 +28,19 @@ public class CabinetronController implements ActionListener {
 		
 		switch(command) {
 			case "Login":
+				if (hasLoginViewOpen) {
+					view.closeLoginView();
+					hasLoginViewOpen = false;
+				}
 				view.ViewLogin();
+				hasLoginViewOpen = true;
 				break;
 			case "Logout":
 				view.disableMenu();
 				view.setTitle("Cabinetron");
+				view.enableLogin();
+				view.disableLogout();
+				hasLoginViewOpen = false;
 				break;
 			case "Exit":
 				System.exit(0);

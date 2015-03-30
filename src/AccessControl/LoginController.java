@@ -21,17 +21,34 @@ public class LoginController implements ActionListener{
 		
 		switch(command) {
 		case "Login":
-			authenticator = new Authenticator();
-			session = authenticator.getUserCredentials(loginView.getUsername(), loginView.getPassword());
-			view.enableMenu();
-			view.closeLoginView();
-			view.setTitle(session.getUserName());
-			System.out.println(session.getUserName());
+			try {
+				authenticator = new Authenticator();
+				session = authenticator.getUserCredentials(loginView.getUsername(), loginView.getPassword());
+				if (session == null) {
+					loginView.setErrorMessage("Invalid username or password");
+					break;
+				}
+				view.enableMenu();	
+				view.setTitle(session.getUserName());
+				view.disableLogin();
+				view.enableLogout();
+				view.closeLoginView();
+			} catch (NullPointerException n) {
+				
+			}
+			
 			break;
 		case "Cancel":
 			view.closeLoginView();
 			break;
 		}
 	}
-
+	
+	public LoginController getController() {
+		return this;
+	}
+	
+	public boolean[] getPermisions() {
+		return session.getAccessPrivileges();
+	}
 }

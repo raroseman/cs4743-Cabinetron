@@ -12,6 +12,7 @@ public class Session {
 	private boolean canDeleteParts;
 	private boolean canDeleteInventory;
 	private String sessionUser;
+	private boolean [] accessPrivileges;
 	
 	public Session(Administrator admin) {
 		canViewProductTemplates = true;
@@ -25,6 +26,7 @@ public class Session {
 		canDeleteParts = true;
 		canDeleteInventory = true;
 		sessionUser = admin.getUserName() + ": Administrator";
+		accessPrivileges = new boolean[] {true, true, true, true, true, true, true, true, true, true};
 	}
 	
 	public Session(ProductionManager productManager) {
@@ -39,6 +41,7 @@ public class Session {
 		canDeleteParts = false;
 		canDeleteInventory = false;
 		sessionUser = productManager.getUserName() + ": Production Manager";
+		accessPrivileges = new boolean[] {true, true, true, true, true, false, true, false, false, false};
 	}
 	
 	public Session(InventoryManager inventoryManager) {
@@ -53,16 +56,14 @@ public class Session {
 		canDeleteParts = false;
 		canDeleteInventory = false;
 		sessionUser = inventoryManager.getUserName() + ": Inventory Manager";
+		accessPrivileges = new boolean[] {false, false, false, false, true, true, true, true, false, false};
 	}
 	
 	public String getUserName() {
 		return sessionUser;
 	}
 	
-	// Implement method to disable functions for each constructor
-	// Need the menu first
-	public void disablePermissions() {
-		if (!canViewProductTemplates) { }
-	}
-	
+	public boolean[] getAccessPrivileges() {
+		return accessPrivileges;
+	}	
 }
