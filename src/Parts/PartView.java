@@ -275,6 +275,10 @@ public class PartView extends JPanel {
 		idField.setEnabled(false);
 	}
 	
+	public void disableEdit() {
+		edit.setEnabled(false);
+	}
+	
 	public void disableEditable() {
 		inEditMode = false;
 		ok.setVisible(false);

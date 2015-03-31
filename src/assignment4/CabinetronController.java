@@ -28,11 +28,11 @@ public class CabinetronController implements ActionListener {
 		
 		switch(command) {
 			case "Login":
+				view.ViewLogin();
 				if (hasLoginViewOpen) {
 					view.closeLoginView();
 					hasLoginViewOpen = false;
 				}
-				view.ViewLogin();
 				hasLoginViewOpen = true;
 				break;
 			case "Logout":
@@ -40,6 +40,7 @@ public class CabinetronController implements ActionListener {
 				view.setTitle("Cabinetron");
 				view.enableLogin();
 				view.disableLogout();
+				view.closeOnLogout();
 				hasLoginViewOpen = false;
 				break;
 			case "Exit":

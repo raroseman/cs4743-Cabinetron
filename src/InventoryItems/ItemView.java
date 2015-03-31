@@ -457,6 +457,10 @@ public class ItemView extends JPanel {
 		save.setVisible(false);
 	}
 	
+	public void disableEdit() {
+		edit.setEnabled(false);
+	}
+	
 	public void disableEditable() {
 		ok.setVisible(false);
 		save.setVisible(false);

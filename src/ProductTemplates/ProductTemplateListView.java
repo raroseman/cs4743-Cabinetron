@@ -221,6 +221,10 @@ public class ProductTemplateListView extends JPanel  {
 		deletePart.setEnabled(false);
 	}
 	
+	public void hideTemplatePartsList() {
+		templatePart.setVisible(false);
+	}
+	
 	public void disableTemplateParts() {
 		templatePart.setEnabled(false);
 	}

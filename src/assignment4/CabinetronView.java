@@ -51,12 +51,14 @@ public class CabinetronView extends JFrame {
 	private int minX = 300;
 	private int minY = 300;
 	private boolean[] accessPrivileges;
+	private boolean[] windowsOpen = {false, false, false, false, false, false, false, false};
 	
 	private CabinetronModel model;
 	private CabinetronView thisView;
 	
 	private PartsInventoryView partsInventoryView = null;
 	private InventoryView inventoryView = null;
+	private ItemView inventoryItemDetailView = null;
 	private ProductTemplateListView productTemplateListView;
 	private ProductTemplatePartView productTemplatePartListView;
 	private ProductTemplateDetailView templateDetailView;
@@ -198,6 +200,7 @@ public class CabinetronView extends JFrame {
 			loginController.getController();
 			accessPrivileges = loginController.getPermisions();
 			setPartPermissions();
+			windowsOpen[0] = true;
 		}
 		else {
 			displayOpenFrame(partListWindow);
@@ -205,9 +208,15 @@ public class CabinetronView extends JFrame {
 		return partsInventoryView;
 	}
 	
+	public void closePartInventoryView() {
+		partListWindow.dispose();
+		windowsOpen[0] = false;
+	}
+	
 	public PartView ViewPartDetails(String title) {
 		int prevX, prevY;
 		PartView partDetailView = new PartView(model.GetPartsModel(), (model.GetGUIWidth() / 5) * 2, (model.GetGUIHeight() / 5) * 2, minX, minY);
+		if (!accessPrivileges[7]) partDetailView.disableEdit();
 		if (partDetailWindow != null) {
 			prevX = partDetailWindow.getX();
 			prevY = partDetailWindow.getY();
@@ -229,11 +238,13 @@ public class CabinetronView extends JFrame {
 		partDetailWindow.setLocation(prevX, prevY); // child window position in desktop 
 		desktop.add(partDetailWindow);
 		partDetailWindow.setVisible(true);
+		windowsOpen[1] = true;
 		return partDetailView;
 	}
 	
 	public void closePartDetailView() {
 		partDetailWindow.dispose();
+		windowsOpen[1] = false;
 	}
 	
 	public InventoryView ViewInventoryItems() {
@@ -262,11 +273,17 @@ public class CabinetronView extends JFrame {
 			loginController.getController();
 			accessPrivileges = loginController.getPermisions();
 			setInventoryPermissions();
+			windowsOpen[2] = true;
 		}
 		else {
 			displayOpenFrame(inventoryListWindow);
 		}
 		return inventoryView;
+	}
+	
+	public void closeInventoryView() {
+		inventoryListWindow.dispose();
+		windowsOpen[2] = false;
 	}
 	
 	void displayOpenFrame(JInternalFrame frame) {
@@ -281,7 +298,8 @@ public class CabinetronView extends JFrame {
 	
 	public ItemView ViewInventoryItemDetails(String title) {
 		int prevX, prevY;
-		ItemView inventoryItemDetailView = new ItemView(model.GetInventoryItemModel(), (model.GetGUIWidth() / 5) * 2, (model.GetGUIHeight() / 5) * 2, minX, minY);
+		inventoryItemDetailView = new ItemView(model.GetInventoryItemModel(), (model.GetGUIWidth() / 5) * 2, (model.GetGUIHeight() / 5) * 2, minX, minY);
+		if (!accessPrivileges[5]) inventoryItemDetailView.disableEdit();
 		if (inventoryDetailWindow != null) {
 			prevX = inventoryDetailWindow.getX();
 			prevY = inventoryDetailWindow.getY();
@@ -303,11 +321,13 @@ public class CabinetronView extends JFrame {
 		inventoryDetailWindow.setLocation(prevX, prevY); // child window position in desktop 
 		desktop.add(inventoryDetailWindow);
 		inventoryDetailWindow.setVisible(true);
+		windowsOpen[3] = true;
 		return inventoryItemDetailView;
 	}
 	
 	public void closeInventoryItemDetailView() {
 		inventoryDetailWindow.dispose();
+		windowsOpen[3] = false;
 	}
 	
 	public void showInventoryItemEditConflictWindow() {
@@ -342,11 +362,17 @@ public class CabinetronView extends JFrame {
 			loginController.getController();
 			accessPrivileges = loginController.getPermisions();
 			setTemplatePermissions();
+			windowsOpen[4] = true;
 		}
 		else {
 			displayOpenFrame(templateListWindow);
 		}
 		return productTemplateListView;
+	}
+	
+	public void closeProductTemplateView() {
+		templateListWindow.dispose();
+		windowsOpen[4] = false;
 	}
 	
 	public ProductTemplatePartView ViewProductTemplatePartList(ProductTemplate template) {
@@ -372,6 +398,7 @@ public class CabinetronView extends JFrame {
 			templatePartListWindow.setLocation(0, 0); // child window position in desktop 
 			desktop.add(templatePartListWindow);
 			templatePartListWindow.setVisible(true);
+			windowsOpen[5] = true;
 		}
 		else {
 			displayOpenFrame(templateListWindow);
@@ -381,6 +408,7 @@ public class CabinetronView extends JFrame {
 	
 	public void closeProductTemplatePartListView() {
 		templatePartListWindow.dispose();
+		windowsOpen[5] = false;
 	}
 	
 	public ProductTemplateDetailView ViewProductTemplateDetails(String title) {
@@ -407,11 +435,13 @@ public class CabinetronView extends JFrame {
 		templateDetailWindow.setLocation(prevX, prevY); // child window position in desktop 
 		desktop.add(templateDetailWindow);
 		templateDetailWindow.setVisible(true);
+		windowsOpen[6] = true;
 		return templateDetailView;
 	}
 	
 	public void closeProductTemplateDetailView() {
 		templateDetailWindow.dispose();
+		windowsOpen[6] = false;
 	}
 	
 	
@@ -440,11 +470,13 @@ public class CabinetronView extends JFrame {
 		templatePartDetailWindow.setLocation(prevX, prevY); // child window position in desktop 
 		desktop.add(templatePartDetailWindow);
 		templatePartDetailWindow.setVisible(true);
+		windowsOpen[7] = true;
 		return templatePartDetailView;
 	}
 	
 	public void closeProductTemplatePartDetailView() {
 		templatePartDetailWindow.dispose();
+		windowsOpen[7] = false;
 	}
 	
 	public void closeLoginView() {
@@ -478,7 +510,10 @@ public class CabinetronView extends JFrame {
 	}
 	
 	public void setTemplatePermissions() {
-		if (!accessPrivileges[0]) productTemplateListView.hideView();
+		if (!accessPrivileges[0]) {
+			productTemplateListView.hideView();
+			productTemplateListView.hideTemplatePartsList();
+		}
 		if (!accessPrivileges[1]) productTemplateListView.hideAdd();
 		if (!accessPrivileges[2]) productTemplateListView.hideDelete();
 		//if (accessPrivileges[3]) productTemplateListView.hideCreate();
@@ -494,5 +529,16 @@ public class CabinetronView extends JFrame {
 		if (!accessPrivileges[6]) partsInventoryView.hideView();
 		if (!accessPrivileges[7]) partsInventoryView.hideAdd();
 		if (!accessPrivileges[8]) partsInventoryView.hideDelete();
+	}
+	
+	public void closeOnLogout() {
+		if (windowsOpen[0] && partListWindow != null) closePartInventoryView();
+		if (windowsOpen[1] && partDetailWindow != null) closePartDetailView();
+		if (windowsOpen[2] && inventoryListWindow != null) closeInventoryView();
+		if (windowsOpen[3] && inventoryDetailWindow != null) closeInventoryItemDetailView();
+		if (windowsOpen[4] && templateListWindow != null) closeProductTemplateView();
+		if (windowsOpen[5] && templatePartListWindow != null) closeProductTemplatePartListView();
+		if (windowsOpen[6] && templateDetailWindow != null) closeProductTemplateDetailView();
+		if (windowsOpen[7] && templatePartDetailWindow != null) closeProductTemplatePartDetailView();
 	}
 }
