@@ -116,6 +116,29 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 					hasPartViewOpen = true;
 				}
 				break;
+// 5
+			case "Create Product":
+				productTemplateListView.clearErrorMessage();
+				if (selectedTemplate != null) {
+					if (hasPartViewOpen) {
+						view.closeProductTemplateDetailView();
+						hasPartViewOpen = false;
+					}
+					try {
+						productTemplateModel.deleteProductTemplate(selectedTemplate);
+						clearSelection();
+						productTemplateListView.updatePanel();
+						productTemplateListView.repaint();
+					} 
+					catch (SQLException sqe) {
+						productTemplateListView.setErrorMessage(sqe.getMessage());
+					}
+					catch (IOException ioe) {
+						productTemplateListView.setErrorMessage(ioe.getMessage());
+					}
+					
+				}
+				break;
 			case "Edit":
 				productTemplateDetailView.enableEditable();
 				productTemplateDetailView.hideEditButton();
@@ -165,6 +188,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 				productTemplateListView.enableDelete();
 				productTemplateListView.enableView();
 				productTemplateListView.enableTemplateParts();
+				productTemplateListView.enableCreateProduct();
 				view.closeProductTemplateDetailView();
 				hasPartViewOpen = false;
 				break;
@@ -176,6 +200,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 		productTemplateListView.disableDelete();
 		productTemplateListView.disableView();
 		productTemplateListView.disableTemplateParts();
+		productTemplateListView.disableCreateProduct();
 	}
 	
 	// When the user clicks on an element in the inventory list, event is triggered: gets Part from index of list element
@@ -194,6 +219,7 @@ public class ProductTemplateListController implements ActionListener, ListSelect
 			productTemplateListView.enableView();
 			productTemplateListView.enableTemplateParts();
 			productTemplateListView.enablePartsList();
+			productTemplateListView.enableCreateProduct();
 		}
 	}
 }

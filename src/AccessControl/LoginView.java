@@ -143,6 +143,14 @@ public class LoginView extends JPanel{
 		errorMessage.setText(error);
 	}
 	
+	public void setUsername(String user) {
+		usernameField.setText(user);
+	}
+	
+	public void setPassword(String pass) {
+		passwordField.setText(pass);
+	}
+	
 /*	
 	public void hideTemplateID() {
 		productTemplateIDField.setVisible(false);

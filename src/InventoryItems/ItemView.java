@@ -22,13 +22,13 @@ public class ItemView extends JPanel {
 	private InventoryItemModel model;
 	private JPanel partFrame;
 	private JButton cancel, ok, edit, save;
-	private JLabel ID, errorMessage, mergeMessage, oldColumn = null, newColumn = null;
-	private JLabel partIDLabel, itemQuantityLabel, partLocationLabel, timestampLabel;
-	private JLabel oldPartID = null, oldItemQuantity = null, oldPartLocation = null;
-	private JLabel newPartID = null, newItemQuantity = null, newPartLocation = null;
+	private JLabel ID, productTemplateID, description, errorMessage, mergeMessage, oldColumn = null, newColumn = null;
+	private JLabel partIDLabel, itemQuantityLabel, partLocationLabel, productTemplateIDLabel, timestampLabel;
+	private JLabel oldPartID = null, oldItemQuantity = null, oldProductTemplateID = null, oldPartLocation = null;
+	private JLabel newPartID = null, newItemQuantity = null, newProductTemplateID = null, newPartLocation = null;
 	private JLabel oldTimestamp = null, newTimestamp = null;
 	private JTextField quantityField;
-	private JComboBox<String> partField, locationField;	
+	private JComboBox<String> partField, locationField, productTemplateField;
 	private int viewWidth, viewHeight, errorW, errorH, buttonW, buttonH, buttonX, buttonY, fieldW, fieldH, fieldLeft, fieldTop, buttonBottom,
 				labelW, labelH, labelTop, labelLeft,
 				column1Left, column2Left, column3Left, center, centerW, sideW;
@@ -92,7 +92,6 @@ public class ItemView extends JPanel {
 		oldPartID = new JLabel(oldDatabaseItem.getPart().getPartNumber());
 		format(oldPartID, oldDataWidth, SwingConstants.CENTER, x, y);
 		
-//// NEED TO COPY PARTFIELD INPUT TO THIS NEW FIELD
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.weightx = 0.5;
@@ -114,7 +113,6 @@ public class ItemView extends JPanel {
 		oldItemQuantity = new JLabel(oldDatabaseItem.getQuantity().toString());
 		format(oldItemQuantity, oldDataWidth, SwingConstants.CENTER, x, y);
 		
-//// NEED TO ADD QUANTITY INPUT TO THIS FIELD
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.weightx = 0.5;
@@ -129,6 +127,27 @@ public class ItemView extends JPanel {
 		
 		x = 0; y = 4;
 		
+		productTemplateIDLabel = new JLabel("Product Template ID");
+		productTemplateIDLabel.setFont(labelFont);
+		format(productTemplateIDLabel, labelWidth, SwingConstants.RIGHT, x, y);
+		
+		oldProductTemplateID = new JLabel(oldDatabaseItem.getProductTemplateID().toString());
+		format(oldProductTemplateID, oldDataWidth, SwingConstants.CENTER, x, y);
+		
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weightx = 0.5;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = currentDataWidth;
+		x += currentDataWidth;
+		partFrame.add(productTemplateID, constraints);
+		
+		newProductTemplateID = new JLabel(newDatabaseItem.getProductTemplateID().toString());
+		format(newProductTemplateID, newDataWidth, SwingConstants.CENTER, x, y);
+		
+		x = 0; y = 5;
+		
 		partLocationLabel = new JLabel("Location");
 		partLocationLabel.setFont(labelFont);
 		format(partLocationLabel, labelWidth, SwingConstants.RIGHT, x, y);
@@ -136,7 +155,6 @@ public class ItemView extends JPanel {
 		oldPartLocation = new JLabel(oldDatabaseItem.getLocation());
 		format(oldPartLocation, oldDataWidth, SwingConstants.CENTER, x, y);
 		
-//// NEED TO ADD LOCATION DATA TO THIS FIELD
 		constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.weightx = 0.5;
@@ -149,11 +167,11 @@ public class ItemView extends JPanel {
 		newPartLocation = new JLabel(newDatabaseItem.getLocation());
 		format(newPartLocation, newDataWidth, SwingConstants.CENTER, x, y);
 		
-		x = 0; y = 5;
+		x = 0; y = 6;
 		
 		format(errorMessage, totalWidth, SwingConstants.CENTER, x, y);
 		
-		x = 0; y = 6;
+		x = 0; y = 7;
 		
 		if (oldDatabaseItem.getQuantity() != newDatabaseItem.getQuantity()) {
 			int dataDiff = newDatabaseItem.getQuantity() - oldDatabaseItem.getQuantity();
@@ -271,10 +289,21 @@ public class ItemView extends JPanel {
 		partLocationLabel.setBounds(labelLeft, labelTop + (labelH * 4), labelW, labelH);
 		partFrame.add(partLocationLabel);
 		
+		description = new JLabel("");
+		description.setHorizontalAlignment(SwingConstants.CENTER);
+		description.setBounds(labelLeft, labelTop + (labelH * 5), errorW, errorH);
+		description.setAutoscrolls(true);
+		partFrame.add(description);
+
+		productTemplateID = new JLabel("");
+		productTemplateID.setHorizontalAlignment(SwingConstants.CENTER);
+		productTemplateID.setBounds(labelLeft, labelTop + (labelH * 6), errorW, errorH);
+		partFrame.add(productTemplateID);
+		
 		errorMessage = new JLabel("");
 		errorMessage.setHorizontalAlignment(SwingConstants.CENTER);
 		errorMessage.setForeground(Color.red);
-		errorMessage.setBounds(labelLeft, labelTop + (labelH * 5), errorW, errorH);
+		errorMessage.setBounds(labelLeft, labelTop + (labelH * 7), errorW, errorH);
 		partFrame.add(errorMessage);
 		
 		cancel = new JButton("Cancel");
@@ -304,6 +333,18 @@ public class ItemView extends JPanel {
 		}
 		partField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
 		partFrame.add(partField);
+		
+		productTemplateField = new JComboBox<String>();
+		try {
+			for (String template : model.getProductTemplates()) {
+				productTemplateField.addItem(template);
+			}
+		} 
+		catch (SQLException e) {
+			setErrorMessage(e.getMessage());
+		}
+		productTemplateField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
+		partFrame.add(productTemplateField);
 		
 		quantityField = new JTextField();
 		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
@@ -355,6 +396,7 @@ public class ItemView extends JPanel {
 		edit.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		save.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		partField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
+		productTemplateField.setBounds(fieldLeft, fieldTop + (fieldH * 2), fieldW, fieldH);
 		quantityField.setBounds(fieldLeft, fieldTop + (fieldH * 3), fieldW, fieldH);
 		locationField.setBounds(fieldLeft, fieldTop + (fieldH * 4), fieldW, fieldH);
 		
@@ -385,8 +427,8 @@ public class ItemView extends JPanel {
 	public Integer getID() throws NumberFormatException {
 		Integer i = 0;
 		try {
-			System.out.println("LINE 387 ITEMVIEW: ID = " + ID.getText());
-			String IDstr = ID.getText().split("/ /")[1]; // Splits "ID: ###";
+			//String IDstr = ID.getText().split("/ /")[1]; // Splits "ID: ###";
+			String IDstr = ID.getText().substring(4, ID.getText().length());
 			i = Integer.parseInt(IDstr.trim());
 			return i;
 		}
@@ -411,8 +453,25 @@ public class ItemView extends JPanel {
 		return locationField.getItemAt(index);
 	}
 	
+	public Integer getProductTemplateID() {
+		return Integer.parseInt(this.productTemplateID.getText());
+	}
+	
 	public String getErrorMessage() {
 		return errorMessage.getText();
+	}
+	
+	public String getDescription() {
+		return this.description.getText();
+	}
+	
+	public String getProductNumber() {
+		int index = productTemplateField.getSelectedIndex();
+		return productTemplateField.getItemAt(index);
+	}
+	
+	public void setDescription(String description) {
+		this.description.setText(description);
 	}
 	
 	public void setErrorMessage(String error) {
@@ -421,6 +480,14 @@ public class ItemView extends JPanel {
 	
 	public void setPartNumber(String partNumber) {
 		partField.setSelectedItem(partNumber);
+	}
+	
+	public void setProductNumber(String productNumber) {
+		productTemplateField.setSelectedItem(productNumber);
+	}
+	
+	public void setProductTemplateID(Integer id) {
+		productTemplateID.setText(id.toString());
 	}
 	
 	public void setPartNumberByID(Integer ID) {
@@ -457,6 +524,16 @@ public class ItemView extends JPanel {
 		save.setVisible(false);
 	}
 	
+	public void partsMode() {
+		partField.setVisible(true);
+		productTemplateField.setVisible(false);
+	}
+	
+	public void productMode() {
+		partField.setVisible(false);
+		productTemplateField.setVisible(true);
+	}
+	
 	public void disableEdit() {
 		edit.setEnabled(false);
 	}
@@ -465,6 +542,7 @@ public class ItemView extends JPanel {
 		ok.setVisible(false);
 		save.setVisible(false);
 		partField.setEnabled(false);
+		productTemplateField.setEnabled(false);
 		quantityField.setEnabled(false);
 		locationField.setEnabled(false);
 	}
@@ -472,6 +550,7 @@ public class ItemView extends JPanel {
 	public void enableEditable() {
 		save.setVisible(true);
 		partField.setEnabled(true);
+		productTemplateField.setEnabled(true);
 		quantityField.setEnabled(true);
 		locationField.setEnabled(true);
 	}

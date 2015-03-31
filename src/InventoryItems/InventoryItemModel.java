@@ -22,7 +22,7 @@ public class InventoryItemModel {
 	
 	public void addInventoryItem(InventoryItem ii) throws Exception {
 		try {
-			addInventoryItem(ii.getPartID(), ii.getLocation(), ii.getQuantity());
+			addInventoryItem(ii.getPartID(), ii.getLocation(), ii.getQuantity(), ii.getProductTemplateID());
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -33,9 +33,9 @@ public class InventoryItemModel {
 		}
 	}
 	
-	public void addInventoryItem(Part p, String location, Integer quantity) throws Exception { // with optional args omitted
+	public void addInventoryItem(Part p, String location, Integer quantity, Integer productTemplateID) throws Exception { // with optional args omitted
 		try {
-			addInventoryItem(p.getID(), location, quantity);
+			addInventoryItem(p.getID(), location, quantity, productTemplateID);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -45,12 +45,12 @@ public class InventoryItemModel {
 		}
 	}
 	
-	public void addInventoryItem(Integer partID, String location, Integer quantity) throws Exception, IOException, SQLException { // all args
+	public void addInventoryItem(Integer partID, String location, Integer quantity, Integer productTemplateID) throws Exception, IOException, SQLException { // all args
 		if (quantity <= 0) {
 			throw new IOException("Error: Quantity for a new item must be greater than zero.");
 		}
 		try {
-			iig.addInventoryItem(partID, location, quantity);
+			iig.addInventoryItem(partID, location, quantity, productTemplateID);
 			inventoryItems = iig.getInventory(); // update list of inventory items
 		}
 		catch (SQLException sqe) {
@@ -75,7 +75,7 @@ public class InventoryItemModel {
 	
 	public void editInventoryItem(InventoryItem iiOld, InventoryItem iiNew) throws SQLException, IOException, Exception {
 		try {
-			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity(), iiOld.getTimestamp());
+			iig.editInventoryItem(iiOld.getID(), iiNew.getPartID(), iiNew.getLocation(), iiNew.getQuantity(), iiNew.getProductTemplateID(), iiNew.getProductNumber(), iiOld.getTimestamp());
 			inventoryItems = iig.getInventory(); // gets list of inventory items
 		}
 		catch (SQLException sqe) {
@@ -121,6 +121,10 @@ public class InventoryItemModel {
 	
 	public ArrayList<String> getParts() throws SQLException {
 		return iig.getParts();
+	}
+	
+	public ArrayList<String> getProductTemplates() throws SQLException {
+		return iig.getProductTemplates();
 	}
 	
 	public Integer getPartIDByPartNumber(String partNumber) throws SQLException {

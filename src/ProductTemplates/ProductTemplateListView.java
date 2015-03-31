@@ -19,7 +19,7 @@ public class ProductTemplateListView extends JPanel  {
 	private ProductTemplateModel model;
 
 	private JPanel tablePanel;
-	private JButton addPart, deletePart, viewPart, templatePart;
+	private JButton addPart, deletePart, viewPart, templatePart, createProduct;
 	private int GUIWidth;
 	private int GUIHeight;
 	private String[] columnNames = {"ID", "Product Number", "Product Description"};
@@ -52,9 +52,9 @@ public class ProductTemplateListView extends JPanel  {
 		errorH = 32;
 		errorX = tableMargin;
 		errorY = GUIHeight - 85;
-		buttonW = GUIWidth / 5;
+		buttonW = GUIWidth / 6;
 		buttonH = 30;
-		buttonX = GUIWidth / 5;
+		buttonX = GUIWidth / 6;
 		buttonY = GUIHeight - 50;
 
 		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
@@ -127,6 +127,11 @@ public class ProductTemplateListView extends JPanel  {
 		disablePartsList();
 		tablePanel.add(templatePart);
 		
+		createProduct = new JButton("Create Product");
+		createProduct.setBounds((buttonX * 5) - (buttonW / 2), buttonY, buttonW, buttonH);
+		disableCreateProduct();
+		tablePanel.add(createProduct);
+		
 		errorMessage = new JLabel("");
 		errorMessage.setForeground(Color.red);
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
@@ -148,9 +153,9 @@ public class ProductTemplateListView extends JPanel  {
 		errorH = 32;
 		errorX = tableMargin;
 		errorY = GUIHeight - 85;
-		buttonW = GUIWidth / 5;
+		buttonW = GUIWidth / 6;
 		buttonH = 30;
-		buttonX = GUIWidth / 5;
+		buttonX = GUIWidth / 6;
 		buttonY = GUIHeight - 50;
 
 		this.setPreferredSize(new Dimension(GUIWidth, GUIHeight));
@@ -160,6 +165,7 @@ public class ProductTemplateListView extends JPanel  {
 		deletePart.setBounds((buttonX * 2) - (buttonW / 2), buttonY, buttonW, buttonH);
 		viewPart.setBounds((buttonX * 3) - (buttonW / 2), buttonY, buttonW, buttonH);
 		templatePart.setBounds((buttonX * 4) - (buttonW / 2), buttonY, buttonW, buttonH);
+		createProduct.setBounds((buttonX * 5) - (buttonW / 2), buttonY, buttonW, buttonH);
 		errorMessage.setBounds(errorX, errorY, errorW, errorH);
 	}
 	
@@ -168,6 +174,7 @@ public class ProductTemplateListView extends JPanel  {
 		addPart.addActionListener(controller);
 		deletePart.addActionListener(controller);
 		viewPart.addActionListener(controller);
+		createProduct.addActionListener(controller);
 		tableSelectionModel.addListSelectionListener(controller);
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
 		    @Override
@@ -233,12 +240,20 @@ public class ProductTemplateListView extends JPanel  {
 		templatePart.setEnabled(false);
 	}
 	
+	public void disableCreateProduct() {
+		createProduct.setEnabled(false);
+	}
+	
 	public void enablePartsList() {
 		templatePart.setEnabled(true);
 	}
 	
 	public void enableDelete() {
 		deletePart.setEnabled(true);
+	}
+	
+	public void enableCreateProduct() {
+		createProduct.setEnabled(true);
 	}
 	
 	public void enableView() {

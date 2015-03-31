@@ -31,7 +31,7 @@ public class InventoryView extends JPanel  {
 	private JButton addPart, deletePart, viewPart;
 	private int GUIWidth;
 	private int GUIHeight;
-	private String[] columnNames = {"ID", "Part ID", "Part Name", "Part Number", "Location", "Quantity"};
+	private String[] columnNames = {"ID", "Part ID", "Part Name", "Part Number", "Product Template ID", "Product Description", "Location", "Quantity"};
 	private JTable table;
 	private JScrollPane tableScrollPane;
 	private ListSelectionModel tableSelectionModel;
@@ -202,7 +202,12 @@ public class InventoryView extends JPanel  {
 		model.sortByCurrentSortMethod();
 		for (InventoryItem p: model.getInventory()) {
 			Part part = p.getPart();
-			rowData = new Object[] { p.getID(), part.getID(), part.getPartName(), part.getPartNumber(), p.getLocation(), p.getQuantity()};
+			if (part != null) {
+				rowData = new Object[] { p.getID(), part.getID(), part.getPartName(), part.getPartNumber(), "", "", p.getLocation(), p.getQuantity()};
+			}
+			else {
+				rowData = new Object[] { p.getID(), "", "", "", p.getProductTemplateID(), p.getDescription(), p.getLocation(), p.getQuantity()};	
+			}
 			tableModel.addRow(rowData);
 		}
 		if (partsModel.getSize() == 0) {

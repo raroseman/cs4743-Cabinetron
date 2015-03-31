@@ -137,7 +137,7 @@ public class InventoryItemGateway {
 		
 	}
 	
-	public void addInventoryItem(Integer partID, String location, Integer quantity) throws SQLException, IOException {
+	public void addInventoryItem(Integer partID, String location, Integer quantity, Integer productTemplateID) throws SQLException, IOException {
 		createConnection();
 		
 		int locationID = convertLocationTypeToID(location);
@@ -146,13 +146,19 @@ public class InventoryItemGateway {
 //4			// Concurrency issue - part was added but was not displayed in list view.
 			throw new IOException("Error: The Part ID is already associated with that location.");
 		}
+//5
+		if (partID > 0 && productTemplateID > 0) { // cannot reference both a Part and a ProductTemplate
+			closeConnection();
+			throw new IOException("Error: An InventoryItem cannot reference both a Part and a ProductTemplate.");
+		}
 		try {	
-			SQL = "INSERT IGNORE INTO InventoryItems (PartID, LocationID, Quantity) ";
-			SQL += "VALUES (?, ?, ?)";
+			SQL = "INSERT IGNORE INTO InventoryItems (PartID, LocationID, Quantity, ProductTemplateID) ";
+			SQL += "VALUES (?, ?, ?, ?)";
 			prepstmt = conn.prepareStatement(SQL);
 			prepstmt.setInt(1, partID);
 			prepstmt.setInt(2, locationID);
 			prepstmt.setInt(3, quantity);
+			prepstmt.setInt(4, productTemplateID);
 			prepstmt.execute();
 		}
 		catch (SQLException e) {
@@ -189,7 +195,7 @@ public class InventoryItemGateway {
 		closeConnection();
 	}
 	
-	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity, String prevTimestamp) throws SQLException, IOException, Exception {
+	public void editInventoryItem(Integer itemID, Integer partID, String location, Integer quantity, Integer productTemplateID, String productNumber, String prevTimestamp) throws SQLException, IOException, Exception {
 		createConnection();
 		
 		InventoryItem ii = null;
@@ -198,44 +204,72 @@ public class InventoryItemGateway {
 			ii = getInventoryItem(itemID);
 		} 
 		catch (IOException e1) {
+
 			closeConnection();
 			throw new IOException(e1.getMessage());
 		}
 		catch (SQLException sqe) {
+
 			closeConnection();
 			throw new SQLException(sqe.getMessage());
 		}
+
 		int locationID = convertLocationTypeToID(location);
 		if (!checkTimestamp(ii.getID(), prevTimestamp)) {
 			closeConnection();
 			throw new Exception("Error: This InventoryItem was recently changed. You may wish to review these changes before submitting your own.");
 //4
 		}
-		
 		if (!(ii.getPartID().equals(partID) && ii.getLocation().equals(location))) { // part ID or location have changed	
-			if (!isPart(partID)) {
-				closeConnection();
-				throw new IOException("Error: Part ID does not match any Part in database.");
-			}
-			if (!isPartAndLocationUnique(partID, locationID)) {
-				closeConnection();
-				throw new IOException("Error: The Part ID is already associated with that location.");
+			if (partID != 0) {
+				if (!isPart(partID)) {
+					closeConnection();
+					throw new IOException("Error: Part ID does not match any Part in database.");
+				}
+				if (!isPartAndLocationUnique(partID, locationID)) {
+					closeConnection();
+					throw new IOException("Error: The Part ID is already associated with that location.");
+				}
 			}
 		}
-		try {
-			SQL = "UPDATE InventoryItems SET PartID=?, LocationID=?, Quantity=? WHERE ID=?";
-			prepstmt = conn.prepareStatement(SQL);
-			prepstmt.setInt(1, partID);
-			prepstmt.setInt(2, locationID);
-			prepstmt.setInt(3, quantity);
-			prepstmt.setInt(4, itemID);
-			prepstmt.execute();
-		}
-		catch (SQLException e) {
-			closePreparedStatement();
-			conn.rollback();
+//5
+		if (partID > 0 && productTemplateID > 0) { // cannot reference both a Part and a ProductTemplate
 			closeConnection();
-			throw new SQLException(e.getMessage()); // "Duplicate entry..."
+			throw new IOException("Error: An InventoryItem cannot reference both a Part and a ProductTemplate.");
+		}
+		if (partID > 0) { // editing a Part
+			try {
+				SQL = "UPDATE InventoryItems SET PartID=?, LocationID=?, Quantity=? WHERE ID=?";
+				prepstmt = conn.prepareStatement(SQL);
+				prepstmt.setInt(1, partID);
+				prepstmt.setInt(2, locationID);
+		//		prepstmt.setInt(3, productTemplateID); // cannot edit product template ID
+				prepstmt.setInt(3, quantity);
+				prepstmt.setInt(4, itemID);
+				prepstmt.execute();
+			}
+			catch (SQLException e) {
+				closePreparedStatement();
+				conn.rollback();
+				closeConnection();
+				throw new SQLException(e.getMessage()); // "Duplicate entry..."
+			}
+		}
+		else { // editing a product
+			try {
+				SQL = "UPDATE InventoryItems SET LocationID=?, Quantity=? WHERE ID=?";
+				prepstmt = conn.prepareStatement(SQL);
+				prepstmt.setInt(1, locationID);
+				prepstmt.setInt(2, quantity);
+				prepstmt.setInt(3, itemID);
+				prepstmt.execute();
+			}
+			catch (SQLException e) {
+				closePreparedStatement();
+				conn.rollback();
+				closeConnection();
+				throw new SQLException(e.getMessage()); // "Duplicate entry..."
+			}
 		}
 		closePreparedStatement();
 		conn.commit();
@@ -356,11 +390,21 @@ public class InventoryItemGateway {
 		List<InventoryItem> inventory = new ArrayList<InventoryItem>();
 		createConnection();
 		// Select all inventory items for display
+		/*
 		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
-		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp, InventoryItems.ProductTemplateID FROM InventoryItems ";
 		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
 		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		*/
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp, InventoryItems.ProductTemplateID, ";
+		SQL += "ProductTemplates.ProductNumber, ProductTemplates.Description FROM InventoryItems ";
+		SQL += "LEFT OUTER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "LEFT OUTER JOIN Units ON Units.ID = Parts.UnitID ";
+		SQL += "LEFT OUTER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "LEFT OUTER JOIN ProductTemplates ON InventoryItems.ProductTemplateID = ProductTemplates.ID ";
+		
 		try {
 			stmt = conn.createStatement();
 			stmt.execute(SQL);
@@ -368,9 +412,18 @@ public class InventoryItemGateway {
 
 			while (rs.next()) {
 				try {
-					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
-					InventoryItem ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
-					inventory.add(ii);
+					if (rs.getInt("PartID") != 0 && rs.getInt("ProductTemplateID") != 0) { // neither are NULL, which is forbidden. Internal error.
+						throw new IOException("Internal error: InventoryItem " + rs.getInt("ID") + " references both a Part and Product Template.");
+					}
+					else if (rs.getInt("PartID") != 0) { // 0 is an SQL NULL value
+						Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+						InventoryItem ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), 0, rs.getString("Timestamp"), "", "");
+						inventory.add(ii);
+					}
+					else {
+						InventoryItem ii = new InventoryItem(rs.getInt("ID"), 0, rs.getString("Location"), rs.getInt("Quantity"), rs.getInt("ProductTemplateID"), rs.getString("Timestamp"), rs.getString("ProductNumber"), rs.getString("Description"));
+						inventory.add(ii);
+					}
 				}
 				catch (IOException ioe) {
 					System.out.println(ioe.getMessage());
@@ -387,17 +440,28 @@ public class InventoryItemGateway {
 		}
 		closeConnection();
 		return inventory;
+		
 	}
 	
 	public InventoryItem getUpdatedInventoryItem(Integer itemID) throws SQLException, IOException {
 		InventoryItem ii = null;
 		createConnection();
-		
+		/*
 		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
-		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp FROM InventoryItems ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp, InventoryItems.ProductTemplateID FROM InventoryItems ";
 		SQL += "INNER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
 		SQL += "INNER JOIN Units ON Units.ID = Parts.UnitID ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "INNER JOIN ProductTemplates ON InventoryItems.ProductTemplateID = ProductTemplates.ID ";
+		SQL += "WHERE InventoryItems.ID=?";
+		*/
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp, InventoryItems.ProductTemplateID, ";
+		SQL += "ProductTemplates.ProductNumber, ProductTemplates.Description FROM InventoryItems ";
+		SQL += "LEFT OUTER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "LEFT OUTER JOIN Units ON Units.ID = Parts.UnitID ";
+		SQL += "LEFT OUTER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "LEFT OUTER JOIN ProductTemplates ON InventoryItems.ProductTemplateID = ProductTemplates.ID ";
 		SQL += "WHERE InventoryItems.ID=?";
 		
 		try {
@@ -407,9 +471,13 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
-					Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
-					ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
-					
+					if (rs.getInt("PartID") != 0) { // 0 is an SQL NULL value
+						Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+						ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), 0, rs.getString("Timestamp"), "", "");
+					}
+					else {
+						ii = new InventoryItem(rs.getInt("ID"), 0, rs.getString("Location"), rs.getInt("Quantity"), rs.getInt("ProductTemplateID"), rs.getString("Timestamp"), rs.getString("ProductNumber"), rs.getString("Description"));
+					}
 				}
 				catch (IOException ioe) {
 					closeResultSet();
@@ -440,9 +508,18 @@ public class InventoryItemGateway {
 	public InventoryItem getInventoryItem(Integer itemID) throws SQLException, IOException {
 		InventoryItem ii = null;
 //		createConnection();
-		
-		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Locations.Location, InventoryItems.Quantity, InventoryItems.Timestamp FROM InventoryItems ";
+		/*
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Locations.Location, InventoryItems.Quantity, InventoryItems.Timestamp, InventoryItems.ProductTemplateID FROM InventoryItems ";
 		SQL += "INNER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "WHERE InventoryItems.ID=?";
+		*/
+		SQL = "SELECT InventoryItems.ID, InventoryItems.PartID, Units.Unit, Parts.PartName, Parts.PartNumber, Parts.ExternalPartNumber, ";
+		SQL += "InventoryItems.Quantity, Locations.Location, InventoryItems.Timestamp, InventoryItems.ProductTemplateID, ";
+		SQL += "ProductTemplates.ProductNumber, ProductTemplates.Description FROM InventoryItems ";
+		SQL += "LEFT OUTER JOIN Parts ON InventoryItems.PartID = Parts.ID ";
+		SQL += "LEFT OUTER JOIN Units ON Units.ID = Parts.UnitID ";
+		SQL += "LEFT OUTER JOIN Locations ON InventoryItems.LocationID = Locations.ID ";
+		SQL += "LEFT OUTER JOIN ProductTemplates ON InventoryItems.ProductTemplateID = ProductTemplates.ID ";
 		SQL += "WHERE InventoryItems.ID=?";
 		try {
 			prepstmt = conn.prepareStatement(SQL);
@@ -451,7 +528,13 @@ public class InventoryItemGateway {
 
 			if (rs.next()) {
 				try {
-					ii = new InventoryItem(rs.getInt("ID"), rs.getInt("PartID"), rs.getString("Location"), rs.getInt("Quantity"), rs.getString("Timestamp"));
+					if (rs.getInt("PartID") != 0) { // 0 is an SQL NULL value
+						Part p = new Part(rs.getInt("PartID"), rs.getString("Unit"), rs.getString("PartName"), rs.getString("PartNumber"), rs.getString("ExternalPartNumber"));
+						ii = new InventoryItem(rs.getInt("ID"), p, rs.getString("Location"), rs.getInt("Quantity"), 0, rs.getString("Timestamp"), "", "");
+					}
+					else {
+						ii = new InventoryItem(rs.getInt("ID"), 0, rs.getString("Location"), rs.getInt("Quantity"), rs.getInt("ProductTemplateID"), rs.getString("Timestamp"), rs.getString("ProductNumber"), rs.getString("Description"));
+					}
 				}
 				catch (IOException ioe) {
 					closeResultSet();
@@ -529,6 +612,32 @@ public class InventoryItemGateway {
 		closePreparedStatement();
 		closeConnection();
 		return parts;
+	}
+	
+	public ArrayList<String> getProductTemplates() throws SQLException {
+		ArrayList<String> productTemplates = new ArrayList<String>();
+		createConnection();
+		
+		SQL = "SELECT ProductTemplates.ProductNumber FROM ProductTemplates";
+		try {
+			stmt = conn.createStatement();
+			stmt.executeQuery(SQL);
+			rs = stmt.getResultSet();
+			
+			while (rs.next()) {
+				productTemplates.add(rs.getString("ProductNumber"));
+			}
+		} 
+		catch (SQLException e) {
+			closeResultSet();
+			closePreparedStatement();
+			closeConnection();
+			throw new SQLException (e.getMessage());
+		}
+		closeResultSet();
+		closePreparedStatement();
+		closeConnection();
+		return productTemplates;
 	}
 	
 	public Integer getPartIDByPartNumber(String partNumber) throws SQLException {

@@ -75,25 +75,6 @@ public class DB_InsertTableData {
 			e1.printStackTrace();
 		}
 		
-		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity) VALUES ";
-		for (int i = 25; i > 0; i--) {
-			if (i % 3 == 0) {
-				SQL += "("+i+", 2, "+i+"), ";
-			}
-			else if (i % 3 == 1){
-				SQL += "("+i+", 3, "+i+"), ";
-			}
-			else {
-				SQL += "("+i+", 4, "+i+"), ";
-			}
-		}
-		SQL += "(1, 2, 1) ";
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
 		SQL = "INSERT INTO ProductTemplates (ProductNumber, Description) VALUES ";
 
 		SQL += "('AProduct1', 'A poor product.'), ";
@@ -130,6 +111,27 @@ public class DB_InsertTableData {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
+		
+		SQL = "INSERT INTO InventoryItems (PartID, LocationID, Quantity, ProductTemplateID) VALUES ";
+		for (int i = 25; i > 0; i--) {
+			if (i % 3 == 0) {
+				SQL += "("+i+", 2, "+i+", NULL), ";
+			}
+			else if (i % 3 == 1){
+				SQL += "("+i+", 3, "+i+", NULL), ";
+			}
+			else {
+				SQL += "("+i+", 4, "+i+", NULL), ";
+			}
+		}
+		SQL += "(NULL, 2, 1, 1) ";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		
 		// Close all JDBC objects
 		try {

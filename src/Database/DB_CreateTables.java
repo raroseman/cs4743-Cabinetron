@@ -29,6 +29,20 @@ public class DB_CreateTables {
 		}
 		
 		// Drop table if it existed
+
+		SQL = "DROP TABLE IF EXISTS Inventory"; // depends on InventoryItems
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "DROP TABLE IF EXISTS InventoryItems"; // depends on Parts, Locations, ProductTemplates
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		
 		SQL = "DROP TABLE IF EXISTS ProductTemplateParts";
 		try {
@@ -38,20 +52,6 @@ public class DB_CreateTables {
 		}
 		
 		SQL = "DROP TABLE IF EXISTS ProductTemplates";
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		SQL = "DROP TABLE IF EXISTS Inventory"; // depends on InventoryItems
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		SQL = "DROP TABLE IF EXISTS InventoryItems"; // depends on Parts, Locations
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {
@@ -120,22 +120,6 @@ public class DB_CreateTables {
 			e1.printStackTrace();
 		}
 		
-		SQL = "CREATE TABLE InventoryItems (";
-		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
-		SQL += "PartID INT(10) NOT NULL, ";
-		SQL += "LocationID INT(10) NOT NULL, ";
-		SQL += "Quantity INT(10) NOT NULL, ";
-		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
-		SQL += "PRIMARY KEY (ID), ";
-		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
-		SQL += "FOREIGN KEY (LocationID) REFERENCES Locations(ID), ";
-		SQL += "CONSTRAINT PartLocation UNIQUE (PartID, LocationID) )";
-		try {
-			stmt.execute(SQL);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-		
 		SQL = "CREATE TABLE ProductTemplates (";
 		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
 		SQL += "ProductNumber VARCHAR(20) NOT NULL UNIQUE, ";
@@ -158,6 +142,24 @@ public class DB_CreateTables {
 		SQL += "FOREIGN KEY (ProductTemplateID) REFERENCES ProductTemplates(ID), ";
 		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
 		SQL += "CONSTRAINT ProductTemplatePart UNIQUE (PartID, ProductTemplateID) )";
+		try {
+			stmt.execute(SQL);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		SQL = "CREATE TABLE InventoryItems (";
+		SQL += "ID INT(10) NOT NULL AUTO_INCREMENT, ";
+		SQL += "PartID INT(10), ";
+		SQL += "LocationID INT(10) NOT NULL, ";
+		SQL += "Quantity INT(10) NOT NULL, ";
+		SQL += "ProductTemplateID INT(10), ";
+		SQL += "Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ";
+		SQL += "PRIMARY KEY (ID), ";
+		SQL += "FOREIGN KEY (PartID) REFERENCES Parts(ID), ";
+		SQL += "FOREIGN KEY (LocationID) REFERENCES Locations(ID), ";
+		SQL += "FOREIGN KEY (ProductTemplateID) REFERENCES ProductTemplates(ID), ";
+		SQL += "CONSTRAINT PartLocation UNIQUE (PartID, LocationID) )";
 		try {
 			stmt.execute(SQL);
 		} catch (SQLException e1) {

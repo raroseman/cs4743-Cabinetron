@@ -8,59 +8,90 @@ import Parts.Part;
 public class InventoryItem implements Comparable<InventoryItem> {
 	private Integer id = 0;
 	private Integer partID = 0;
+	private Integer productTemplateID = 0;
 	private Integer quantity = 0;
 	private Part part = null;
 	private String location = "Unknown";
 	private String timestamp = null;
+	private String productNumber = "";
+	private String description = "";
 	
 	/*
 	 * Does not include the optional parameters: ID (required for reference only),
 	 * Since the ID field is determined by the database, setting the ID before it is assigned by the database
 	 * may introduce inconsistencies.
 	 */
-	public InventoryItem(Integer partID, String location, Integer quantity) throws IOException {
+	public InventoryItem(Integer partID, String location, Integer quantity, Integer productTemplateID, String productNumber, String description) throws IOException {
 		try {
 			setPartID(partID);
 			setQuantity(quantity);
 			setLocation(location);
+			setProductTemplateID(productTemplateID);
+			setProductNumber(productNumber);
+			setDescription(description);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
 	
-	public InventoryItem(Part p, String location, Integer quantity) throws IOException {
+	public InventoryItem(Part p, String location, Integer quantity, Integer productTemplateID, String productNumber, String description) throws IOException {
 		try {
 			setPart(p);
+			setProductTemplateID(productTemplateID);
 			setQuantity(quantity);
 			setLocation(location);
+			setProductNumber(productNumber);
+			setDescription(description);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
+	// controller edit item
+	public InventoryItem(Integer id, Integer partID, String location, Integer quantity, Integer productTemplateID, String productNumber, String description) throws IOException {
+		try {
+			setID(id);
+			setPartID(partID);
+			setProductTemplateID(productTemplateID);
+			setQuantity(quantity);
+			setLocation(location);
+			setProductNumber(productNumber);
+			setDescription(description);
+		}
+		catch (IOException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+	
 	
 	// used by IIG getInventoryItem()
-	public InventoryItem(Integer id, Integer partID, String location, Integer quantity, String timestamp) throws IOException {
+	public InventoryItem(Integer id, Integer partID, String location, Integer quantity, Integer productTemplateID, String timestamp, String productNumber, String description) throws IOException {
 		try {
 			setID(id);
 			setPartID(partID);
+			setProductTemplateID(productTemplateID);
 			setQuantity(quantity);
 			setLocation(location);
 			setTimestamp(timestamp);
+			setProductNumber(productNumber);
+			setDescription(description);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
 	}
 	
-	public InventoryItem(Integer id, Part p, String location, Integer quantity, String timestamp) throws IOException {
+	public InventoryItem(Integer id, Part p, String location, Integer quantity, Integer productTemplateID, String timestamp, String productNumber, String description) throws IOException {
 		try {
 			setID(id);
 			setPart(p);
+			setProductTemplateID(productTemplateID);
 			setQuantity(quantity);
 			setLocation(location);
 			setTimestamp(timestamp);
+			setProductNumber(productNumber);
+			setDescription(description);
 		}
 		catch (IOException e) {
 			throw new IOException(e.getMessage());
@@ -73,6 +104,10 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	
 	public Integer getPartID() {
 		return this.partID;
+	}
+	
+	public Integer getProductTemplateID() {
+		return this.productTemplateID;
 	}
 	
 	public Part getPart() {
@@ -91,6 +126,22 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		return this.timestamp;
 	}
 	
+	public String getDescription() {
+		return this.description;
+	}
+	
+	public void setProductNumber(String productNumber) {
+		this.productNumber = productNumber;
+	}
+	
+	public String getProductNumber() {
+		return this.productNumber;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	
 	private void setID(Integer id) throws IOException {
 		if (id < 1) {
@@ -102,11 +153,36 @@ public class InventoryItem implements Comparable<InventoryItem> {
 	}
 	
 	private void setPartID(Integer partID) throws IOException {
-		if (partID < 1) {
-			throw new IOException("Error: part ID must be greater than zero.");
+		if (partID == 0) { // zero allowed to indicate that it this InventoryItem does not reference a Part
+			this.partID = 0;
+			return;
+		}
+		else if (partID < 1) {
+			throw new IOException("Error: part ID must be zero (if unused) or greater (if assigned).");
+		}
+		else if (this.productTemplateID != 0) {
+			System.out.println("INTERNAL ERROR: PRODUCT ID ASSIGNED TO THIS ITEM. InventoryItem around line 114.");
+			throw new IOException("INTERNAL ERROR: PRODUCT ID ASSIGNED TO THIS ITEM.");
 		}
 		else {
 			this.partID = partID;
+		}
+	}
+	
+	public void setProductTemplateID(Integer productTemplateID) throws IOException {
+		if (productTemplateID == 0) { // zero allowed to indicate that it this InventoryItem does not reference a ProductTemplate
+			this.productTemplateID = 0;
+			return;
+		}
+		else if (productTemplateID < 1) {
+			throw new IOException("Error: product ID must be zero (if unused) or greater (if assigned).");
+		}
+		else if (this.partID != 0) {
+			System.out.println("INTERNAL ERROR: PART ID ASSIGNED TO THIS ITEM. InventoryItem around line 127.");
+			throw new IOException("INTERNAL ERROR: PART ID ASSIGNED TO THIS ITEM.");
+		}
+		else {
+			this.productTemplateID = productTemplateID;
 		}
 	}
 	
@@ -116,6 +192,8 @@ public class InventoryItem implements Comparable<InventoryItem> {
 		}
 		else {
 			this.part = p;
+			this.partID = p.getID();
+			
 		}
 	}
 	

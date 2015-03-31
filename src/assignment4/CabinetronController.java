@@ -28,11 +28,35 @@ public class CabinetronController implements ActionListener {
 		
 		switch(command) {
 			case "Login":
-				view.ViewLogin();
 				if (hasLoginViewOpen) {
 					view.closeLoginView();
 					hasLoginViewOpen = false;
 				}
+				view.ViewLogin();
+				hasLoginViewOpen = true;
+				break;
+			case "Login as Ragnar Nelson":
+				if (hasLoginViewOpen) {
+					view.closeLoginView();
+					hasLoginViewOpen = false;
+				}
+				view.ViewLogin("RagnarNelson@Cabinetron.com", "EX-23%^++l33t");
+				hasLoginViewOpen = true;
+				break;
+			case "Login as Sue Smith":
+				if (hasLoginViewOpen) {
+					view.closeLoginView();
+					hasLoginViewOpen = false;
+				}
+				view.ViewLogin("SueSmith@Cabinetron.com", "KittyLuver75");
+				hasLoginViewOpen = true;
+				break;
+			case "Login as Tom Jones":
+				if (hasLoginViewOpen) {
+					view.closeLoginView();
+					hasLoginViewOpen = false;
+				}
+				view.ViewLogin("TomJones@Cabinetron.com", "TommyJ$$$");
 				hasLoginViewOpen = true;
 				break;
 			case "Logout":

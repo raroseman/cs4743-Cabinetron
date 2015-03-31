@@ -87,7 +87,17 @@ public class InventoryController implements ActionListener, ListSelectionListene
 					itemView = view.ViewInventoryItemDetails("View/Edit Inventory Item");
 					itemView.register(this);
 					itemView.disableEditable();
-					itemView.setPartNumber(selectedItem.getPart().getPartNumber());
+					if (selectedItem.getPart() != null) {
+						itemView.setPartNumber(selectedItem.getPart().getPartNumber());
+						itemView.setProductNumber("0");
+						itemView.setProductTemplateID(selectedItem.getProductTemplateID());
+						itemView.partsMode();
+					}
+					else {
+						itemView.setProductNumber(selectedItem.getProductNumber());
+						itemView.setProductTemplateID(selectedItem.getProductTemplateID());
+						itemView.productMode();
+					}
 					itemView.setID(selectedItem.getID());
 					itemView.setQuantity(selectedItem.getQuantity());
 					itemView.setLocationType(selectedItem.getLocation());
@@ -107,10 +117,12 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						oldDatabaseItem = newDatabaseItem; // user had an edit conflict already; move "new" to "old"
 					}
 					try {
-						userModifiedItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());
+	
+						userModifiedItem = new InventoryItem(itemView.getID(), itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity(), itemView.getProductTemplateID(), itemView.getProductNumber(), itemView.getDescription());
 						// should generate an IOException here if location is Unknown or other parameters are incorrect
+
 						inventoryItemModel.editInventoryItem(oldDatabaseItem, userModifiedItem);
-						
+
 						oldDatabaseItem = null;
 						userModifiedItem = null;
 						newDatabaseItem = null;
@@ -142,6 +154,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 						
 						inventoryView.updatePanel();
 						inventoryView.repaint();
+						e1.printStackTrace();
 						itemView.setErrorMessage(e1.getMessage());
 						view.showInventoryItemEditConflictWindow();
 						itemView.showEditConflictWindow(oldDatabaseItem, userModifiedItem, newDatabaseItem, view.getWidth());
@@ -152,7 +165,7 @@ public class InventoryController implements ActionListener, ListSelectionListene
 				break;
 			case "OK":
 				try {
-					InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity());			
+					InventoryItem newItem = new InventoryItem(itemView.getPartID(), itemView.getLocationName(), itemView.getQuantity(), itemView.getProductTemplateID(), itemView.getProductNumber(), itemView.getDescription());			
 					inventoryItemModel.addInventoryItem(newItem);
 					view.closeInventoryItemDetailView();
 					inventoryView.updatePanel();

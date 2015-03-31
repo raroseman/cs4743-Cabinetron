@@ -47,7 +47,7 @@ public class CabinetronView extends JFrame {
 	private int GUIHeight;
 	private JMenuBar menuBar;
 	private JMenu menuParts, menuTemplates, user;
-	private JMenuItem itemParts, itemInventory, itemTemplates, login, logout, exit;
+	private JMenuItem itemParts, itemInventory, itemTemplates, login, loginRagnar, loginSue, loginTom, logout, exit;
 	private int minX = 300;
 	private int minY = 300;
 	private boolean[] accessPrivileges;
@@ -116,6 +116,15 @@ public class CabinetronView extends JFrame {
 		login = new JMenuItem("Login");
 		user.add(login);
 		
+		loginRagnar = new JMenuItem("Login as Ragnar Nelson");
+		user.add(loginRagnar);
+		
+		loginSue = new JMenuItem("Login as Sue Smith");
+		user.add(loginSue);
+		
+		loginTom = new JMenuItem("Login as Tom Jones");
+		user.add(loginTom);
+		
 		logout = new JMenuItem("Logout");
 		user.add(logout);
 		
@@ -137,16 +146,26 @@ public class CabinetronView extends JFrame {
 	
 	public void register(CabinetronController controller) {
 		login.addActionListener(controller);
+		loginRagnar.addActionListener(controller);
+		loginSue.addActionListener(controller);
+		loginTom.addActionListener(controller);
 		logout.addActionListener(controller);
 		exit.addActionListener(controller);
 		itemParts.addActionListener(controller);
 		itemInventory.addActionListener(controller);
 		itemTemplates.addActionListener(controller);
 	}
+	
+	public LoginView ViewLogin(String username, String password) {
+		loginView = ViewLogin();
+		loginView.setUsername(username);
+		loginView.setPassword(password);
+		return loginView;
+	}
 
 	public LoginView ViewLogin() {
-		if (partListWindow == null) {
-			loginView = new LoginView(0, 0, 200, 200);
+		if (loginWindow == null) {
+			loginView = new LoginView(model.GetGUIWidth() / 2, model.GetGUIHeight() / 2, minX, minY);
 			loginController = new LoginController(thisView, loginView);
 			loginView.register(loginController);
 			loginWindow = new JInternalFrame("Login", true, true, true, true );
@@ -338,7 +357,7 @@ public class CabinetronView extends JFrame {
 	
 	public ProductTemplateListView ViewProductTemplateList() {
 		if (templateListWindow == null) {
-			productTemplateListView = new ProductTemplateListView(model.GetProductTemplateModel(), model.GetGUIWidth() / 2, model.GetGUIHeight() / 2, minX, minY);
+			productTemplateListView = new ProductTemplateListView(model.GetProductTemplateModel(), (model.GetGUIWidth() / 3) * 2, model.GetGUIHeight() / 2, minX, minY);
 			productTemplateListController = new ProductTemplateListController(model.GetProductTemplateModel(), productTemplateListView, thisView);
 			productTemplateListView.register(productTemplateListController);
 			templateListWindow = new JInternalFrame("Product Template List", true, true, true, true );
@@ -480,7 +499,10 @@ public class CabinetronView extends JFrame {
 	}
 	
 	public void closeLoginView() {
-		loginWindow.dispose();
+		if (loginWindow != null) {
+			loginWindow.dispose();
+			loginWindow = null;
+		}
 	}
 	
 	public void disableMenu() {

@@ -25,17 +25,18 @@ public class Tester {
 	private static Authenticator authenticator;
 	private static Session session;
 	public static void main(String args[]) {
+	
+		
+		DB_CreateTables c = new DB_CreateTables();
+		c.Setup();
+		DB_InsertTableData i = new DB_InsertTableData();
+		i.Setup();
 		CabinetronModel model = new CabinetronModel();
 		CabinetronView view = new CabinetronView(model);
 		CabinetronController controller = new CabinetronController(model, view);
 		view.register(controller);
 		
+	
 		
-		/*
-		DB_CreateTables c = new DB_CreateTables();
-		c.Setup();
-		DB_InsertTableData i = new DB_InsertTableData();
-		i.Setup();
-		*/
 	}
 }
